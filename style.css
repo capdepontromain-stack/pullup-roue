@@ -2954,3 +2954,62 @@ body.theme-circus .ticket-detail { color: var(--toile); }
   .scene-faisceau { animation: none; }
   .scene-vedette { animation: none; }
 }
+
+/* ============================================================
+   LE TOUCHER (26/08/2026)
+   ------------------------------------------------------------
+   Sur un téléphone, un doigt qui appuie doit voir quelque chose
+   se passer AVANT que l'écran ne change : c'est ce qui sépare
+   une application vivante d'une page web. Trois gestes, posés
+   une bonne fois pour toutes sur les éléments que l'on touche :
+     1. l'enfoncement (l'objet cède sous le doigt) ;
+     2. l'onde dorée qui part du point de contact ;
+     3. la lueur qui s'allume une fraction de seconde.
+   Tout est purement décoratif : rien ici ne conditionne un clic,
+   et tout disparaît si le téléphone demande moins d'animations.
+   ============================================================ */
+
+.btn, .option, .carte-univers, .promo, .bandit-levier, .ch-place {
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Le levier et les chapeaux débordent volontairement de leur cadre
+   quand ils bougent : eux gardent leur débordement visible. */
+.bandit-levier, .ch-place { overflow: visible; }
+
+/* L'onde : un rond doré qui s'ouvre depuis le point touché. Sa
+   position est posée par le script (--x, --y), sinon elle part du
+   centre, ce qui reste juste. */
+.onde {
+  position: absolute;
+  left: var(--x, 50%);
+  top: var(--y, 50%);
+  width: 12px; height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 240, 205, .55) 0%, rgba(239, 195, 104, .28) 45%, transparent 70%);
+  transform: scale(0);
+  opacity: .9;
+  pointer-events: none;
+  animation: onde .58s ease-out forwards;
+  z-index: 1;
+}
+@keyframes onde {
+  to { transform: scale(16); opacity: 0; }
+}
+/* Sur les boutons dorés, l'onde est sombre : une onde claire sur un
+   fond clair ne se verrait pas. */
+.btn-or .onde {
+  background: radial-gradient(circle, rgba(60, 34, 4, .3) 0%, rgba(60, 34, 4, .16) 45%, transparent 70%);
+}
+
+/* L'enfoncement : franc mais court, avec un retour élastique. */
+.btn:active { transform: scale(.975); }
+.option:active { transform: scale(.99); background: rgba(201, 150, 46, .12); }
+.carte-univers:active { transform: scale(.98); }
+.promo:active { transform: scale(.99); }
+
+@media (prefers-reduced-motion: reduce) {
+  .onde { display: none; }
+}

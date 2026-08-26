@@ -818,11 +818,11 @@ function tirerLot() {
   // gagne, comme avant, et c'est à la galerie d'ajouter son lot perdant.
   if (!perdants.length) return tirerDansListe(gagnants);
 
-  let taux = tauxGagnants();
-  // Bonus « chance doublée » du ticket : la probabilité de gagner est
-  // vraiment doublée, plafonnée à 100 %. C'est enfin ce que la carte
-  // promet au joueur (voir preparerBonus).
-  if (chanceDoublee) taux = Math.min(100, taux * 2);
+  // Le taux de l'opération, et lui seul : aucun bonus ne le modifie
+  // plus (voir le bloc « LE BILLET D'ENTRÉE N'INVENTE PLUS DE BONUS »).
+  // Le tirage de la page doit donner exactement le même résultat que
+  // celui du serveur, sinon les chiffres annoncés aux galeries sont faux.
+  const taux = tauxGagnants();
 
   const gagne = Math.random() * 100 < taux;
   return tirerDansListe(gagne ? gagnants : perdants);
@@ -1126,59 +1126,69 @@ document.addEventListener('visibilitychange', () => {
 // Les poids font 100 en tout. Le bonus « une entrée au grand tirage »
 // (14 %) a disparu le 25/08/2026 avec le grand tirage lui-même : ses 14
 // points ont été répartis sur les deux bonus qui restent, plutôt que
-// rendus au « pas de bonus ». Un ticket sur quatre donne donc un vrai
-// avantage (26 %), contre un sur six avant, et plus aucun ticket ne
-// promet quelque chose qui n'existe plus.
+// LE BILLET D'ENTRÉE N'INVENTE PLUS DE BONUS (26/08/2026)
+// ---------------------------------------------------------
+// Ce que le ticket révélait jusqu'ici : « Chance doublée », pour un
+// joueur sur quatre. Deux problèmes, tous les deux graves.
 //
-// LE BONUS « DEUX PARTIES » EST RETIRÉ (25/08/2026). Le parcours ne
-// distribue plus qu'UN SEUL lot par joueur et par jour, et la base ne
-// sait de toute façon enregistrer qu'une participation, un lot et un
-// code par personne et par jour : un second tour aurait affiché à
-// l'écran un lot et un code qui n'existent nulle part. Ses 10 points
-// vont à « Chance doublée », le seul bonus qui change vraiment quelque
-// chose. La mécanique du second tour reste dans le code (toursRestants)
-// au cas où les fonctions serveur seraient un jour installées.
+//   1. ÇA NE DOUBLAIT RIEN. Le bonus n'agissait que sur le tirage fait
+//      par la page (tirerLot). Or, en service, c'est le SERVEUR qui
+//      tire le lot (fonction roue_jouer), et il ne connaît pas ce
+//      bonus : il applique le taux de l'opération, un point c'est tout.
+//      Un quart des joueurs lisait donc une promesse sans effet, et le
+//      taux réel annoncé aux galeries (31,5 %) était faux.
+//   2. PERSONNE NE COMPRENAIT CE QU'IL GAGNAIT. Romain, en jouant le
+//      26/08 : « le grattage fait gagner quelque chose, mais on ne sait
+//      pas trop quoi ».
 //
-// DÉCISION DU 26/08/2026 : le second tour est acté à zéro. Le règlement
-// (articles 3 et 4) et le budget des lots ont été alignés dessus. Ne pas
-// le remettre sans corriger d'abord ces deux documents.
+// Le billet dit maintenant la vérité, et rien d'autre : il donne une
+// place sous le chapiteau et annonce le programme du joueur. Aucune
+// promesse, donc aucune promesse à tenir.
 //
-// CONSÉQUENCE À CONNAÎTRE SUR LE TAUX DE GAGNANTS : « Chance doublée »
-// sort pour 26 % des joueurs et double alors leur probabilité. Avec le
-// taux par défaut de 25 %, la part réelle de gagnants n'est donc pas de
-// 25 % mais de 0,74 x 25 + 0,26 x 50 = 31,5 %, soit à peu près un joueur
-// sur trois. C'est ce chiffre-là qu'il faut annoncer à une galerie, et
-// c'est lui qu'il faut recalculer si l'un des deux réglages change.
-const BONUS_GRATTAGE = [
-  { texte: 'Chance doublée',          detail: 'Tes chances de gagner sont doublées.', poids: 26, chance: 2 },
-  { texte: 'En piste',                detail: 'Pas de bonus sur ce ticket. Le jeu, lui, t’attend.', poids: 74 }
-];
+// POUR REMETTRE UN VRAI BONUS UN JOUR : il faut que le SERVEUR le tire
+// et l'applique, dans roue_jouer. Tant que ce n'est pas fait, aucun
+// avantage annoncé ici n'aura le moindre effet sur les chances réelles.
+// Ne pas retomber dans ce piège.
+
+// Les places du chapiteau : un rang, un numéro. C'est du décor, et
+// c'est écrit comme tel (aucun siège n'est réservé nulle part).
+const RANGS_BILLET = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+function numeroDePlace() {
+  const rang = RANGS_BILLET[Math.floor(Math.random() * RANGS_BILLET.length)];
+  const place = 1 + Math.floor(Math.random() * 48);
+  return 'Rang ' + rang + ' · Place ' + place;
+}
+
+// La liste des numéros du jour, écrite comme on l'annonce au micro.
+function listeLisible(mots) {
+  if (mots.length <= 1) return mots[0] || '';
+  return mots.slice(0, -1).join(', ') + ' et ' + mots[mots.length - 1];
+}
+
+function contenuDuBillet() {
+  let noms = [];
+  try {
+    noms = listeDesManches()
+      .map(nom => (jeuPourNom(nom) || {}).nom)
+      .filter(Boolean);
+  } catch (e) { noms = []; }
+  return {
+    texte: numeroDePlace(),
+    detail: noms.length
+      ? 'Au programme : ' + listeLisible(noms) + '.'
+      : 'Le spectacle va commencer.'
+  };
+}
 
 let bonusGrattage = null;
 let toursRestants = 1;
 
-function tirerBonus() {
-  const total = BONUS_GRATTAGE.reduce((somme, b) => somme + b.poids, 0);
-  let r = Math.random() * total;
-  for (const b of BONUS_GRATTAGE) { r -= b.poids; if (r <= 0) return b; }
-  return BONUS_GRATTAGE[BONUS_GRATTAGE.length - 1];
-}
-
-// LE BONUS EST TIRÉ AVANT LE LOT, ET C'EST IMPORTANT
-// ---------------------------------------------------
-// Bug trouvé le 25/08/2026 : « Chance doublée » ne doublait rien du
-// tout. Le lot était tiré au moment où le joueur validait ses
-// coordonnées, donc AVANT que le ticket ne soit gratté ; la variable
-// chanceDoublee n'était posée qu'après, et n'arrivait plus à temps.
-// Un ticket sur six promettait donc au joueur un avantage qui n'avait
-// aucun effet sur sa partie.
-// Le bonus est désormais tiré au tout début, avant le lot : le ticket
-// ne fait plus que révéler une carte déjà distribuée, et la promesse
-// est tenue. Le joueur, lui, ne voit aucune différence.
+// Le contenu du billet est fabriqué avant la partie, comme l'était le
+// bonus : il est prêt quand le joueur gratte, et il ne change plus.
 function preparerBonus() {
-  bonusGrattage = tirerBonus();
-  toursRestants = bonusGrattage.tours || 1;
-  chanceDoublee = !!bonusGrattage.chance;
+  bonusGrattage = contenuDuBillet();
+  toursRestants = 1;
 }
 
 function preparerGrattage() {
@@ -1330,7 +1340,6 @@ document.getElementById('btn-grattage-suite').addEventListener('click', () => {
   lancerJeu(false);
 });
 
-let chanceDoublee = false;
 
 // ============================================
 // LE MOTEUR DE JEUX
@@ -1452,7 +1461,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '26aout2026h';
+const VERSION_JEUX = '26aout2026i';
 const FICHIERS_JEUX = {
   bandit:   'jeux/bandit.js?v=' + VERSION_JEUX,
   pingouin: 'jeux/pingouin.js?v=' + VERSION_JEUX,
@@ -2083,6 +2092,34 @@ function reveler(element) {
   element.hidden = false;
   element.classList.add('apparait');
 }
+
+// L'ONDE AU TOUCHER (26/08/2026)
+// -----------------------------
+// Un seul écouteur pour toute l'application, posé sur le document :
+// chaque fois qu'un doigt (ou une souris) se pose sur un élément que
+// l'on touche, une onde dorée part du point de contact. Rien n'est
+// ajouté au HTML des écrans, rien n'est à brancher dans les jeux : ils
+// en héritent tous, y compris ceux qui seront écrits plus tard.
+//
+// L'onde est purement décorative : elle ne bloque aucun clic
+// (pointer-events: none), elle se retire toute seule, et elle
+// disparaît si le téléphone demande moins d'animations.
+const TOUCHABLES = '.btn, .option, .carte-univers, .promo, .bandit-levier, .ch-place, .btn-mini';
+
+function poserOnde(evenement) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cible = evenement.target && evenement.target.closest && evenement.target.closest(TOUCHABLES);
+  if (!cible || cible.disabled) return;
+  const boite = cible.getBoundingClientRect();
+  if (!boite.width) return;
+  const onde = document.createElement('span');
+  onde.className = 'onde';
+  onde.style.setProperty('--x', (evenement.clientX - boite.left) + 'px');
+  onde.style.setProperty('--y', (evenement.clientY - boite.top) + 'px');
+  cible.appendChild(onde);
+  setTimeout(() => onde.remove(), 620);
+}
+document.addEventListener('pointerdown', poserOnde, { passive: true });
 
 function echap(s) {
   const d = document.createElement('div');
