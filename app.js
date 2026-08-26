@@ -1477,7 +1477,8 @@ const FICHIERS_JEUX = {
   trapeze:  'jeux/trapeze.js?v=' + VERSION_JEUX,
   hotte:    'jeux/hotte.js?v=' + VERSION_JEUX,
   etoiles:  'jeux/etoiles.js?v=' + VERSION_JEUX,
-  canon:    'jeux/canon.js?v=' + VERSION_JEUX
+  canon:    'jeux/canon.js?v=' + VERSION_JEUX,
+  sapin:    'jeux/sapin.js?v=' + VERSION_JEUX
 };
 const chargements = {};
 
