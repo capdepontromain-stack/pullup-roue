@@ -2463,10 +2463,17 @@ body.theme-circus .entete { border-bottom-color: rgba(201, 150, 46, .3); }
 /* La mention d'essai est posée en bas de l'écran, par-dessus la page :
    on réserve donc sa hauteur au bas du document, sinon elle recouvre le
    pied dès que la page défile. */
-body.mode-test { padding-bottom: 26px; }
-/* La page occupe toute la hauteur de l'écran : sans cette ligne, le
-   pied vient se loger exactement là où la mention d'essai est posée. */
-body.mode-test .app { min-height: calc(100dvh - 26px); }
+/* LA MENTION D'ESSAI DESCEND DANS LA PAGE (26/08/2026)
+   Fixée au bas de l'écran, elle finissait toujours par recouvrir
+   quelque chose : le pied de page sur l'accueil, le paragraphe des
+   données ailleurs. Elle est maintenant posée à la suite du contenu,
+   tout en bas du document : elle ne recouvre plus rien, et elle reste
+   visible puisque la page se termine là. */
+body.mode-test .badge-test {
+  position: static;
+  padding: 2px 0 6px;
+  margin: 0;
+}
 
 /* --- L'aperçu de l'e-mail du jeudi (écran des bons plans) ---
    Une maquette, pas une capture : le joueur voit la forme de ce qu'il
