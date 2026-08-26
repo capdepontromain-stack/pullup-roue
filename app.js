@@ -49,6 +49,23 @@ function contexteDeTest() {
 
 const MODE_TEST = contexteDeTest();
 
+// LA VERSION D'ESSAI EN LIGNE (26/08/2026)
+// ----------------------------------------
+// L'adresse de démonstration (GitHub Pages) n'est pas le vrai domaine
+// du jeu : c'est la version qu'on envoie aux galeries pour qu'elles
+// l'essaient. Là, on ne bloque personne au bout d'une partie, sinon
+// personne ne peut montrer le jeu deux fois. Le joueur voit quand même
+// l'écran « Pas si vite ! », pour comprendre qu'en vrai, c'est une
+// partie par jour, et il repart d'un bouton.
+// Le jour où le jeu vivra sur jeu.pullup.re, cette adresse ne
+// correspondra plus et le verrou redeviendra strict tout seul : il n'y
+// a aucun réglage, aucun paramètre d'URL, aucune porte dérobée.
+function contexteEssai() {
+  return /(^|\.)github\.io$/.test(location.hostname);
+}
+const VERSION_ESSAI = contexteEssai();
+const PARTIES_ILLIMITEES = MODE_TEST || VERSION_ESSAI;
+
 // « &demo=1 » sert UNIQUEMENT à masquer la mention pendant une
 // démonstration client (partage d'écran en visio). Il ne désactive
 // rien du tout : le verrou du jour dépend de l'adresse du site, jamais
@@ -59,8 +76,11 @@ const DEMO_SANS_MENTION = new URLSearchParams(location.search).get('demo') === '
 
 function afficherMentionTest() {
   const el = document.getElementById('badge-test');
-  if (el) el.hidden = !MODE_TEST || DEMO_SANS_MENTION;
-  if (MODE_TEST && !DEMO_SANS_MENTION) document.body.classList.add('mode-test');
+  if (el) {
+    if (VERSION_ESSAI && !MODE_TEST) el.textContent = 'Version d’essai · parties illimitées';
+    el.hidden = !PARTIES_ILLIMITEES || DEMO_SANS_MENTION;
+  }
+  if (PARTIES_ILLIMITEES && !DEMO_SANS_MENTION) document.body.classList.add('mode-test');
 }
 
 // --------------------------------------------
@@ -99,9 +119,13 @@ const OPERATIONS_LOCALES = {
     nom: 'La Hotte des Commerçants',
     lieu: 'Cap Sacré-Cœur',
     emoji: '🎁',
-    accroche: 'Cinq questions, trois jeux, et peut-être un cadeau offert par tes commerçants.',
+    accroche: 'Six questions rapides, des jeux, et peut-être un cadeau offert par tes commerçants.',
     theme: 'noel',
-    logo: 'img/client/logo-csc-blanc.png',
+    // Le logo de la galerie dans sa vraie couleur (26/08/2026, Romain :
+    // « le logo Cap Sacré-Cœur est rouge sur internet, mets-le en rouge
+    // et plus gros »). La version blanche reste dans le dossier pour un
+    // support qui ne supporterait pas le rouge.
+    logo: 'img/client/logo-csc-couleur.png',
     texte_tirage: '',
     lots: [
       { nom: "Bon d'achat 10 €",        commercant: 'Le supermarché de la galerie',        poids: 8,  perdant: false },
@@ -118,6 +142,16 @@ const OPERATIONS_LOCALES = {
 
 function appliquerOperation() {
   document.body.classList.toggle('theme-noel', OPERATION.theme === 'noel');
+
+  // LE MÉDAILLON D'ACCUEIL : la hotte, pas un paquet cadeau
+  // (26/08/2026, demande de Romain). Il est dessiné au trait doré,
+  // comme tous les autres médaillons du jeu : l'accueil était le seul
+  // écran à porter une photographie.
+  const medaillon = document.getElementById('accueil-medaillon');
+  if (medaillon && typeof ICONES !== 'undefined' && ICONES.hotte) {
+    medaillon.classList.remove('hero-photo');
+    medaillon.innerHTML = medaillonIcone(ICONES.hotte, 70);
+  }
 
   // L'EN-TÊTE DE L'OPÉRATION, présent sur tous les écrans.
   // Romain, 25/08/2026 : « le nom du jeu ET celui de la galerie doivent
@@ -235,56 +269,50 @@ const COULEURS_SEGMENTS = ['#C9962E', '#F1ECE2', '#5A554B', '#E3B85A', '#8A8378'
 // QUESTIONS DU QUIZ (test de personnalité)
 // --------------------------------------------
 // Le joueur a l'impression de faire un petit test amusant sur lui-même.
-// En coulisses, chaque réponse remplit EXACTEMENT les mêmes colonnes
-// qu'avant dans roue_participations : le ciblage des campagnes d'offres
-// est intact, la base n'a pas bougé d'un pouce.
+// En coulisses, chaque réponse remplit les colonnes de
+// roue_participations : c'est ce qui permettra d'envoyer à chacun les
+// promotions de SES commerçants. La base n'a pas bougé d'un pouce.
 //
-// CINQ ÉCRANS, PAS UN DE PLUS (consigne de Romain du 25/08/2026, il
-// trouvait le quiz trop long). Pour tenir en cinq sans perdre le
-// ciblage, deux questions remplissent chacune DEUX colonnes.
+// SIX ÉCRANS, LES MÊMES POUR TOUT LE MONDE (26/08/2026).
+// Deux changements demandés par Romain après son essai :
+//   1. plus aucune question, ni aucune proposition, ne change d'un
+//      joueur à l'autre. Avant, le samedi idéal proposait six choix
+//      choisis selon le genre : deux joueurs n'avaient donc pas le même
+//      questionnaire, et les campagnes comparaient des réponses qui
+//      n'avaient pas été posées à tout le monde ;
+//   2. les réponses doivent SERVIR au commerce. Chaque trait de
+//      caractère porte maintenant un rayon de boutique, et une nouvelle
+//      question demande pour qui le joueur cherche un cadeau. Tout cela
+//      se range dans la colonne univers (voir consoliderCiblage), sans
+//      jamais poser de question commerciale à l'écran.
 //
 // TABLE DE CORRESPONDANCE (question à l'écran -> colonne(s) en base)
 // ------------------------------------------------------------------
-// 01  « Ton prénom ? »                   -> prenom
-// 02  « Tu es… »                         -> genre
-//        homme / femme / autre
-//        Sert aussi à choisir les propositions du samedi idéal.
-// 03  « Ton âge ? »                      -> age_tranche
-//        -18 / 18-25 / 26-35 / 36-50 / 51-65 / 65+
+// 01  « Ton prénom ? »                        -> prenom
+// 02  « Tu es… »                              -> genre
+// 03  « Ton âge ? »                           -> age_tranche
 //        ATTENTION : -18 force le consentement aux offres à « non ».
 //        C'est la protection des mineurs, elle ne bouge jamais.
-// 04  « Tes amis disent que tu es… »     -> style ET frequence
-//        (PLUSIEURS RÉPONSES depuis le 25/08/2026)
-//        « Celui ou celle qui fonce »    -> sportif + liste
-//        « Celui ou celle qui réfléchit » -> smart  + flaner
-//        « Du genre à mettre l'ambiance » -> fetard + famille
-//        Le tempérament décide des deux : qui fonce va droit au but,
-//        qui réfléchit compare, qui met l'ambiance décide en tribu.
-//        style   : reçoit TOUTES les valeurs cochées, séparées par des
-//                  virgules, comme la colonne l'a toujours permis.
-//        frequence : reçoit la valeur de la PREMIÈRE réponse cochée
-//                  dans l'ordre de la liste (une seule valeur, c'est un
-//                  tempérament). Le schéma de la base n'a pas bougé.
-// 05  « Ton samedi idéal ? »             -> univers ET enfants
-//        (plusieurs réponses) C'est LA question de ciblage : ses
-//        valeurs sont les rayons des boutiques (mode, beaute, bijoux,
-//        sport, hightech, enfants, gourmandise, maison), elles servent
-//        à trier les offres et les nouveautés. Voir RAYONS plus bas.
-//        Cocher « Une sortie avec les enfants » remplit en plus la
-//        colonne enfants (oui), sinon elle vaut non.
-//
-// CE QU'ON A ACCEPTÉ DE PERDRE en passant de sept écrans à cinq :
-//   - les valeurs style « mode » et « nature » (il reste sportif,
-//     smart, fetard) ;
-//   - la valeur frequence « pause » (il reste liste, flaner, famille) ;
-//   - la valeur enfants « grands » : le foyer est désormais lu en
-//     oui / non. Les campagnes qui visaient les enfants restent
-//     possibles, celles qui visaient les ados grandis ne le sont plus.
-//   - la question « chez toi, l'ambiance ressemble à », remplacée par
-//     la déduction ci-dessus.
-// Et ce qui avait déjà disparu à la demande de Romain : la fréquence
-// de visite et la façon d'acheter. On ne fait plus d'étude de marché,
-// on fait un test.
+// 04  « Tes amis disent que tu es plutôt… »   -> style, frequence, univers
+//        (plusieurs réponses) Chaque option porte un rayon :
+//        élégant -> mode, coquet -> beauté, sportif -> sport,
+//        gourmand -> gourmandise, curieux -> high-tech,
+//        généreux -> bijoux, cocon -> maison.
+//        frequence reçoit le tempérament de la PREMIÈRE réponse cochée
+//        dans l'ordre de la liste (une seule valeur, c'est un
+//        tempérament, pas une liste).
+// 05  « Ton samedi idéal ? »                  -> univers ET enfants
+//        (plusieurs réponses) LA question de ciblage : ses valeurs sont
+//        les huit rayons des boutiques (mode, beaute, bijoux, sport,
+//        hightech, enfants, gourmandise, maison). La réponse brute est
+//        gardée dans « samedi », univers est recalculé par-dessus.
+// 06  « Tu cherches un cadeau pour qui ? »    -> univers ET enfants
+//        (plusieurs réponses) La question qui relie le jeu aux vitrines :
+//        amoureux -> bijoux + beauté, enfants -> rayon enfants,
+//        parents -> maison, amis -> gourmandise, moi -> mode.
+//        « Mes enfants » remplit aussi la colonne enfants.
+//        Sa colonne à elle n'existe pas en base : c'est voulu, tout
+//        atterrit dans univers et enfants, rien à modifier dans Supabase.
 const QUESTIONS = [
   {
     id: 'prenom', type: 'texte',
@@ -315,44 +343,54 @@ const QUESTIONS = [
     ]
   },
   {
-    // PLUSIEURS RÉPONSES POSSIBLES (demande de Romain, 25/08/2026 :
-    // « on est rarement d'un seul bloc »). Même traitement visuel que
-    // la question du samedi idéal, et le bouton compte les choix.
-    //
-    // Cette question alimente DEUX colonnes, et les deux ne se
-    // comportent pas pareil :
-    //   - « style » accepte plusieurs valeurs séparées par des virgules
-    //     (c'est écrit noir sur blanc dans le SQL de la table depuis le
-    //     premier jour) : on y écrit donc tout ce qui est coché, par
-    //     exemple « sportif,fetard ». Rien à changer en base.
-    //   - « frequence » n'a de sens qu'avec UNE valeur : c'est un
-    //     tempérament, pas une liste. Règle retenue : LA PREMIÈRE
-    //     RÉPONSE COCHÉE DANS L'ORDRE DE LA LISTE FAIT FOI. Elle est
-    //     stable (elle ne dépend pas de l'ordre dans lequel le joueur a
-    //     tapé), elle se recalcule à l'identique quand on revient en
-    //     arrière, et elle ne demande AUCUNE modification du schéma.
-    // Voir appliquerColonnesLiees() plus bas.
+    // PLUSIEURS RÉPONSES POSSIBLES. Chaque trait de caractère porte
+    // discrètement un rayon (champ « rayons ») : c'est ce qui relie le
+    // test de personnalité aux offres des commerçants, sans jamais
+    // poser de question commerciale. « frequence » reçoit le
+    // tempérament de la PREMIÈRE réponse cochée dans l'ordre de la
+    // liste (voir appliquerColonnesLiees).
     id: 'style', type: 'multi',
     soustitre: 'Plusieurs réponses possibles, coche tout ce qui te ressemble.',
     titre: 'Tes amis disent que tu es plutôt\u2026',
     options: [
-      { v: 'sportif', l: 'Du genre à foncer',        aussi: { frequence: 'liste' } },
-      { v: 'smart',   l: 'Du genre à réfléchir',    aussi: { frequence: 'flaner' } },
-      { v: 'fetard',  l: 'Du genre à mettre l\u2019ambiance', aussi: { frequence: 'famille' } }
+      { v: 'elegant',  l: 'Toujours tiré à quatre épingles',      rayons: ['mode'],        aussi: { frequence: 'flaner' } },
+      { v: 'coquet',   l: 'Du genre à prendre soin de toi',        rayons: ['beaute'],      aussi: { frequence: 'flaner' } },
+      { v: 'sportif',  l: 'Toujours en mouvement',                 rayons: ['sport'],       aussi: { frequence: 'liste' } },
+      { v: 'gourmand', l: 'Bon vivant, la table avant tout',       rayons: ['gourmandise'], aussi: { frequence: 'famille' } },
+      { v: 'curieux',  l: 'Fan de nouveautés et de gadgets',       rayons: ['hightech'],    aussi: { frequence: 'flaner' } },
+      { v: 'genereux', l: 'Le cœur sur la main, toujours à offrir', rayons: ['bijoux'],     aussi: { frequence: 'liste' } },
+      { v: 'cocon',    l: 'Bien chez toi, cocon avant tout',       rayons: ['maison'],      aussi: { frequence: 'famille' } }
     ]
   },
   {
-    id: 'univers', type: 'multi',
+    // LA question de ciblage : ses valeurs sont les rayons des
+    // boutiques. Depuis le 26/08/2026 la liste est LA MÊME POUR TOUT
+    // LE MONDE (demande de Romain : « il faut qu'à chaque fois il y
+    // ait toutes ces questions, pas selon l'utilisateur »).
+    id: 'samedi', type: 'multi',
     titre: 'Ton samedi idéal ?',
-    soustitre: 'Promis, c’est la dernière : coche tout ce qui te tente.',
-    options: []            // remplies selon le profil, voir universSelonProfil()
+    soustitre: 'Coche tout ce qui te tente.',
+    options: []            // remplies par universSelonProfil()
+  },
+  {
+    // Question de Noël qui parle à tout le monde, et qui dit aux
+    // commerçants POUR QUI le joueur achète. Chaque réponse ajoute ses
+    // rayons au ciblage, et « mes enfants » remplit la colonne enfants.
+    id: 'pour_qui', type: 'multi',
+    titre: 'Cette année, tu cherches un cadeau pour qui ?',
+    soustitre: 'Dernière question, coche tout ce qui te concerne.',
+    options: [
+      { v: 'amoureux',  l: 'Mon amoureux, mon amoureuse', rayons: ['bijoux', 'beaute'] },
+      { v: 'enfants',   l: 'Mes enfants',                 rayons: ['enfants'] },
+      { v: 'parents',   l: 'Mes parents, ma famille',     rayons: ['maison'] },
+      { v: 'amis',      l: 'Mes amis, mes collègues',     rayons: ['gourmandise'] },
+      { v: 'moi',       l: 'Moi, je me fais plaisir',     rayons: ['mode'] }
+    ]
   }
 ];
 
-// Les propositions du « samedi idéal » s'adaptent au profil : la liste
-// reste courte et elle parle à la personne. Les VALEURS (mode, beaute…)
-// sont celles des rayons des boutiques : ce sont elles qui font le
-// ciblage, seuls les libellés sont habillés en loisirs.
+// Les rayons des boutiques. Ce sont EUX qui trient les offres, les
+// promotions et les nouveautés montrées au joueur après sa partie.
 const RAYONS = {
   mode:        { v: 'mode',        l: 'Une virée shopping entre amis' },
   beaute:      { v: 'beaute',      l: 'Un moment beauté rien que pour toi' },
@@ -364,38 +402,24 @@ const RAYONS = {
   maison:      { v: 'maison',      l: 'Bricoler et décorer chez toi' }
 };
 
-// La liste dépend du genre. « Une sortie avec les enfants » est
-// désormais proposée à tout le monde : c'est elle qui remplit la
-// colonne enfants, puisque la question du foyer a disparu.
+// LA MÊME LISTE POUR TOUT LE MONDE (26/08/2026).
+// Avant, les propositions changeaient selon le genre : deux joueurs
+// n'avaient pas le même questionnaire, et les campagnes comparaient des
+// réponses qui n'avaient pas été posées à tous. Romain a tranché : même
+// question, mêmes propositions, pour tout le monde.
 function universSelonProfil() {
   const R = RAYONS;
-  if (reponses.genre === 'femme') {
-    return [R.mode, R.beaute, R.bijoux, R.gourmandise, R.enfants, R.maison];
-  }
-  if (reponses.genre === 'homme') {
-    return [R.mode, R.sport, R.hightech, R.gourmandise, R.enfants, R.maison];
-  }
-  return [R.mode, R.beaute, R.sport, R.gourmandise, R.enfants, R.maison];
+  return [R.mode, R.beaute, R.bijoux, R.sport, R.hightech, R.gourmandise, R.enfants, R.maison];
 }
 
 // LES COLONNES LIÉES D'UNE QUESTION À CHOIX MULTIPLE
 // --------------------------------------------------
 // Certaines réponses remplissent une deuxième colonne (champ « aussi »).
-// Sur une question à choix unique, c'est simple : une réponse, une
-// valeur. Sur une question à choix multiple, il faut trancher, parce
-// que la colonne visée n'accepte, elle, qu'une seule valeur.
-//
-// RÈGLE RETENUE : la PREMIÈRE réponse cochée dans l'ordre de la liste
-// affichée fait foi. Pourquoi celle-là :
-//   - elle est stable : deux joueurs qui cochent les mêmes réponses
-//     obtiennent la même valeur, quel que soit l'ordre de leurs doigts ;
-//   - elle se recalcule à l'identique si le joueur revient en arrière
-//     (rien n'est mémorisé sur l'ordre des clics) ;
-//   - elle n'écrit qu'UNE valeur dans la colonne : le schéma de la base
-//     n'est pas touché, les exports et les campagnes continuent de lire
-//     exactement la même chose qu'avant.
-// Une valeur combinée (« sportif+fetard ») aurait été tentante, mais
-// elle aurait cassé tous les filtres existants sur cette colonne.
+// RÈGLE : la PREMIÈRE réponse cochée dans l'ordre de la liste affichée
+// fait foi. Elle est stable (elle ne dépend pas de l'ordre des doigts
+// du joueur), elle se recalcule à l'identique quand on revient en
+// arrière, et elle n'écrit qu'UNE valeur dans la colonne : le schéma de
+// la base n'est pas touché.
 function appliquerColonnesLiees(q) {
   if (!q || !q.options) return;
   const cochees = String(reponses[q.id] || '').split(',').filter(Boolean);
@@ -406,11 +430,40 @@ function appliquerColonnesLiees(q) {
   }
 }
 
-// Le foyer se déduit du samedi idéal : cocher la sortie avec les
-// enfants remplit la colonne enfants, sinon elle vaut « non ».
+// LE CIBLAGE : ce que le joueur a dit de lui devient des rayons.
+// -------------------------------------------------------------
+// La colonne « univers » est la liste des rayons qui intéressent le
+// joueur. Elle est nourrie par trois sources, dans cet ordre :
+//   1. le samedi idéal (la question de ciblage elle-même) ;
+//   2. les traits de caractère cochés (champ « rayons » des options) ;
+//   3. les personnes pour qui il cherche un cadeau.
+// Résultat : un joueur qui n'a jamais répondu à une question
+// commerciale se voit quand même proposer les bonnes promotions.
+// La colonne « pour_qui » n'existe pas en base : ses réponses vivent
+// dans univers (rayons) et dans enfants. Rien à modifier dans Supabase.
+function consoliderCiblage() {
+  // On repart TOUJOURS des cases réellement cochées au samedi idéal :
+  // ainsi, un joueur qui revient en arrière et décoche une réponse voit
+  // le ciblage se recalculer, au lieu de garder un rayon fantôme.
+  const rayons = new Set((reponses.samedi || '').split(',').filter(Boolean));
+  ['style', 'pour_qui'].forEach(id => {
+    const q = QUESTIONS.filter(x => x.id === id)[0];
+    if (!q) return;
+    const cochees = String(reponses[id] || '').split(',').filter(Boolean);
+    q.options.forEach(o => {
+      if (cochees.indexOf(o.v) !== -1 && o.rayons) o.rayons.forEach(r => rayons.add(r));
+    });
+  });
+  reponses.univers = Array.from(rayons).join(',');
+}
+
+// Le foyer se déduit de deux réponses : « mes enfants » à la question
+// des cadeaux, ou la sortie avec les enfants du samedi idéal.
 function deduireFoyer() {
-  const gouts = (reponses.univers || '').split(',');
-  reponses.enfants = gouts.indexOf('enfants') !== -1 ? 'oui' : 'non';
+  const gouts = (reponses.samedi || '').split(',');
+  const pourQui = (reponses.pour_qui || '').split(',');
+  const avecEnfants = gouts.indexOf('enfants') !== -1 || pourQui.indexOf('enfants') !== -1;
+  reponses.enfants = avecEnfants ? 'oui' : 'non';
 }
 
 // --------------------------------------------
@@ -467,7 +520,7 @@ function compteRebours() {
 
 function afficherQuestion() {
   const q = QUESTIONS[questionActuelle];
-  if (q.id === 'univers') q.options = universSelonProfil();
+  if (q.id === 'samedi') q.options = universSelonProfil();
   document.getElementById('barre-progression').style.width =
     Math.round(((questionActuelle + 1) / QUESTIONS.length) * 100) + '%';
   // Un décompte qui rassure au lieu d'informer : le joueur voit la fin
@@ -573,7 +626,13 @@ function questionSuivante() {
   } else {
     document.getElementById('barre-progression').style.width = '100%';
     adapterCoordonneesMineur();
-    afficherEcran('ecran-coordonnees');
+    // LES BONS PLANS SE DEMANDENT ICI (26/08/2026, demande de Romain).
+    // Avant, la question tombait après la saisie de l'adresse : le
+    // joueur avait déjà donné son mail, il n'avait plus rien à gagner à
+    // dire oui. Maintenant elle arrive juste après le test, quand il
+    // vient de dire ce qu'il aime, et avant qu'on lui demande quoi que
+    // ce soit. Un joueur mineur ne voit jamais cet écran.
+    proposerLesOffres(() => afficherEcran('ecran-coordonnees'));
   }
 }
 
@@ -592,7 +651,7 @@ function adapterCoordonneesMineur() {
   if (texte) {
     texte.textContent = mineur
       ? 'Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot, rien d’autre. Tu ne recevras aucune offre par e-mail : c’est réservé aux joueurs majeurs. Données supprimées au plus tard un an après l’opération, jamais vendues.'
-      : 'Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. À l’écran suivant, on te demandera si tu veux aussi recevoir les offres des commerçants : c’est un choix libre, et il ne change rien à ta participation. Données conservées un an après l’opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.';
+      : 'Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Tu viens de choisir librement si tu voulais aussi recevoir les bons plans des commerçants : ce choix ne change rien à ta participation, et tu peux en changer quand tu veux. Données conservées un an après l’opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.';
   }
 }
 
@@ -610,8 +669,10 @@ document.getElementById('btn-multi-suivant').addEventListener('click', () => {
   // derrière « tes amis disent que tu es plutôt… ») : c'est la première
   // cochée dans l'ordre de la liste qui fait foi. Voir la fonction.
   appliquerColonnesLiees(q);
-  // Le samedi idéal remplit aussi la colonne du foyer
-  if (q.id === 'univers') deduireFoyer();
+  // Les traits de caractère et les cadeaux cherchés deviennent des
+  // rayons, et le foyer se déduit des deux (voir consoliderCiblage).
+  consoliderCiblage();
+  deduireFoyer();
   questionSuivante();
 });
 
@@ -1708,8 +1769,9 @@ function vibrer(motif) {
 }
 
 // Enveloppe une icône dans un SVG doré pour le médaillon
-function medaillonIcone(trace) {
-  return `<svg viewBox="0 0 100 100" width="52" height="52" aria-hidden="true"
+function medaillonIcone(trace, taille) {
+  const px = taille || 52;
+  return `<svg viewBox="0 0 100 100" width="${px}" height="${px}" aria-hidden="true"
        fill="none" stroke="#EFC368" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
        ${trace}</svg>`;
 }
@@ -2017,13 +2079,9 @@ async function validerCoordonnees() {
   reponses.email = email;
   reponses.telephone = tel || null;
 
-  // LES BONS PLANS SE DEMANDENT ICI, avant les jeux (25/08/2026).
-  // Deux raisons : le joueur vient de dire ce qu'il aime, la promesse
-  // tombe donc juste ; et surtout le consentement part maintenant dans
-  // la MÊME ligne que la participation, au lieu de dépendre d'une
-  // fonction serveur (roue_enregistrer_consentement) qui n'existe pas
-  // encore dans la base. Un joueur mineur ne voit jamais cet écran.
-  proposerLesOffres(lancerLaPartie);
+  // La question des bons plans a déjà été posée, juste après le test :
+  // sa réponse part dans la même ligne que la participation.
+  lancerLaPartie();
 }
 
 async function lancerLaPartie() {
@@ -2045,20 +2103,34 @@ async function lancerLaPartie() {
 
   const statut = await enregistrerParticipation();
 
+  // LE OUI DU JOUEUR DOIT ARRIVER JUSQU'EN BASE (corrigé le 26/08/2026).
+  // Quand c'est le serveur qui enregistre la participation (fonction
+  // roue_jouer), il écrit consentement_marketing = false en dur : la
+  // réponse du joueur était donc perdue, et la base d'abonnés se
+  // remplissait de « non » alors que des gens avaient dit oui. On la
+  // renvoie ici par la porte prévue pour ça, qui ne touche que cette
+  // seule colonne. Un mineur n'a jamais pu dire oui (protection en
+  // amont, plus un garde-fou dans la base).
+  if (statut === 'ok' && codeLot && reponses.consentement_marketing === true) {
+    try {
+      await sb.rpc('roue_enregistrer_consentement', { p_code: codeLot, p_accepte: true });
+    } catch (e) {
+      console.warn('Consentement non remonté :', e);
+    }
+  }
+
   btn.disabled = false;
   btn.classList.remove('travaille');
   btn.removeAttribute('aria-busy');
 
   if (statut === 'deja-joue') {
-    // En contexte de test, on laisse rejouer autant qu'on veut : la
-    // partie se déroule avec le lot tiré par la page, elle n'est
-    // simplement pas réenregistrée (le verrou de la base reste intact).
-    if (MODE_TEST) {
-      console.info('Mode test : verrou du jour ignoré, cette partie n’est pas enregistrée.');
-    } else {
-      afficherEcran('ecran-deja-joue');
-      return;
-    }
+    // Le verrou de la base, lui, ne bouge JAMAIS : la partie qui suit
+    // se déroule avec le lot tiré par la page, elle n'est simplement
+    // pas réenregistrée.
+    afficherEcran('ecran-deja-joue');
+    const bloc = document.getElementById('deja-joue-essai');
+    if (bloc) bloc.hidden = !PARTIES_ILLIMITEES;
+    return;
   }
 
   preparerGrattage();
@@ -2066,6 +2138,21 @@ async function lancerLaPartie() {
 }
 
 document.getElementById('btn-valider').addEventListener('click', validerCoordonnees);
+
+// « Rejouer quand même » : n'existe que sur la version d'essai. La
+// partie se joue avec le lot tiré par la page, et elle n'est pas
+// réenregistrée (le verrou de la base n'est pas contourné).
+const btnRejouerEssai = document.getElementById('btn-rejouer-essai');
+if (btnRejouerEssai) {
+  btnRejouerEssai.addEventListener('click', () => {
+    if (!PARTIES_ILLIMITEES) return;
+    lotGagne = tirerLot();
+    codeLot = genererCode();
+    preparerBonus();
+    preparerGrattage();
+    afficherEcran('ecran-grattage');
+  });
+}
 
 // --------------------------------------------
 // CHARGEMENT OPÉRATION + LOTS DEPUIS SUPABASE

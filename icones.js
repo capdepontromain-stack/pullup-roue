@@ -6,6 +6,14 @@
 // ============================================
 
 const ICONES = {
+  // La hotte magique : le sac du Père Noël, col ouvert, d'où s'échappe
+  // une étoile. C'est l'emblème de l'opération (26/08/2026).
+  hotte: `<path d="M28 36 c-9 13 -16 26 -16 38 a38 21 0 0 0 76 0 c0 -12 -7 -25 -16 -38" />
+          <path d="M24 34 c9 -7 43 -7 52 0 c-9 7 -43 7 -52 0 z" />
+          <path d="M37 40 c-5 16 -5 34 -1 48" />
+          <path d="M63 40 c5 16 5 34 1 48" />
+          <path d="M63 4 l4.6 9.6 l10.4 1.5 l-7.5 7.2 l1.8 10.4 l-9.3 -4.9 l-9.3 4.9 l1.8 -10.4 l-7.5 -7.2 l10.4 -1.5 z" />`,
+
   // Bon d'achat : étiquette avec symbole euro
   bon: `<path d="M18 34 L58 34 L82 58 L58 82 L18 82 Z" />
         <circle cx="30" cy="46" r="3.5" />

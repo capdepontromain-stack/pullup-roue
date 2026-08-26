@@ -16,21 +16,20 @@
   <!-- Les deux images du premier écran, demandées tout de suite au lieu
        d'attendre que la feuille de style soit lue et appliquée. -->
   <link rel="preload" href="img/fond-bokeh-or.jpg" as="image">
-  <link rel="preload" href="img/photos/cadeau-medaillon-photo.jpg" as="image">
   <!-- Le numéro derrière le nom du fichier force le téléphone à recharger
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=26aout2026">
+  <link rel="stylesheet" href="style.css?v=26aout2026b">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js" defer></script>
+  <script src="icones.js?v=26aout2026b" defer></script>
   <script src="contenus-demo.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="app.js?v=26aout2026b" defer></script>
   <!-- Envoi du bon par e-mail (dossier envoi-mails). Après app.js,
        et sans effet tant que les fonctions Supabase ne sont pas en place. -->
   <script src="envoi-mails/envoi-client.js" defer></script>
@@ -135,7 +134,7 @@
         <!-- Ce bouton ouvre le ticket à gratter, et le jeu du jour n'est
              pas toujours la roue : « Je tente ma chance » reste vrai. -->
         <button class="btn btn-or btn-grand" id="btn-valider">Je tente ma chance</button>
-        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. À la fin de la partie, on te demandera si tu veux aussi recevoir les offres des commerçants&nbsp;: c'est un choix libre, et il ne change rien à ta participation. Données conservées trois ans au maximum, jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" class="lien-or">En savoir plus sur tes données</a></p>
+        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Tu viens de choisir librement si tu voulais aussi recevoir les bons plans des commerçants&nbsp;: ce choix ne change rien à ta participation. Données conservées trois ans au maximum, jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" class="lien-or">En savoir plus sur tes données</a></p>
       </div>
     </section>
 
@@ -366,12 +365,13 @@
         <div class="hero-emoji" id="offres-medaillon"></div>
         <span class="offres-kicker">Avant de jouer</span>
         <h1>Les bons plans de la galerie, chaque jeudi.</h1>
-        <p class="sous-titre">La remise du boucher, la nouvelle collection, le menu du midi. On peut te les envoyer, triés selon ce que tu viens de nous dire.</p>
+        <p class="sous-titre">Les bons de réduction, la remise chez ta boutique préférée, les nouvelles collections, le menu du midi.</p>
 
         <div class="promesse">
           <span class="promesse-titre">Ce qu'on t'envoie</span>
-          <div class="promesse-ligne"><span class="promesse-puce" aria-hidden="true"></span><span><strong>Un seul e-mail, le jeudi.</strong> Pas un de plus.</span></div>
-          <div class="promesse-ligne"><span class="promesse-puce" aria-hidden="true"></span><span><strong>Rien que les commerçants d'ici</strong>, selon les rayons que tu aimes. Jamais de publicité extérieure, jamais ton adresse revendue.</span></div>
+          <div class="promesse-ligne"><span class="promesse-puce" aria-hidden="true"></span><span><strong>Un seul e-mail le jeudi, pas un de plus.</strong> Promis, que des bons plans.</span></div>
+          <div class="promesse-ligne"><span class="promesse-puce" aria-hidden="true"></span><span><strong>Tiens-toi au courant</strong> des promos, des cadeaux et des animations de la galerie.</span></div>
+          <div class="promesse-ligne"><span class="promesse-puce" aria-hidden="true"></span><span><strong>Rien que les commerçants d'ici.</strong> Jamais de publicité extérieure, jamais ton adresse revendue.</span></div>
           <div class="promesse-ligne"><span class="promesse-puce" aria-hidden="true"></span><span><strong>Tu pars en un clic</strong>, lien de désinscription dans chaque e-mail.</span></div>
         </div>
 
@@ -457,6 +457,11 @@
         </div>
         <h1>Pas si vite&nbsp;!</h1>
         <p class="sous-titre">Tu as déjà tenté ta chance aujourd'hui avec cette adresse mail.<br><strong>Reviens demain pour rejouer&nbsp;!</strong></p>
+        <!-- Visible uniquement sur la version d'essai (voir PARTIES_ILLIMITEES) -->
+        <div id="deja-joue-essai" hidden>
+          <p class="sous-titre">Mais comme tu es sur la <strong>version d'essai</strong>, tu peux rejouer autant de fois que tu veux. Dans la vraie opération, c'est une partie par personne et par jour.</p>
+          <button class="btn btn-or btn-grand" id="btn-rejouer-essai">Rejouer quand même</button>
+        </div>
       </div>
     </section>
 

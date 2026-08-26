@@ -1206,7 +1206,9 @@ h1 {
 
 
 /* --- En-tête : logo du client + signature Pull Up --- */
-.logo-client { height: 38px; width: auto; max-width: 72%; object-fit: contain; display: block; }
+/* Le logo de la galerie, en grand : c'est le client qui accueille le
+   joueur, pas nous (26/08/2026). */
+.logo-client { height: 54px; width: auto; max-width: 84%; object-fit: contain; display: block; }
 .entete-separateur {
   width: 1px; height: 20px;
   background: rgba(239, 195, 104, .35);
@@ -1527,7 +1529,7 @@ h1 {
    Le logo de la galerie tient la ligne du bas, à la place et à la
    taille du nom écrit : c'est lui, le nom de la galerie. */
 .entete { text-align: left; }
-.logo-client { height: 38px; }
+.logo-client { height: 54px; }
 
 /* --- Signature Pull Up en pied --- */
 .pied {
