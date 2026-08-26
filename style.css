@@ -2464,6 +2464,9 @@ body.theme-circus .entete { border-bottom-color: rgba(201, 150, 46, .3); }
    on réserve donc sa hauteur au bas du document, sinon elle recouvre le
    pied dès que la page défile. */
 body.mode-test { padding-bottom: 26px; }
+/* La page occupe toute la hauteur de l'écran : sans cette ligne, le
+   pied vient se loger exactement là où la mention d'essai est posée. */
+body.mode-test .app { min-height: calc(100dvh - 26px); }
 
 /* --- L'aperçu de l'e-mail du jeudi (écran des bons plans) ---
    Une maquette, pas une capture : le joueur voit la forme de ce qu'il
