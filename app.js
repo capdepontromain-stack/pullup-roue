@@ -149,17 +149,17 @@ function appliquerOperation() {
   // de chapiteau, fanions. Tout est dans style.css, sous .theme-circus.
   document.body.classList.toggle('theme-circus', OPERATION.theme === 'circus');
 
-  // LE MÉDAILLON D'ACCUEIL : un vrai Père Noël, en photographie
-  // (26/08/2026, demande de Romain). Le portrait est cadré serré : dans
-  // un rond de 124 px, un visage se lit, une silhouette entière non.
-  // L'accueil du cirque montre la scène (le projecteur et le Père Noël
-  // en pied) ; les autres univers gardent le médaillon rond.
-  const circusAccueil = OPERATION.theme === 'circus';
-  const scene = document.getElementById('accueil-scene');
+  // LE MÉDAILLON D'ACCUEIL : le Père Noël, EN DESSIN.
+  // 26/08/2026, Romain : « je préfère un Père Noël en dessin, il faut
+  // que ce soit plus qualitatif ». C'est donc une illustration
+  // vectorielle (img/pere-noel.svg), posée dans le médaillon rond, et
+  // affichée sur TOUS les univers, cirque compris. Une version
+  // intermédiaire montrait à la place une photographie détourée en
+  // pied sous un projecteur : elle allait contre cette consigne, elle
+  // a été retirée.
   const medaillon = document.getElementById('accueil-medaillon');
-  if (scene) scene.hidden = !circusAccueil;
   if (medaillon) {
-    medaillon.hidden = circusAccueil;
+    medaillon.hidden = false;
     medaillon.classList.add('hero-photo', 'medaillon-pere-noel');
     medaillon.innerHTML = '';
   }
@@ -1393,7 +1393,13 @@ let cibleRoue = null;
 // (c'est elle qui porte le nom du jeu, elle reste le clou). « Trois
 // Cadeaux Pareils » n'est pas supprimé pour autant : il reste jouable,
 // il suffit de l'écrire dans la colonne jeu de roue_operations.
-const MANCHES_DEFAUT = ['bandit', 'chamboule', 'roue'];
+// LE PROGRAMME DU CHAPITEAU (26/08/2026)
+// Trois numéros, dans l'ordre où un spectacle monte : la machine de
+// foire et son levier, le chamboule-tout, puis le tour du magicien.
+// La roue de la fortune reste disponible (?jeu=roue) et peut prendre
+// la place de l'un des trois d'un jour à l'autre, via la colonne
+// « jeu » de roue_operations.
+const MANCHES_DEFAUT = ['bandit', 'chamboule', 'chapeau'];
 let MANCHES = MANCHES_DEFAUT.slice();
 let mancheActuelle = 0;
 let mancheSecondTour = false;
@@ -1452,7 +1458,8 @@ const FICHIERS_JEUX = {
   pingouin: 'jeux/pingouin.js?v=' + VERSION_JEUX,
   paquets:  'jeux/paquets.js?v=' + VERSION_JEUX,
   cartes:   'jeux/cartes.js?v=' + VERSION_JEUX,
-  chamboule: 'jeux/chamboule.js?v=' + VERSION_JEUX
+  chamboule: 'jeux/chamboule.js?v=' + VERSION_JEUX,
+  chapeau:  'jeux/chapeau.js?v=' + VERSION_JEUX
 };
 const chargements = {};
 
