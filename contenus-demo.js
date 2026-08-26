@@ -6,30 +6,116 @@
 // dès que les tables Supabase sont remplies.
 // ============================================
 
-// Le programme tutoie, comme tout le reste du jeu : c'était le seul écran
-// qui vouvoyait, juste après deux minutes de tutoiement.
-// La vedette va à la Hotte Géante, qui est au devis. Le Père Noël est une
-// option facturée à part : le mettre en tête par défaut promettrait au
-// joueur une animation que la galerie n'a peut-être pas achetée.
+// LE PROGRAMME, EN VRAI AGENDA (26/08/2026, demande de Romain)
+// -------------------------------------------------------------
+// Deux niveaux, et c'est l'affichage qui les distingue tout seul :
+//   - les rendez-vous PERMANENTS n'ont pas de jour : ils sont réunis
+//     en haut de l'écran, sous « Tous les jours » ;
+//   - les autres portent un jour et une heure : ils se rangent sous
+//     leur journée, du matin au soir, comme un agenda.
+// Le programme tutoie, comme tout le reste du jeu.
+// Les horaires ci-dessous sont un EXEMPLE, à remplacer par ceux de la
+// galerie (table roue_programme dans Supabase, colonnes jour et heure).
 const PROGRAMME_DEMO = [
   {
     titre: 'La photo dans la Hotte Géante',
     lieu: 'Place centrale',
-    horaires: 'Tous les jours de l’opération, aux heures d’ouverture',
+    horaires: 'Aux heures d’ouverture de la galerie',
     detail: 'Installe-toi dans la hotte, sors ton téléphone et prends autant de photos que tu veux. C’est gratuit, sans achat et sans limite.',
     vedette: true
   },
   {
-    titre: 'La Mère Noël et ses lutins',
-    lieu: 'Allée des boutiques, en déambulation',
-    horaires: 'Samedis 12 et 19 décembre, 14h à 18h',
-    detail: 'Gourmandises pour les enfants et petites surprises pour ceux qui ont joué le jour même.'
-  },
-  {
     titre: 'La Boutique Étoilée du jour',
     lieu: 'Une boutique différente chaque jour',
-    horaires: 'Tous les jours de l’opération',
+    horaires: 'Toute la journée',
     detail: 'Une vitrine porte l’étoile du jour, et personne ne dit laquelle : à toi de la trouver en te promenant.'
+  },
+
+  // ---- Samedi 12 décembre ----
+  {
+    jour: 'Samedi 12 décembre', heure: '10h30',
+    titre: 'L’atelier ballons du lutin',
+    lieu: 'Place centrale', horaires: '10h30 à 12h30',
+    detail: 'Épée, fleur, petit chien : le lutin sculpte le ballon que l’enfant lui demande. Gratuit.'
+  },
+  {
+    jour: 'Samedi 12 décembre', heure: '14h00',
+    titre: 'La photo avec le Père Noël',
+    lieu: 'Le trône, place centrale', horaires: '14h à 17h',
+    detail: 'Le Père Noël reçoit les enfants sur son trône. Photo avec ton téléphone, gratuite et sans achat.',
+    vedette: true
+  },
+  {
+    jour: 'Samedi 12 décembre', heure: '15h30',
+    titre: 'La chorale de Noël',
+    lieu: 'Allée principale', horaires: '30 minutes de chants'
+  },
+  {
+    jour: 'Samedi 12 décembre', heure: '16h30',
+    titre: 'Le spectacle du chapiteau',
+    lieu: 'Place centrale', horaires: '45 minutes',
+    detail: 'Jonglage, acrobaties et magie : le chapiteau ouvre sa piste au milieu de la galerie.'
+  },
+  {
+    jour: 'Samedi 12 décembre', heure: '18h00',
+    titre: 'Le cracheur de feu',
+    lieu: 'Parvis de la galerie', horaires: 'À la tombée de la nuit',
+    detail: 'Le grand final du samedi, dehors, à voir en famille.'
+  },
+
+  // ---- Mercredi 16 décembre ----
+  {
+    jour: 'Mercredi 16 décembre', heure: '10h00',
+    titre: 'L’atelier des enfants',
+    lieu: 'Espace animation', horaires: '10h à 12h',
+    detail: 'Boules à décorer, cartes de vœux et couronnes de Noël. Gratuit, dès 3 ans.'
+  },
+  {
+    jour: 'Mercredi 16 décembre', heure: '14h00',
+    titre: 'La photo avec le Père Noël',
+    lieu: 'Le trône, place centrale', horaires: '14h à 17h',
+    detail: 'Le Père Noël reçoit les enfants sur son trône. Photo gratuite, sans achat.'
+  },
+  {
+    jour: 'Mercredi 16 décembre', heure: '15h00',
+    titre: 'L’atelier ballons du lutin',
+    lieu: 'Place centrale', horaires: '15h à 17h'
+  },
+  {
+    jour: 'Mercredi 16 décembre', heure: '16h30',
+    titre: 'Le spectacle du chapiteau',
+    lieu: 'Place centrale', horaires: '45 minutes'
+  },
+
+  // ---- Samedi 19 décembre ----
+  {
+    jour: 'Samedi 19 décembre', heure: '10h30',
+    titre: 'L’atelier ballons du lutin',
+    lieu: 'Place centrale', horaires: '10h30 à 12h30'
+  },
+  {
+    jour: 'Samedi 19 décembre', heure: '14h00',
+    titre: 'La photo avec le Père Noël',
+    lieu: 'Le trône, place centrale', horaires: '14h à 18h',
+    detail: 'Dernier samedi avant Noël : le Père Noël reste une heure de plus.',
+    vedette: true
+  },
+  {
+    jour: 'Samedi 19 décembre', heure: '15h00',
+    titre: 'La brigade du Père Noël',
+    lieu: 'En déambulation dans les allées', horaires: '15h à 18h',
+    detail: 'Le Père Noël, la Mère Noël et leurs lutins remontent la galerie, en musique et en gourmandises.'
+  },
+  {
+    jour: 'Samedi 19 décembre', heure: '16h30',
+    titre: 'La chorale de Noël',
+    lieu: 'Allée principale', horaires: '30 minutes de chants'
+  },
+  {
+    jour: 'Samedi 19 décembre', heure: '18h00',
+    titre: 'Le cracheur de feu',
+    lieu: 'Parvis de la galerie', horaires: 'À la tombée de la nuit',
+    detail: 'Le grand final de l’opération.'
   }
 ];
 

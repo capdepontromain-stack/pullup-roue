@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Père Noël">
+  <defs>
+    <radialGradient id="fond" cx="50%" cy="38%" r="72%">
+      <stop offset="0%"  stop-color="#F7E3B4"/>
+      <stop offset="55%" stop-color="#DDB264"/>
+      <stop offset="100%" stop-color="#A8792A"/>
+    </radialGradient>
+    <linearGradient id="bonnet" x1="20%" y1="0%" x2="85%" y2="100%">
+      <stop offset="0%"  stop-color="#D8383E"/>
+      <stop offset="55%" stop-color="#BC2830"/>
+      <stop offset="100%" stop-color="#8E1B21"/>
+    </linearGradient>
+    <linearGradient id="peau" x1="30%" y1="10%" x2="75%" y2="100%">
+      <stop offset="0%"  stop-color="#FBDCC4"/>
+      <stop offset="70%" stop-color="#F3C6A6"/>
+      <stop offset="100%" stop-color="#E5AE8B"/>
+    </linearGradient>
+    <linearGradient id="poil" x1="25%" y1="0%" x2="70%" y2="100%">
+      <stop offset="0%"  stop-color="#FFFFFF"/>
+      <stop offset="58%" stop-color="#F6F3EC"/>
+      <stop offset="100%" stop-color="#DCD6C9"/>
+    </linearGradient>
+    <linearGradient id="or" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#F2D08A"/>
+      <stop offset="50%" stop-color="#C9962E"/>
+      <stop offset="100%" stop-color="#9C6F1C"/>
+    </linearGradient>
+    <clipPath id="rond"><circle cx="100" cy="100" r="100"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#rond)">
+    <circle cx="100" cy="100" r="100" fill="url(#fond)"/>
+
+    <!-- LA BARBE : posée avant le visage, elle l'entoure et descend
+         jusqu'au bas du médaillon, en trois vagues. -->
+    <path fill="url(#poil)" d="
+      M58 84
+      C48 96 46 118 52 138
+      C57 156 68 172 84 182
+      C90 187 96 190 100 190
+      C104 190 110 187 116 182
+      C132 172 143 156 148 138
+      C154 118 152 96 142 84
+      C142 108 136 128 124 140
+      C116 148 108 152 100 152
+      C92 152 84 148 76 140
+      C64 128 58 108 58 84 Z"/>
+    <!-- Les vagues du bas de la barbe -->
+    <path fill="url(#poil)" d="
+      M60 140
+      C64 160 74 176 88 184
+      C80 176 76 166 76 156
+      C82 164 90 170 100 172
+      C110 170 118 164 124 156
+      C124 166 120 176 112 184
+      C126 176 136 160 140 140
+      C132 152 118 158 100 158
+      C82 158 68 152 60 140 Z"/>
+
+    <!-- Les plis de la barbe : des ombres douces, jamais des traits.
+         Un trait net faisait des dents de fourchette ; une ombre large
+         et transparente donne du volume sans se voir. -->
+    <g fill="#C8C0AE" opacity=".3">
+      <path d="M78 138 C74 154 78 170 88 182 C84 166 82 150 86 138 Z"/>
+      <path d="M122 138 C126 154 122 170 112 182 C116 166 118 150 114 138 Z"/>
+      <path d="M100 156 C96 166 95 176 97 186 C102 176 104 166 104 156 Z"/>
+    </g>
+
+    <!-- LE VISAGE -->
+    <ellipse cx="100" cy="98" rx="41" ry="44" fill="url(#peau)"/>
+
+    <!-- Les joues, deux touches de rose, jamais un cercle net -->
+    <ellipse cx="74"  cy="108" rx="12" ry="8.5" fill="#E4917E" opacity=".42"/>
+    <ellipse cx="126" cy="108" rx="12" ry="8.5" fill="#E4917E" opacity=".42"/>
+
+    <!-- LES YEUX, ronds et sombres : un Père Noël qui sourit des yeux -->
+    <ellipse cx="83"  cy="94" rx="4.4" ry="4.8" fill="#3A2A1E"/>
+    <ellipse cx="117" cy="94" rx="4.4" ry="4.8" fill="#3A2A1E"/>
+    <circle cx="84.6" cy="92.2" r="1.5" fill="#FFFFFF" opacity=".9"/>
+    <circle cx="118.6" cy="92.2" r="1.5" fill="#FFFFFF" opacity=".9"/>
+
+    <!-- LES SOURCILS, deux touffes blanches -->
+    <path fill="url(#poil)" d="M70 84 C76 78 88 77 94 82 C88 81 78 82 70 87 Z"/>
+    <path fill="url(#poil)" d="M130 84 C124 78 112 77 106 82 C112 81 122 82 130 87 Z"/>
+
+    <!-- LE NEZ -->
+    <ellipse cx="100" cy="107" rx="9" ry="7.6" fill="#E9A587"/>
+    <ellipse cx="97.5" cy="104.5" rx="3.4" ry="2.6" fill="#F8DAC4" opacity=".75"/>
+
+    <!-- LA MOUSTACHE : deux lobes qui se rejoignent sous le nez -->
+    <path fill="url(#poil)" d="
+      M100 112
+      C92 110 82 111 76 116
+      C70 121 70 129 76 132
+      C83 135 92 130 97 122
+      C98.5 119 99.5 116 100 112 Z"/>
+    <path fill="url(#poil)" d="
+      M100 112
+      C108 110 118 111 124 116
+      C130 121 130 129 124 132
+      C117 135 108 130 103 122
+      C101.5 119 100.5 116 100 112 Z"/>
+
+    <!-- LA BOUCHE, un sourire entrouvert sous la moustache -->
+    <path fill="#8E4A46" d="M90 128 C95 133 105 133 110 128 C105 137 95 137 90 128 Z"/>
+
+    <!-- LES LUNETTES RONDES, en or -->
+    <g fill="none" stroke="url(#or)" stroke-width="2.6">
+      <circle cx="83"  cy="94" r="13.5"/>
+      <circle cx="117" cy="94" r="13.5"/>
+      <path d="M96.5 94 C99 91.5 101 91.5 103.5 94" stroke-linecap="round"/>
+      <path d="M69.5 92 L60 89" stroke-linecap="round"/>
+      <path d="M130.5 92 L140 89" stroke-linecap="round"/>
+    </g>
+    <circle cx="78" cy="89" r="3.6" fill="#FFFFFF" opacity=".28"/>
+    <circle cx="112" cy="89" r="3.6" fill="#FFFFFF" opacity=".28"/>
+
+    <!-- LE BONNET : le pli retombe DERRIÈRE la calotte, la calotte
+         passe devant le front, la fourrure ferme le tout et le pompon
+         se pose au bout du pli. Dessiné dans cet ordre, aucune pointe
+         ne dépasse. -->
+    <path fill="#9E2027" d="
+      M128 34
+      C150 34 170 52 180 76
+      C186 90 186 102 180 110
+      C174 118 164 120 156 116
+      C165 110 168 100 164 88
+      C158 70 144 56 126 50 Z"/>
+    <path fill="url(#bonnet)" d="
+      M54 70
+      C56 44 76 24 102 24
+      C126 24 146 40 154 62
+      C156 68 157 73 156 78
+      C140 68 120 64 100 64
+      C82 64 66 66 54 76
+      C53 74 53 72 54 70 Z"/>
+    <!-- Le bord de fourrure, une bande souple et non un rectangle -->
+    <path fill="url(#poil)" d="
+      M52 62
+      C68 56 85 54 100 54
+      C117 54 136 57 151 64
+      C158 67 160 75 155 80
+      C150 86 141 85 133 82
+      C120 77 110 75 100 75
+      C88 75 74 77 62 82
+      C53 86 45 84 43 77
+      C41 70 45 65 52 62 Z"/>
+    <!-- Le pompon, au bout du pli -->
+    <circle cx="172" cy="116" r="15" fill="url(#poil)"/>
+    <circle cx="167" cy="111" r="5" fill="#FFFFFF" opacity=".5"/>
+  </g>
+</svg>

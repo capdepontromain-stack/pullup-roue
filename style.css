@@ -1525,6 +1525,147 @@ h1 {
 }
 
 
+
+/* --- LE PROGRAMME EN AGENDA (26/08/2026) ---
+   Une journée, un intitulé. Sous l'intitulé, un fil doré vertical sur
+   lequel chaque rendez-vous s'accroche à son heure. Le fil est une
+   bordure gauche sur le conteneur : rien à positionner, donc rien à
+   casser quand une ligne s'allonge sur deux lignes de texte. */
+.agenda-jour {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 22px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--filet);
+}
+.agenda-jour:first-child { margin-top: 2px; }
+.agenda-jour-nom {
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--or-blanc);
+  line-height: 1.1;
+}
+.agenda-jour-precision {
+  font-size: var(--t-etiquette);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--gris);
+}
+
+/* Le fil de la journée. */
+.agenda-fil {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-left: 1px solid rgba(201, 150, 46, .3);
+  margin-left: 66px;              /* la place de la colonne des heures */
+  padding-left: 0;
+}
+
+.agenda-ligne {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  animation: pose .46s var(--entree) backwards;
+}
+/* L'heure, à gauche du fil : elle déborde sur la marge, le fil reste
+   droit d'un bout à l'autre de la journée. */
+.agenda-heure {
+  flex: 0 0 auto;
+  /* La colonne des heures vit à GAUCHE du fil : une largeur fixe, tirée
+     hors du conteneur par une marge négative de la même valeur. Le
+     padding de droite réserve la place de la pastille, pour qu'une heure
+     à cinq caractères (« 16h30 ») ne vienne jamais buter dessus. */
+  width: 66px;
+  margin-left: -66px;
+  padding-right: 15px;
+  text-align: right;
+  padding-top: 15px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .4px;
+  color: var(--or-clair);
+  position: relative;
+}
+/* La pastille qui pose le rendez-vous sur le fil. */
+.agenda-heure::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: 19px;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--or);
+  box-shadow: 0 0 0 3px var(--noir);
+}
+
+.agenda-corps {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--verre);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 150, 46, .22);
+  border-radius: 2px;
+  padding: 13px 15px;
+  margin-left: 14px;
+}
+.agenda-titre { font-family: var(--serif); font-size: 18.5px; line-height: 1.22; }
+.agenda-lieu {
+  font-size: 12px;
+  color: var(--or-clair);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+.agenda-duree {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .4px;
+  color: #241804;
+  background: linear-gradient(165deg, var(--or-blanc), var(--or));
+  border-radius: 2px;
+  padding: 3px 9px;
+  margin-top: 8px;
+}
+.agenda-detail {
+  font-size: 13.5px;
+  color: var(--creme);
+  opacity: .86;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+/* Le rendez-vous phare de la journée : le même cadre, en or plein. */
+.agenda-ligne.vedette .agenda-corps {
+  border-color: rgba(239, 195, 104, .65);
+  background: linear-gradient(160deg, rgba(58, 42, 18, .75), var(--verre));
+  box-shadow: 0 8px 30px rgba(201, 150, 46, .16);
+}
+.agenda-ligne.vedette .agenda-heure { color: var(--or-blanc); }
+
+/* Les rendez-vous permanents : pas d'heure, pas de fil, pleine largeur. */
+.agenda-ligne.permanent { gap: 0; }
+.agenda-ligne.permanent .agenda-heure {
+  width: 0; margin: 0; padding: 0;
+}
+.agenda-ligne.permanent .agenda-heure::after { display: none; }
+.agenda-ligne.permanent .agenda-corps { margin-left: 0; }
+.agenda-puce { display: none; }
+
+/* Sur les tout petits téléphones, l'heure passe au-dessus du texte
+   plutôt que de manger la largeur du cadre. */
+@media (max-width: 340px) {
+  .agenda-fil { margin-left: 0; border-left: 0; }
+  .agenda-ligne { flex-direction: column; gap: 3px; }
+  .agenda-heure { width: auto; margin: 0; text-align: left; padding-top: 0; }
+  .agenda-heure::after { display: none; }
+  .agenda-corps { margin-left: 0; width: 100%; }
+}
+
+
 /* --- En-tête : le client d'abord ---
    Le logo de la galerie tient la ligne du bas, à la place et à la
    taille du nom écrit : c'est lui, le nom de la galerie. */
@@ -2437,27 +2578,27 @@ body.theme-circus .pastille {
 }
 body.theme-circus .entete { border-bottom-color: rgba(201, 150, 46, .3); }
 
-/* Le médaillon d'accueil : le portrait du Père Noël, cadré serré sur
-   le visage et passé à l'or comme toutes les photographies du jeu. */
+/* LE MÉDAILLON D'ACCUEIL : LE PÈRE NOËL, EN DESSIN (26/08/2026)
+   Romain a écarté la photographie : « je préfère un Père Noël en
+   dessin, il faut que ce soit plus qualitatif ». C'est maintenant une
+   illustration vectorielle (img/pere-noel.svg) : elle reste nette sur
+   tous les écrans, elle pèse 4 Ko, et elle porte les ors de la charte.
+   Le dessin est déjà rond et cadré : il se pose entier dans le
+   médaillon (contain), sans recadrage ni filtre. */
 .medaillon-pere-noel {
-  background-image: url('img/photos/pere-noel-medaillon.jpg') !important;
+  background-image: url('img/pere-noel.svg') !important;
   background-blend-mode: normal !important;
-  background-size: 122% !important;
-  background-position: 52% 44% !important;
-  /* Un rien de chaleur pour que la photographie se pose dans l'or de
-     l'écran, sans jamais teindre le visage. */
-  filter: saturate(1.04) contrast(1.04);
+  background-size: contain !important;
+  background-position: 50% 50% !important;
+  background-repeat: no-repeat !important;
+  filter: none;
   box-shadow:
     inset 0 0 0 2px rgba(239, 195, 104, .55),
     0 10px 26px -12px rgba(0, 0, 0, .8);
 }
-/* Le voile du médaillon (une ombre qui referme le bas) reste, mais très
-   allégé : il doit encadrer le visage, pas l'assombrir. */
-.medaillon-pere-noel::after {
-  background:
-    radial-gradient(circle at 50% 26%, rgba(255, 240, 205, .14) 0%, transparent 52%),
-    radial-gradient(circle at 50% 100%, rgba(20, 6, 6, .5) 0%, transparent 62%) !important;
-}
+/* Le voile qui assombrissait le bas de la photographie n'a plus lieu
+   d'être sur un dessin : il ne ferait que salir les blancs. */
+.medaillon-pere-noel::after { display: none !important; }
 
 /* Le pied et la mention d'essai ne se marchent plus dessus. */
 /* La mention d'essai est posée en bas de l'écran, par-dessus la page :

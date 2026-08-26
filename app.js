@@ -356,63 +356,78 @@ const QUESTIONS = [
     ]
   },
   {
+    // QUATRE TRANCHES, PAS SIX (26/08/2026, soirée).
+    // Romain : « trop de choix à chaque fois ». Quatre tranches
+    // suffisent à trier les campagnes (jeune public, jeune actif,
+    // famille, senior) et l'écran se lit d'un coup d'œil.
     id: 'age_tranche', type: 'choix',
     titre: 'Ton âge ?',
     soustitre: 'Promis, on ne le dira à personne.',
     options: [
       { v: '-18',   l: 'Moins de 18 ans' },
-      { v: '18-25', l: '18 à 25 ans' },
-      { v: '26-35', l: '26 à 35 ans' },
-      { v: '36-50', l: '36 à 50 ans' },
-      { v: '51-65', l: '51 à 65 ans' },
-      { v: '65+',   l: 'Plus de 65 ans' }
+      { v: '18-30', l: '18 à 30 ans' },
+      { v: '31-50', l: '31 à 50 ans' },
+      { v: '50+',   l: 'Plus de 50 ans' }
     ]
   },
   {
     // LE TEST DE PERSONNALITÉ, version chapiteau. Le joueur choisit son
     // rôle sur la piste ; en coulisses, chaque rôle porte un rayon de
-    // boutique (champ « rayons »). Personne n'a l'impression de
-    // répondre à une question commerciale, et les campagnes savent quoi
-    // envoyer. « frequence » reçoit le tempérament de la première
-    // réponse cochée dans l'ordre de la liste.
+    // boutique (champ « rayons »). Quatre rôles seulement : les deux
+    // autres (le magicien, le régisseur) faisaient doublon avec les
+    // rayons demandés juste après.
     id: 'style', type: 'multi',
     titre: 'Si tu montais sur la piste, tu serais…',
-    soustitre: 'Plusieurs réponses possibles. Personne ne te jugera.',
+    soustitre: 'Plusieurs réponses possibles.',
     options: [
-      { v: 'acrobate',   l: 'L’acrobate, toujours en mouvement',      rayons: ['sport'],       aussi: { frequence: 'liste' } },
-      { v: 'magicien',   l: 'Le magicien, fan de nouveautés',          rayons: ['hightech'],    aussi: { frequence: 'flaner' } },
-      { v: 'loyal',      l: 'Monsieur Loyal, tiré à quatre épingles',  rayons: ['mode'],        aussi: { frequence: 'flaner' } },
-      { v: 'clown',      l: 'Le clown, celui qui met l’ambiance',      rayons: ['gourmandise'], aussi: { frequence: 'famille' } },
+      { v: 'acrobate',   l: 'L’acrobate, toujours en mouvement',       rayons: ['sport'],            aussi: { frequence: 'liste' } },
+      { v: 'loyal',      l: 'Monsieur Loyal, tiré à quatre épingles',   rayons: ['mode'],             aussi: { frequence: 'flaner' } },
       { v: 'costumiere', l: 'La costumière, l’œil pour les paillettes', rayons: ['beaute', 'bijoux'], aussi: { frequence: 'flaner' } },
-      { v: 'regisseur',  l: 'Le régisseur, celui qui fait tourner la maison', rayons: ['maison'], aussi: { frequence: 'liste' } }
+      { v: 'clown',      l: 'Le clown, celui qui met l’ambiance',       rayons: ['gourmandise'],      aussi: { frequence: 'famille' } }
     ]
   },
   {
-    // LA question qui vaut de l'or pour les commerçants, posée comme un
-    // rêve et pas comme un sondage. Une seule réponse : c'est la
-    // PRIORITÉ du joueur, celle qui décide de la première offre qu'on
-    // lui enverra.
-    id: 'envie', type: 'choix',
+    // LES 100 €, EN DEUX ÉCRANS DE QUATRE (26/08/2026, soirée).
+    // Avant : une seule question et ses huit propositions, que personne
+    // ne lisait jusqu'au bout. Maintenant deux questions courtes qui se
+    // suivent comme une histoire (« et s'il t'en restait cent ? »).
+    // Les huit rayons sont toujours couverts, et la PREMIÈRE case
+    // cochée ici reste la priorité du joueur : c'est elle qui décide de
+    // la première offre qu'on lui enverra (voir consoliderCiblage).
+    id: 'envie1', type: 'multi',
     titre: 'On t’offre 100 € à dépenser dans la galerie.',
-    soustitre: 'Tu files où en premier ?',
+    soustitre: 'Tu files où en premier ? Plusieurs réponses possibles.',
     options: [
-      { v: 'mode',        l: 'M’habiller de la tête aux pieds',   rayons: ['mode'] },
-      { v: 'beaute',      l: 'Coiffeur, institut, parfum',        rayons: ['beaute'] },
-      { v: 'bijoux',      l: 'Un bijou, un vrai',                 rayons: ['bijoux'] },
-      { v: 'hightech',    l: 'Du high-tech qui fait envie',       rayons: ['hightech'] },
-      { v: 'sport',       l: 'De quoi bouger, du sport',          rayons: ['sport'] },
-      { v: 'gourmandise', l: 'Un festin, resto et gourmandises',  rayons: ['gourmandise'] },
-      { v: 'enfants',     l: 'Des jouets pour les enfants',       rayons: ['enfants'] },
-      { v: 'maison',      l: 'De quoi embellir la maison',        rayons: ['maison'] }
+      { v: 'mode',        l: 'M’habiller de la tête aux pieds',  rayons: ['mode'] },
+      { v: 'beaute',      l: 'Coiffeur, institut, parfum',       rayons: ['beaute'] },
+      { v: 'bijoux',      l: 'Un bijou, un vrai',                rayons: ['bijoux'] },
+      { v: 'gourmandise', l: 'Un festin, resto et gourmandises', rayons: ['gourmandise'] }
     ]
   },
   {
-    // Les centres d'intérêt, en version « moments de vie ». La liste
-    // est LA MÊME POUR TOUT LE MONDE depuis le 26/08/2026.
+    id: 'envie2', type: 'multi',
+    titre: 'Il t’en reste 100 €.',
+    soustitre: 'Tu craques sur quoi ?',
+    options: [
+      { v: 'hightech', l: 'Du high-tech qui fait envie',   rayons: ['hightech'] },
+      { v: 'sport',    l: 'De quoi bouger, du sport',      rayons: ['sport'] },
+      { v: 'enfants',  l: 'Des jouets pour les enfants',   rayons: ['enfants'] },
+      { v: 'maison',   l: 'De quoi embellir la maison',    rayons: ['maison'] }
+    ]
+  },
+  {
+    // Le samedi idéal ne redemande plus les huit rayons (les 100 €
+    // viennent de le faire) : il dit avec QUI et OÙ se passe la journée.
+    // C'est ce qui distingue une famille d'un couple qui flâne.
     id: 'samedi', type: 'multi',
     titre: 'Ton samedi idéal, c’est plutôt…',
     soustitre: 'Coche tout ce qui te tente.',
-    options: []            // remplies par universSelonProfil()
+    options: [
+      { v: 'enfants', l: 'En famille, avec les enfants', rayons: ['enfants'],     aussi: { frequence: 'famille' } },
+      { v: 'mode',    l: 'Flâner entre amis',            rayons: ['mode'] },
+      { v: 'sport',   l: 'Dehors, à bouger',              rayons: ['sport'] },
+      { v: 'maison',  l: 'Au calme, à la maison',         rayons: ['maison'] }
+    ]
   },
   {
     // La question de Noël : elle dit aux commerçants POUR QUI le joueur
@@ -422,37 +437,13 @@ const QUESTIONS = [
     titre: 'Cette année, tu offres un cadeau à qui ?',
     soustitre: 'Dernière question, et ensuite on joue.',
     options: [
-      { v: 'amoureux',  l: 'Mon amoureux, mon amoureuse', rayons: ['bijoux', 'beaute'] },
-      { v: 'enfants',   l: 'Mes enfants',                 rayons: ['enfants'] },
-      { v: 'parents',   l: 'Mes parents, ma famille',     rayons: ['maison'] },
-      { v: 'amis',      l: 'Mes amis, mes collègues',     rayons: ['gourmandise'] },
-      { v: 'moi',       l: 'Moi, je me fais plaisir',     rayons: ['mode'] }
+      { v: 'amoureux', l: 'Mon amoureux, mon amoureuse', rayons: ['bijoux', 'beaute'] },
+      { v: 'enfants',  l: 'Mes enfants',                 rayons: ['enfants'] },
+      { v: 'parents',  l: 'Mes parents, ma famille',     rayons: ['maison'] },
+      { v: 'moi',      l: 'Mes amis, ou moi-même',       rayons: ['gourmandise', 'mode'] }
     ]
   }
 ];
-
-// Les rayons des boutiques. Ce sont EUX qui trient les offres, les
-// promotions et les nouveautés montrées au joueur après sa partie.
-const RAYONS = {
-  mode:        { v: 'mode',        l: 'Une virée shopping entre amis' },
-  beaute:      { v: 'beaute',      l: 'Un moment beauté rien que pour toi' },
-  bijoux:      { v: 'bijoux',      l: 'Se faire plaisir avec un bijou' },
-  sport:       { v: 'sport',       l: 'Une séance de sport ou une rando' },
-  hightech:    { v: 'hightech',    l: 'Une soirée jeux vidéo et high-tech' },
-  enfants:     { v: 'enfants',     l: 'Une sortie avec les enfants' },
-  gourmandise: { v: 'gourmandise', l: 'Un bon resto en famille' },
-  maison:      { v: 'maison',      l: 'Bricoler et décorer chez toi' }
-};
-
-// LA MÊME LISTE POUR TOUT LE MONDE (26/08/2026).
-// Avant, les propositions changeaient selon le genre : deux joueurs
-// n'avaient pas le même questionnaire, et les campagnes comparaient des
-// réponses qui n'avaient pas été posées à tous. Romain a tranché : même
-// question, mêmes propositions, pour tout le monde.
-function universSelonProfil() {
-  const R = RAYONS;
-  return [R.mode, R.beaute, R.bijoux, R.sport, R.hightech, R.gourmandise, R.enfants, R.maison];
-}
 
 // LES COLONNES LIÉES D'UNE QUESTION À CHOIX MULTIPLE
 // --------------------------------------------------
@@ -483,6 +474,18 @@ function appliquerColonnesLiees(q) {
 // commerciale se voit quand même proposer les bonnes promotions.
 // La colonne « pour_qui » n'existe pas en base : ses réponses vivent
 // dans univers (rayons) et dans enfants. Rien à modifier dans Supabase.
+// La première case cochée d'une question, dans l'ordre où les
+// propositions sont affichées : une valeur stable, qui se recalcule à
+// l'identique quand le joueur revient en arrière.
+function premierRayonCoche(idQuestion) {
+  const q = QUESTIONS.filter(x => x.id === idQuestion)[0];
+  if (!q || !q.options) return '';
+  const cochees = String(reponses[idQuestion] || '').split(',').filter(Boolean);
+  if (!cochees.length) return '';
+  const premiere = q.options.filter(o => cochees.indexOf(o.v) !== -1)[0];
+  return premiere ? premiere.v : '';
+}
+
 function consoliderCiblage() {
   // On repart TOUJOURS des cases réellement cochées au samedi idéal :
   // ainsi, un joueur qui revient en arrière et décoche une réponse voit
@@ -496,8 +499,12 @@ function consoliderCiblage() {
       if (o.rayons && cochees.indexOf(o.v) !== -1) o.rayons.forEach(r => rayons.add(r));
     });
   });
-  // La priorité du joueur (les 100 €) passe en tête de liste : c'est
-  // elle qui décide de la première offre qu'on lui enverra.
+  // LA PRIORITÉ DU JOUEUR (26/08/2026, soirée).
+  // Les 100 € tiennent maintenant sur deux écrans à cases à cocher.
+  // La priorité, c'est la PREMIÈRE case cochée du premier écran (dans
+  // l'ordre affiché, pas dans l'ordre des doigts), et à défaut celle du
+  // second. Elle décide de la première offre qu'on enverra au joueur.
+  reponses.envie = premierRayonCoche('envie1') || premierRayonCoche('envie2') || '';
   const priorite = reponses.envie;
   const liste = Array.from(rayons);
   if (priorite && liste.indexOf(priorite) > 0) {
@@ -570,7 +577,6 @@ function compteRebours() {
 
 function afficherQuestion() {
   const q = QUESTIONS[questionActuelle];
-  if (q.id === 'samedi') q.options = universSelonProfil();
   document.getElementById('barre-progression').style.width =
     Math.round(((questionActuelle + 1) / QUESTIONS.length) * 100) + '%';
   // Un décompte qui rassure au lieu d'informer : le joueur voit la fin
@@ -2844,34 +2850,18 @@ function proposerLesOffres(suite) {
   afficherEcran('ecran-offres');
 }
 
-// CE QUE LE JOUEUR VA VRAIMENT RECEVOIR, MONTRÉ AVANT QU'IL DISE OUI
-// ------------------------------------------------------------------
-// Une case à cocher demande une confiance ; un aperçu la donne. L'écran
-// reprend le prénom du joueur, le rayon qu'il vient de choisir (les
-// 100 €) et affiche la maquette de l'e-mail du jeudi, avec trois lignes
-// tirées de SON rayon. Rien n'est promis qui ne soit vrai : ce sont des
-// catégories, jamais une enseigne ni un prix, et le refus reste à un
-// clic, au même endroit qu'avant.
-const APERCU_RAYONS = {
-  mode:        ['Les nouvelles collections de la galerie', 'Les pièces qui viennent d’arriver', 'Les bons plans mode de la semaine'],
-  beaute:      ['Les offres coiffure et institut', 'Les nouveautés parfum et soin', 'Les bons plans beauté de la semaine'],
-  bijoux:      ['Les nouveautés de la bijouterie', 'Les idées cadeaux à offrir', 'Les bons plans bijoux de la semaine'],
-  hightech:    ['Les nouveautés high-tech', 'Les bons plans image et son', 'Ce qui vient d’arriver en rayon'],
-  sport:       ['Les nouveautés sport et outdoor', 'Les bons plans équipement', 'Les rendez-vous sportifs de la galerie'],
-  gourmandise: ['Le menu du midi des restaurants', 'La pâtisserie de la semaine', 'Les bons plans gourmands'],
-  enfants:     ['Les jouets qui viennent d’arriver', 'Les animations pour les enfants', 'Les bons plans famille'],
-  maison:      ['Les idées déco du moment', 'Les nouveautés maison', 'Les bons plans équipement de la maison']
-};
-const APERCU_DEFAUT = ['Les bons plans des commerçants', 'Les nouveautés de la galerie', 'Les animations de la semaine'];
-
+// L'ÉCRAN DES BONS PLANS : TROIS LIGNES, PAS UNE DE PLUS
+// ------------------------------------------------------
+// 26/08/2026, Romain : « il y a trop d'informations ». L'écran portait
+// l'aperçu de l'e-mail du jeudi et quatre promesses détaillées ; il
+// tient maintenant en un titre, une phrase et la question. Ce qui est
+// promis reste vrai : un seul envoi par semaine, et le refus est au
+// même endroit qu'avant.
 function habillerLesOffres() {
   const prenom = (reponses.prenom || '').trim();
   const rayon = (reponses.univers || '').split(',').filter(Boolean)[0] || '';
   const titre = document.getElementById('offres-titre');
   const sousTitre = document.getElementById('offres-soustitre');
-  const lieu = document.getElementById('apercu-lieu');
-  const objet = document.getElementById('apercu-objet');
-  const lignes = document.getElementById('apercu-lignes');
 
   if (titre) {
     titre.textContent = prenom
@@ -2879,20 +2869,12 @@ function habillerLesOffres() {
       : 'Les bons plans de la galerie, chaque jeudi.';
   }
   if (sousTitre) {
+    // Le rayon préféré du joueur se glisse dans la phrase, sans
+    // l'allonger : « côté mode », « côté gourmandise ».
     sousTitre.textContent = MOT_DU_RAYON[rayon]
-      ? 'Un e-mail par semaine, avec ce qui se passe côté ' + MOT_DU_RAYON[rayon] +
-        ', et les bons plans des autres commerçants de la galerie.'
-      : 'Les bons de réduction, la remise chez ta boutique préférée, les nouvelles collections, le menu du midi.';
-  }
-  if (lieu) lieu.textContent = (OPERATION.lieu || '').trim();
-  if (objet) objet.textContent = prenom ? 'Pour toi, ' + prenom + ' : les bons plans de la semaine' : 'Les bons plans de la semaine';
-  if (lignes) {
-    lignes.innerHTML = '';
-    (APERCU_RAYONS[rayon] || APERCU_DEFAUT).forEach(texte => {
-      const li = document.createElement('li');
-      li.textContent = texte;      // jamais innerHTML : rien d'exécutable
-      lignes.appendChild(li);
-    });
+      ? 'Chaque jeudi, reçois un mail avec les cadeaux, les promos et les nouveautés, côté ' +
+        MOT_DU_RAYON[rayon] + ' en premier. Un seul mail par semaine, promis.'
+      : 'Chaque jeudi, reçois un mail avec les cadeaux, les promos et les nouvelles collections. Un seul mail par semaine, promis.';
   }
 }
 
@@ -3069,6 +3051,18 @@ installerOnglets();
 // --------------------------------------------
 // PROGRAMME DES ANIMATIONS
 // --------------------------------------------
+// LE PROGRAMME, PRÉSENTÉ COMME UN AGENDA (26/08/2026)
+// ----------------------------------------------------
+// Avant : une pile de cartes, toutes du même poids, où le joueur ne
+// voyait pas ce qui se passait aujourd'hui. Maintenant :
+//   - en haut, ce qui a lieu TOUS LES JOURS (les rendez-vous sans jour) ;
+//   - en dessous, une journée après l'autre, chaque rendez-vous accroché
+//     à son heure, sur un fil vertical doré.
+// Les colonnes jour et heure sont facultatives : un programme rempli à
+// l'ancienne (titre, lieu, horaires) s'affiche exactement comme avant,
+// sous « Tous les jours ». Le select ne nomme plus les colonnes une à
+// une, pour que l'écran continue de fonctionner que la base ait reçu ou
+// non les deux nouvelles colonnes.
 async function afficherProgramme() {
   const liste = document.getElementById('programme-liste');
   liste.innerHTML = squelettes(3);
@@ -3079,7 +3073,7 @@ async function afficherProgramme() {
   try {
     const { data, error } = await sb
       .from('roue_programme')
-      .select('titre, lieu, horaires, detail, vedette')
+      .select('*')
       .eq('operation', EVENEMENT)
       .eq('actif', true)
       .order('ordre');
@@ -3095,20 +3089,73 @@ async function afficherProgramme() {
   }
 
   liste.innerHTML = '';
-  evenements.forEach((ev, index) => {
-    const carte = document.createElement('article');
-    carte.className = 'evenement' + (ev.vedette ? ' vedette' : '');
-    carte.style.animationDelay = (0.06 + Math.min(index, 8) * 0.06) + 's';
-    const gratuit = /gratuit/i.test(ev.detail || '')
-      ? '<span class="evenement-gratuit">Gratuit, sans achat</span>' : '';
-    carte.innerHTML =
-      `<div class="evenement-lieu">${echap(ev.lieu || '')}</div>
-       <div class="evenement-titre">${echap(ev.titre || '')}</div>
-       <span class="evenement-horaires">${echap(ev.horaires || '')}</span>
-       <div class="evenement-detail">${echap(ev.detail || '')}</div>
-       ${gratuit}`;
-    liste.appendChild(carte);
+  let retard = 0;                 // pour que les lignes arrivent en cascade
+
+  // 1. LES RENDEZ-VOUS DE TOUS LES JOURS
+  const permanents = evenements.filter(ev => !String(ev.jour || '').trim());
+  if (permanents.length) {
+    liste.appendChild(titreDeJournee('Tous les jours', 'Pendant toute l’opération'));
+    permanents.forEach(ev => {
+      liste.appendChild(ligneAgenda(ev, retard++, true));
+    });
+  }
+
+  // 2. LES JOURNÉES, DANS L'ORDRE OÙ ELLES ARRIVENT DANS LA LISTE
+  const journees = [];
+  evenements.forEach(ev => {
+    const jour = String(ev.jour || '').trim();
+    if (!jour) return;
+    let bloc = journees.filter(j => j.jour === jour)[0];
+    if (!bloc) { bloc = { jour: jour, evenements: [] }; journees.push(bloc); }
+    bloc.evenements.push(ev);
   });
+
+  journees.forEach(bloc => {
+    liste.appendChild(titreDeJournee(bloc.jour, ''));
+    const fil = document.createElement('div');
+    fil.className = 'agenda-fil';
+    bloc.evenements.forEach(ev => {
+      fil.appendChild(ligneAgenda(ev, retard++, false));
+    });
+    liste.appendChild(fil);
+  });
+}
+
+// L'intitulé d'une journée : un filet doré, la date, et au besoin une
+// précision (« Pendant toute l'opération »).
+function titreDeJournee(jour, precision) {
+  const bloc = document.createElement('div');
+  bloc.className = 'agenda-jour';
+  bloc.innerHTML =
+    `<span class="agenda-jour-nom">${echap(jour)}</span>` +
+    (precision ? `<span class="agenda-jour-precision">${echap(precision)}</span>` : '');
+  return bloc;
+}
+
+// Une ligne d'agenda : l'heure à gauche, le rendez-vous à droite.
+// Les rendez-vous permanents n'ont pas d'heure : leur colonne de gauche
+// porte alors une étoile, et la ligne s'écrit en pleine largeur.
+function ligneAgenda(ev, index, permanent) {
+  const ligne = document.createElement('article');
+  ligne.className = 'agenda-ligne' +
+    (ev.vedette ? ' vedette' : '') +
+    (permanent ? ' permanent' : '');
+  ligne.style.animationDelay = (0.05 + Math.min(index, 10) * 0.05) + 's';
+
+  const gratuit = /gratuit/i.test(ev.detail || '')
+    ? '<span class="evenement-gratuit">Gratuit, sans achat</span>' : '';
+  const heure = String(ev.heure || '').trim();
+
+  ligne.innerHTML =
+    `<div class="agenda-heure">${heure ? echap(heure) : '<span class="agenda-puce" aria-hidden="true"></span>'}</div>
+     <div class="agenda-corps">
+       <div class="agenda-titre">${echap(ev.titre || '')}</div>
+       ${ev.lieu ? `<div class="agenda-lieu">${echap(ev.lieu)}</div>` : ''}
+       ${ev.horaires ? `<span class="agenda-duree">${echap(ev.horaires)}</span>` : ''}
+       ${ev.detail ? `<div class="agenda-detail">${echap(ev.detail)}</div>` : ''}
+       ${gratuit}
+     </div>`;
+  return ligne;
 }
 
 document.getElementById('btn-voir-programme').addEventListener('click', afficherProgramme);
