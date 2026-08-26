@@ -2460,9 +2460,10 @@ body.theme-circus .entete { border-bottom-color: rgba(201, 150, 46, .3); }
 }
 
 /* Le pied et la mention d'essai ne se marchent plus dessus. */
-/* La mention d'essai vit en bas de l'écran : le pied lui laisse la
-   place, sinon les deux se superposent. */
-body.mode-test .pied { margin-bottom: 26px; }
+/* La mention d'essai est posée en bas de l'écran, par-dessus la page :
+   on réserve donc sa hauteur au bas du document, sinon elle recouvre le
+   pied dès que la page défile. */
+body.mode-test { padding-bottom: 26px; }
 
 /* --- L'aperçu de l'e-mail du jeudi (écran des bons plans) ---
    Une maquette, pas une capture : le joueur voit la forme de ce qu'il

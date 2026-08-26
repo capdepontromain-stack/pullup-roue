@@ -119,7 +119,7 @@ const OPERATIONS_LOCALES = {
     nom: 'La Hotte des Commerçants',
     lieu: 'Cap Sacré-Cœur',
     emoji: '🎁',
-    accroche: 'Six questions, trois numéros sur la piste, et peut-être un cadeau offert par tes commerçants.',
+    accroche: 'Quelques questions, trois numéros sur la piste, et peut-être un cadeau offert par tes commerçants.',
     // L'UNIVERS DE DÉCEMBRE 2026 EST LE CIRQUE (Romain, 26/08/2026) :
     // Cap Sacré-Cœur décore sa galerie sur ce thème, le jeu suit. Le
     // Père Noël reste de la partie, en Monsieur Loyal.
