@@ -1421,7 +1421,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '26aout2026c';
+const VERSION_JEUX = '26aout2026d';
 const FICHIERS_JEUX = {
   bandit:   'jeux/bandit.js?v=' + VERSION_JEUX,
   pingouin: 'jeux/pingouin.js?v=' + VERSION_JEUX,
