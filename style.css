@@ -1880,7 +1880,7 @@ h1 {
    trop voyant pour une visio client, puis cette ligne discrète. */
 .badge-test {
   position: fixed;
-  bottom: 5px;
+  bottom: 2px;
   left: 0;
   right: 0;
   width: 100%;
@@ -2350,3 +2350,179 @@ body.mode-test .app { padding-bottom: calc(var(--e7) + 46px); }
     transition: none !important;
   }
 }
+
+
+/* ============================================================
+   L'UNIVERS DU CIRQUE (décembre 2026, Cap Sacré-Cœur)
+   ------------------------------------------------------------
+   La galerie décore sa piste sur le thème du cirque : le jeu
+   entre sous le même chapiteau. Trois matières, pas une de
+   plus, pour que ça reste une belle affiche et pas une
+   décoration d'anniversaire :
+     1. le velours rouge profond du rideau ;
+     2. l'or des ampoules et des filets ;
+     3. la toile crème rayée du chapiteau.
+   Tout le reste (typographie, échelle, espacements) ne bouge
+   pas : c'est la même application, habillée pour la saison.
+   ============================================================ */
+
+body.theme-circus {
+  --rouge-velours: #6E1113;
+  --rouge-piste:   #A81B1F;
+  --toile:         #F3E7D3;
+}
+
+/* Le fond : le chapiteau de nuit, très en retrait, sous un voile de
+   velours. La photographie ne doit jamais se lire comme une image,
+   seulement comme une profondeur. */
+body.theme-circus::before {
+  background: url('img/photos/chapiteau-nuit.jpg') center 38% / cover no-repeat;
+  filter: saturate(.92) brightness(.36) blur(3px);
+}
+body.theme-circus::after {
+  background:
+    radial-gradient(ellipse 120% 60% at 50% 106%, rgba(168, 27, 31, .34) 0%, transparent 58%),
+    radial-gradient(ellipse 96% 42% at 50% -12%, rgba(201, 150, 46, .26) 0%, transparent 62%),
+    radial-gradient(ellipse 78% 58% at 50% 44%, transparent 0%, rgba(28, 6, 7, .5) 100%),
+    linear-gradient(180deg, rgba(38, 8, 9, .82) 0%, rgba(30, 7, 8, .84) 38%, rgba(20, 5, 6, .9) 64%, rgba(14, 4, 4, .96) 100%);
+}
+
+/* La bande de toile rayée du chapiteau, tout en haut de l'écran.
+   Deux pixels de haut : on la sent plus qu'on ne la voit. */
+body.theme-circus .app::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  z-index: 6;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--rouge-piste) 0 14px,
+    var(--toile) 14px 28px
+  );
+  opacity: .9;
+}
+
+/* La guirlande d'ampoules, sous l'en-tête. Elle scintille très
+   lentement et en décalé, comme une vraie enseigne de foire. */
+.guirlande { display: none; }
+body.theme-circus .guirlande {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  margin: -6px 0 var(--e3);
+  padding: 0 2px;
+}
+body.theme-circus .guirlande i {
+  display: block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #FFF3D4 0%, var(--or-clair) 46%, #8A6A21 100%);
+  box-shadow: 0 0 8px 1px rgba(239, 195, 104, .5);
+  animation: ampoule 3.6s ease-in-out infinite;
+}
+@keyframes ampoule {
+  0%, 100% { opacity: .45; box-shadow: 0 0 6px 0 rgba(239, 195, 104, .35); }
+  50%      { opacity: 1;   box-shadow: 0 0 11px 2px rgba(255, 233, 184, .75); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.theme-circus .guirlande i { animation: none; opacity: .8; }
+}
+
+/* La pastille du pied et les filets prennent le rouge de la piste. */
+body.theme-circus .pastille {
+  background: var(--rouge-clair);
+  box-shadow: 0 0 14px 2px rgba(225, 75, 80, .7);
+}
+body.theme-circus .entete { border-bottom-color: rgba(201, 150, 46, .3); }
+
+/* Le médaillon d'accueil : le portrait du Père Noël, cadré serré sur
+   le visage et passé à l'or comme toutes les photographies du jeu. */
+.medaillon-pere-noel {
+  background-image: url('img/photos/pere-noel-medaillon.jpg') !important;
+  background-blend-mode: normal !important;
+  background-size: 122% !important;
+  background-position: 52% 44% !important;
+  /* Un rien de chaleur pour que la photographie se pose dans l'or de
+     l'écran, sans jamais teindre le visage. */
+  filter: saturate(1.04) contrast(1.04);
+  box-shadow:
+    inset 0 0 0 2px rgba(239, 195, 104, .55),
+    0 10px 26px -12px rgba(0, 0, 0, .8);
+}
+/* Le voile du médaillon (une ombre qui referme le bas) reste, mais très
+   allégé : il doit encadrer le visage, pas l'assombrir. */
+.medaillon-pere-noel::after {
+  background:
+    radial-gradient(circle at 50% 26%, rgba(255, 240, 205, .14) 0%, transparent 52%),
+    radial-gradient(circle at 50% 100%, rgba(20, 6, 6, .5) 0%, transparent 62%) !important;
+}
+
+/* Le pied et la mention d'essai ne se marchent plus dessus. */
+/* La mention d'essai vit en bas de l'écran : le pied lui laisse la
+   place, sinon les deux se superposent. */
+body.mode-test .pied { margin-bottom: 26px; }
+
+/* --- L'aperçu de l'e-mail du jeudi (écran des bons plans) ---
+   Une maquette, pas une capture : le joueur voit la forme de ce qu'il
+   va recevoir, en trois lignes tirées du rayon qu'il vient de choisir.
+   C'est ce qui transforme une case à cocher en promesse tenue. */
+.apercu-mail {
+  margin: var(--e4) 0 var(--e5);
+  padding: var(--e3) var(--e4) var(--e4);
+  border: 1px solid var(--filet);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(246, 241, 230, .06) 0%, rgba(246, 241, 230, .02) 100%);
+  box-shadow: 0 14px 30px -22px rgba(0, 0, 0, .9);
+}
+.apercu-barre {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--e2);
+  padding-bottom: var(--e2);
+  margin-bottom: var(--e2);
+  border-bottom: 1px solid var(--filet);
+}
+.apercu-jour, .apercu-lieu {
+  font-size: 10px; letter-spacing: 2.4px; text-transform: uppercase; font-weight: 600;
+}
+.apercu-jour { color: var(--or); }
+.apercu-lieu { color: var(--gris); }
+.apercu-objet {
+  display: block;
+  font-family: var(--serif);
+  font-size: var(--t-titre-s);
+  line-height: 1.2;
+  color: var(--creme);
+  margin-bottom: var(--e3);
+}
+.apercu-lignes { list-style: none; display: grid; gap: 9px; }
+.apercu-lignes li {
+  position: relative;
+  padding-left: 18px;
+  font-size: var(--t-petit);
+  color: var(--gris);
+  line-height: 1.45;
+}
+.apercu-lignes li::before {
+  content: '';
+  position: absolute; left: 0; top: .55em;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--or-clair);
+  opacity: .75;
+}
+
+/* --- Le billet d'entrée (le ticket à gratter, version chapiteau) ---
+   Même objet, même découpe : seul le fond change, velours rouge au lieu
+   du brun, avec le double filet doré des vrais billets de cirque. */
+body.theme-circus .ticket-fond {
+  background:
+    radial-gradient(circle at 30% 22%, rgba(239, 195, 104, .2), transparent 62%),
+    linear-gradient(160deg, #5E1013, #2A0709);
+  box-shadow:
+    inset 0 0 0 1px rgba(239, 195, 104, .5),
+    inset 0 0 0 6px rgba(239, 195, 104, .12);
+}
+body.theme-circus .ticket-mention { color: var(--or-clair); opacity: .85; }
+body.theme-circus .ticket-detail { color: var(--toile); }

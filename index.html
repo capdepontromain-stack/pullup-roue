@@ -3,8 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>La Roue Pull Up : tente ta chance !</title>
-  <meta name="description" content="Joue à la Roue Pull Up et tente de gagner un cadeau offert par les commerçants partenaires !">
+  <title>La Hotte des Commerçants : tente ta chance !</title>
+  <meta name="description" content="Réponds à quelques questions, joue, et tente de gagner un cadeau offert par les commerçants de la galerie !">
+  <!-- SÉCURITÉ (26/08/2026) : la page ne s'autorise QUE ses propres
+       fichiers et la base Supabase. Si un jour un texte venu de la base
+       contenait du code (ou si quelqu'un parvenait à en glisser un), le
+       navigateur refuserait de l'exécuter. C'est une seconde barrière :
+       la première reste l'échappement systématique côté application
+       (voir la fonction echap dans app.js). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://vincxrmtfjbenlzhjwby.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
+  <!-- L'adresse de la page n'est jamais transmise aux sites extérieurs. -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <!-- La liaison avec la base est ouverte tout de suite, avant même que
        les scripts soient là : sur la 4G d'une galerie, la poignée de
        main met facilement 300 ms, autant ne pas les attendre. -->
@@ -20,16 +29,16 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=26aout2026b">
+  <link rel="stylesheet" href="style.css?v=26aout2026c">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=26aout2026b" defer></script>
+  <script src="icones.js?v=26aout2026c" defer></script>
   <script src="contenus-demo.js" defer></script>
-  <script src="app.js?v=26aout2026b" defer></script>
+  <script src="app.js?v=26aout2026c" defer></script>
   <!-- Envoi du bon par e-mail (dossier envoi-mails). Après app.js,
        et sans effet tant que les fonctions Supabase ne sont pas en place. -->
   <script src="envoi-mails/envoi-client.js" defer></script>
@@ -53,17 +62,21 @@
       </span>
     </header>
 
+    <!-- La guirlande d'ampoules du chapiteau : visible seulement quand
+         l'opération est en univers cirque (voir .theme-circus). -->
+    <div class="guirlande" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
     <!-- Écran 1 : accueil -->
     <section id="ecran-accueil" class="ecran actif">
       <div class="hero">
         <div class="hero-emoji hero-photo" id="accueil-medaillon"></div>
-        <h1>La Roue<br><span class="or">Pull Up</span></h1>
+        <h1>La Hotte des<br><span class="or">Commerçants</span></h1>
         <p id="accueil-lieu" class="lieu-badge" hidden></p>
         <p class="sous-titre">Un mini test de personnalité, tu fais tourner la roue, et tu repars peut-être avec un cadeau&nbsp;!</p>
         <p class="accueil-compte" id="accueil-compte"></p>
         <button class="btn btn-or btn-grand" id="btn-jouer">C'est parti&nbsp;!</button>
         <div class="mentions">
-          <p class="mini-mention">Jeu gratuit sans obligation d'achat · 1 participation par personne et par jour · cadeaux offerts par nos commerçants partenaires · <a href="reglement.html" target="_blank" class="lien-or">Règlement du jeu</a></p>
+          <p class="mini-mention">Jeu gratuit sans obligation d'achat · 1 participation par personne et par jour · cadeaux offerts par nos commerçants partenaires · <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">Règlement du jeu</a></p>
           <p class="mini-mention mini-mention-tres-discrete">Moins de 18 ans&nbsp;? Demande d'abord l'accord d'un parent pour jouer.</p>
         </div>
       </div>
@@ -127,14 +140,14 @@
         </label>
         <label class="case">
           <input type="checkbox" id="check-reglement">
-          <span>J'ai lu et j'accepte le <a href="reglement.html" target="_blank" class="lien-or">règlement du jeu</a> et l'enregistrement de mes réponses par Pull Up Événements. *</span>
+          <span>J'ai lu et j'accepte le <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">règlement du jeu</a> et l'enregistrement de mes réponses par l'organisateur. *</span>
         </label>
 
         <p id="erreur-coordonnees" class="erreur" hidden></p>
         <!-- Ce bouton ouvre le ticket à gratter, et le jeu du jour n'est
              pas toujours la roue : « Je tente ma chance » reste vrai. -->
         <button class="btn btn-or btn-grand" id="btn-valider">Je tente ma chance</button>
-        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Tu viens de choisir librement si tu voulais aussi recevoir les bons plans des commerçants&nbsp;: ce choix ne change rien à ta participation. Données conservées trois ans au maximum, jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" class="lien-or">En savoir plus sur tes données</a></p>
+        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Tu viens de choisir librement si tu voulais aussi recevoir les bons plans des commerçants&nbsp;: ce choix ne change rien à ta participation. Données conservées trois ans au maximum, jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">En savoir plus sur tes données</a></p>
       </div>
     </section>
 
@@ -364,8 +377,18 @@
       <div class="hero hero-offres">
         <div class="hero-emoji" id="offres-medaillon"></div>
         <span class="offres-kicker">Avant de jouer</span>
-        <h1>Les bons plans de la galerie, chaque jeudi.</h1>
-        <p class="sous-titre">Les bons de réduction, la remise chez ta boutique préférée, les nouvelles collections, le menu du midi.</p>
+        <h1 id="offres-titre">Les bons plans de la galerie, chaque jeudi.</h1>
+        <p class="sous-titre" id="offres-soustitre">Les bons de réduction, la remise chez ta boutique préférée, les nouvelles collections, le menu du midi.</p>
+
+        <!-- L'aperçu de l'e-mail du jeudi : le joueur voit exactement ce
+             qu'il va recevoir avant de dire oui. C'est ce qui fait la
+             différence entre une case à cocher et une promesse. Les
+             lignes s'adaptent au rayon qu'il vient de choisir. -->
+        <div class="apercu-mail" aria-hidden="true">
+          <div class="apercu-barre"><span class="apercu-jour" id="apercu-jour">Jeudi</span><span class="apercu-lieu" id="apercu-lieu"></span></div>
+          <strong class="apercu-objet" id="apercu-objet">Les bons plans de la semaine</strong>
+          <ul class="apercu-lignes" id="apercu-lignes"></ul>
+        </div>
 
         <div class="promesse">
           <span class="promesse-titre">Ce qu'on t'envoie</span>
@@ -378,7 +401,7 @@
         <button class="btn btn-or btn-grand" id="btn-offres-oui">Oui, je veux les bons plans</button>
         <button class="btn btn-discret" id="btn-offres-non">Non merci, juste le jeu</button>
         <p id="offres-mineurs" class="mini-mention" hidden>Les offres par e-mail sont réservées aux joueurs majeurs.</p>
-        <p class="mini-mention offres-liberte">Ton choix ne change <strong>rien</strong> à ta partie, ni à tes chances, ni à ton lot, et tu peux en changer quand tu veux. <a href="reglement.html#donnees" target="_blank" class="lien-or">Ce qu'on fait de tes données</a></p>
+        <p class="mini-mention offres-liberte">Ton choix ne change <strong>rien</strong> à ta partie, ni à tes chances, ni à ton lot, et tu peux en changer quand tu veux. <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">Ce qu'on fait de tes données</a></p>
       </div>
     </section>
 
@@ -467,7 +490,7 @@
 
     <footer class="pied">
       <span class="pastille"></span>
-      <span class="pied-marque">Animation Pull Up Événements</span>
+      <span class="pied-marque" id="pied-marque"></span>
     </footer>
 
     <div id="badge-demo" class="badge-demo" hidden>Mode démo : données non enregistrées</div>

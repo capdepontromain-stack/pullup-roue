@@ -89,10 +89,10 @@ function afficherMentionTest() {
 // --------------------------------------------
 let OPERATION = {
   slug: EVENEMENT,
-  nom: 'La Roue Pull Up',
+  nom: 'Le Grand Jeu de Noël',
   lieu: '',
-  emoji: '🎡',
-  accroche: 'Cinq questions, trois jeux, et peut-être un cadeau à la clé.',
+  emoji: '🎪',
+  accroche: 'Quelques questions, des jeux, et peut-être un cadeau à la clé.',
   theme: 'or',
   logo: '',
   // Quel jeu cette galerie utilise : 'roue', 'paquets', 'memory'.
@@ -119,8 +119,11 @@ const OPERATIONS_LOCALES = {
     nom: 'La Hotte des Commerçants',
     lieu: 'Cap Sacré-Cœur',
     emoji: '🎁',
-    accroche: 'Six questions rapides, des jeux, et peut-être un cadeau offert par tes commerçants.',
-    theme: 'noel',
+    accroche: 'Six questions, trois numéros sur la piste, et peut-être un cadeau offert par tes commerçants.',
+    // L'UNIVERS DE DÉCEMBRE 2026 EST LE CIRQUE (Romain, 26/08/2026) :
+    // Cap Sacré-Cœur décore sa galerie sur ce thème, le jeu suit. Le
+    // Père Noël reste de la partie, en Monsieur Loyal.
+    theme: 'circus',
     // Le logo de la galerie dans sa vraie couleur (26/08/2026, Romain :
     // « le logo Cap Sacré-Cœur est rouge sur internet, mets-le en rouge
     // et plus gros »). La version blanche reste dans le dossier pour un
@@ -142,15 +145,17 @@ const OPERATIONS_LOCALES = {
 
 function appliquerOperation() {
   document.body.classList.toggle('theme-noel', OPERATION.theme === 'noel');
+  // L'UNIVERS DU CIRQUE (décembre 2026) : rideau de velours, ampoules
+  // de chapiteau, fanions. Tout est dans style.css, sous .theme-circus.
+  document.body.classList.toggle('theme-circus', OPERATION.theme === 'circus');
 
-  // LE MÉDAILLON D'ACCUEIL : la hotte, pas un paquet cadeau
-  // (26/08/2026, demande de Romain). Il est dessiné au trait doré,
-  // comme tous les autres médaillons du jeu : l'accueil était le seul
-  // écran à porter une photographie.
+  // LE MÉDAILLON D'ACCUEIL : un vrai Père Noël, en photographie
+  // (26/08/2026, demande de Romain). Le portrait est cadré serré : dans
+  // un rond de 124 px, un visage se lit, une silhouette entière non.
   const medaillon = document.getElementById('accueil-medaillon');
-  if (medaillon && typeof ICONES !== 'undefined' && ICONES.hotte) {
-    medaillon.classList.remove('hero-photo');
-    medaillon.innerHTML = medaillonIcone(ICONES.hotte, 70);
+  if (medaillon) {
+    medaillon.classList.add('hero-photo', 'medaillon-pere-noel');
+    medaillon.innerHTML = '';
   }
 
   // L'EN-TÊTE DE L'OPÉRATION, présent sur tous les écrans.
@@ -162,6 +167,15 @@ function appliquerOperation() {
   //     grande : son logo quand la galerie en a un, sinon son nom
   //     écrit en Playfair. Le logo EST le nom : afficher les deux
   //     ferait doublon, puisqu'il contient déjà le mot.
+  // LE PIED DE PAGE PORTE LE NOM DE LA GALERIE, PAS LE NÔTRE.
+  // Romain, 26/08/2026 : « Pull Up doit apparaître très rarement, une
+  // fois peut-être ». L'agence ne se nomme donc plus qu'à un seul
+  // endroit de toute l'application : la mention légale de l'écran des
+  // coordonnées, où le responsable du traitement des données DOIT être
+  // identifié (RGPD). Partout ailleurs, c'est la galerie qui parle.
+  const pied = document.getElementById('pied-marque');
+  if (pied) pied.textContent = (OPERATION.lieu || OPERATION.nom || '').trim();
+
   const logo = document.getElementById('logo-client');
   const lieuEntete = document.getElementById('entete-lieu');
   const jeuEntete = document.getElementById('entete-jeu');
@@ -202,7 +216,16 @@ function appliquerOperation() {
   // grattaient un ticket au nom de Cap Sacré-Cœur.
   const ticketMention = document.getElementById('ticket-mention');
   if (ticketMention) {
-    ticketMention.textContent = OPERATION.lieu ? 'Ticket ' + OPERATION.lieu : 'Ticket surprise';
+    // Sous le chapiteau, ce n'est plus un ticket mais un billet
+    // d'entrée : le mot fait partie du décor.
+    const mot = OPERATION.theme === 'circus' ? 'Billet' : 'Ticket';
+    ticketMention.textContent = OPERATION.lieu ? mot + ' · ' + OPERATION.lieu : mot + ' surprise';
+    const titreGrattage = document.getElementById('grattage-titre');
+    if (titreGrattage) {
+      titreGrattage.textContent = OPERATION.theme === 'circus'
+        ? 'Ton billet d’entrée'
+        : 'Ton ticket surprise';
+    }
   }
 
   document.title = OPERATION.nom + ' : tente ta chance';
@@ -225,14 +248,17 @@ function creerAmpoules() {
 
 // Flocons discrets pour le thème Noël (une seule fois)
 function creerFlocons() {
-  if (document.body.classList.contains('theme-noel') === false) return;
+  const circus = document.body.classList.contains('theme-circus');
+  if (!circus && !document.body.classList.contains('theme-noel')) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const zone = document.getElementById('flocons');
   if (!zone || zone.childElementCount) return;
   for (let i = 0; i < 12; i++) {
     const f = document.createElement('span');
     f.className = 'flocon';
-    f.textContent = '❄';
+    // Sous le chapiteau, ce ne sont plus des flocons qui tombent mais
+    // les paillettes dorées des projecteurs.
+    f.textContent = circus ? '✦' : '❄';
     f.style.left = Math.random() * 100 + 'vw';
     f.style.fontSize = (8 + Math.random() * 10) + 'px';
     f.style.opacity = (0.25 + Math.random() * 0.4).toFixed(2);
@@ -258,7 +284,7 @@ let LOTS = [
   { nom: "Bon d'achat 20 €",  emoji: '💶', poids: 4,  perdant: false },
   { nom: 'Place de cinéma',    emoji: '🎬', poids: 8,  perdant: false },
   { nom: 'Boisson offerte',    emoji: '🥤', poids: 22, perdant: false },
-  { nom: 'Goodies Pull Up',    emoji: '🧢', poids: 26, perdant: false },
+  { nom: 'Goodies de la galerie', emoji: '🧢', poids: 26, perdant: false },
   { nom: 'Surprise partenaire', emoji: '🎁', poids: 12, perdant: false },
   { nom: 'Retente demain !',   emoji: '🍀', poids: 28, perdant: true }
 ];
@@ -316,8 +342,8 @@ const COULEURS_SEGMENTS = ['#C9962E', '#F1ECE2', '#5A554B', '#E3B85A', '#8A8378'
 const QUESTIONS = [
   {
     id: 'prenom', type: 'texte',
-    titre: 'Ton prénom ?',
-    soustitre: 'Ton prénom, ou un pseudo si tu préfères.',
+    titre: 'On t’appelle comment ?',
+    soustitre: 'Ton prénom, ou ton nom de scène si tu préfères.',
     placeholder: 'Prénom ou pseudo'
   },
   {
@@ -343,42 +369,58 @@ const QUESTIONS = [
     ]
   },
   {
-    // PLUSIEURS RÉPONSES POSSIBLES. Chaque trait de caractère porte
-    // discrètement un rayon (champ « rayons ») : c'est ce qui relie le
-    // test de personnalité aux offres des commerçants, sans jamais
-    // poser de question commerciale. « frequence » reçoit le
-    // tempérament de la PREMIÈRE réponse cochée dans l'ordre de la
-    // liste (voir appliquerColonnesLiees).
+    // LE TEST DE PERSONNALITÉ, version chapiteau. Le joueur choisit son
+    // rôle sur la piste ; en coulisses, chaque rôle porte un rayon de
+    // boutique (champ « rayons »). Personne n'a l'impression de
+    // répondre à une question commerciale, et les campagnes savent quoi
+    // envoyer. « frequence » reçoit le tempérament de la première
+    // réponse cochée dans l'ordre de la liste.
     id: 'style', type: 'multi',
-    soustitre: 'Plusieurs réponses possibles, coche tout ce qui te ressemble.',
-    titre: 'Tes amis disent que tu es plutôt\u2026',
+    titre: 'Si tu montais sur la piste, tu serais…',
+    soustitre: 'Plusieurs réponses possibles. Personne ne te jugera.',
     options: [
-      { v: 'elegant',  l: 'Toujours tiré à quatre épingles',      rayons: ['mode'],        aussi: { frequence: 'flaner' } },
-      { v: 'coquet',   l: 'Du genre à prendre soin de toi',        rayons: ['beaute'],      aussi: { frequence: 'flaner' } },
-      { v: 'sportif',  l: 'Toujours en mouvement',                 rayons: ['sport'],       aussi: { frequence: 'liste' } },
-      { v: 'gourmand', l: 'Bon vivant, la table avant tout',       rayons: ['gourmandise'], aussi: { frequence: 'famille' } },
-      { v: 'curieux',  l: 'Fan de nouveautés et de gadgets',       rayons: ['hightech'],    aussi: { frequence: 'flaner' } },
-      { v: 'genereux', l: 'Le cœur sur la main, toujours à offrir', rayons: ['bijoux'],     aussi: { frequence: 'liste' } },
-      { v: 'cocon',    l: 'Bien chez toi, cocon avant tout',       rayons: ['maison'],      aussi: { frequence: 'famille' } }
+      { v: 'acrobate',   l: 'L’acrobate, toujours en mouvement',      rayons: ['sport'],       aussi: { frequence: 'liste' } },
+      { v: 'magicien',   l: 'Le magicien, fan de nouveautés',          rayons: ['hightech'],    aussi: { frequence: 'flaner' } },
+      { v: 'loyal',      l: 'Monsieur Loyal, tiré à quatre épingles',  rayons: ['mode'],        aussi: { frequence: 'flaner' } },
+      { v: 'clown',      l: 'Le clown, celui qui met l’ambiance',      rayons: ['gourmandise'], aussi: { frequence: 'famille' } },
+      { v: 'costumiere', l: 'La costumière, l’œil pour les paillettes', rayons: ['beaute', 'bijoux'], aussi: { frequence: 'flaner' } },
+      { v: 'regisseur',  l: 'Le régisseur, celui qui fait tourner la maison', rayons: ['maison'], aussi: { frequence: 'liste' } }
     ]
   },
   {
-    // LA question de ciblage : ses valeurs sont les rayons des
-    // boutiques. Depuis le 26/08/2026 la liste est LA MÊME POUR TOUT
-    // LE MONDE (demande de Romain : « il faut qu'à chaque fois il y
-    // ait toutes ces questions, pas selon l'utilisateur »).
+    // LA question qui vaut de l'or pour les commerçants, posée comme un
+    // rêve et pas comme un sondage. Une seule réponse : c'est la
+    // PRIORITÉ du joueur, celle qui décide de la première offre qu'on
+    // lui enverra.
+    id: 'envie', type: 'choix',
+    titre: 'On t’offre 100 € à dépenser dans la galerie.',
+    soustitre: 'Tu files où en premier ?',
+    options: [
+      { v: 'mode',        l: 'M’habiller de la tête aux pieds',   rayons: ['mode'] },
+      { v: 'beaute',      l: 'Coiffeur, institut, parfum',        rayons: ['beaute'] },
+      { v: 'bijoux',      l: 'Un bijou, un vrai',                 rayons: ['bijoux'] },
+      { v: 'hightech',    l: 'Du high-tech qui fait envie',       rayons: ['hightech'] },
+      { v: 'sport',       l: 'De quoi bouger, du sport',          rayons: ['sport'] },
+      { v: 'gourmandise', l: 'Un festin, resto et gourmandises',  rayons: ['gourmandise'] },
+      { v: 'enfants',     l: 'Des jouets pour les enfants',       rayons: ['enfants'] },
+      { v: 'maison',      l: 'De quoi embellir la maison',        rayons: ['maison'] }
+    ]
+  },
+  {
+    // Les centres d'intérêt, en version « moments de vie ». La liste
+    // est LA MÊME POUR TOUT LE MONDE depuis le 26/08/2026.
     id: 'samedi', type: 'multi',
-    titre: 'Ton samedi idéal ?',
+    titre: 'Ton samedi idéal, c’est plutôt…',
     soustitre: 'Coche tout ce qui te tente.',
     options: []            // remplies par universSelonProfil()
   },
   {
-    // Question de Noël qui parle à tout le monde, et qui dit aux
-    // commerçants POUR QUI le joueur achète. Chaque réponse ajoute ses
-    // rayons au ciblage, et « mes enfants » remplit la colonne enfants.
+    // La question de Noël : elle dit aux commerçants POUR QUI le joueur
+    // achète, ce qui vaut mieux que de savoir ce qu'il aime. « Mes
+    // enfants » remplit aussi la colonne enfants.
     id: 'pour_qui', type: 'multi',
-    titre: 'Cette année, tu cherches un cadeau pour qui ?',
-    soustitre: 'Dernière question, coche tout ce qui te concerne.',
+    titre: 'Cette année, tu offres un cadeau à qui ?',
+    soustitre: 'Dernière question, et ensuite on joue.',
     options: [
       { v: 'amoureux',  l: 'Mon amoureux, mon amoureuse', rayons: ['bijoux', 'beaute'] },
       { v: 'enfants',   l: 'Mes enfants',                 rayons: ['enfants'] },
@@ -446,15 +488,23 @@ function consoliderCiblage() {
   // ainsi, un joueur qui revient en arrière et décoche une réponse voit
   // le ciblage se recalculer, au lieu de garder un rayon fantôme.
   const rayons = new Set((reponses.samedi || '').split(',').filter(Boolean));
-  ['style', 'pour_qui'].forEach(id => {
-    const q = QUESTIONS.filter(x => x.id === id)[0];
-    if (!q) return;
-    const cochees = String(reponses[id] || '').split(',').filter(Boolean);
+  QUESTIONS.forEach(q => {
+    if (!q.options || q.id === 'samedi') return;
+    const cochees = String(reponses[q.id] || '').split(',').filter(Boolean);
+    if (!cochees.length) return;
     q.options.forEach(o => {
-      if (cochees.indexOf(o.v) !== -1 && o.rayons) o.rayons.forEach(r => rayons.add(r));
+      if (o.rayons && cochees.indexOf(o.v) !== -1) o.rayons.forEach(r => rayons.add(r));
     });
   });
-  reponses.univers = Array.from(rayons).join(',');
+  // La priorité du joueur (les 100 €) passe en tête de liste : c'est
+  // elle qui décide de la première offre qu'on lui enverra.
+  const priorite = reponses.envie;
+  const liste = Array.from(rayons);
+  if (priorite && liste.indexOf(priorite) > 0) {
+    liste.splice(liste.indexOf(priorite), 1);
+    liste.unshift(priorite);
+  }
+  reponses.univers = liste.join(',');
 }
 
 // Le foyer se déduit de deux réponses : « mes enfants » à la question
@@ -620,6 +670,10 @@ document.getElementById('btn-coordonnees-retour').addEventListener('click', () =
 });
 
 function questionSuivante() {
+  // Chaque réponse peut porter un rayon de boutique : on recalcule le
+  // ciblage à chaque pas, jamais en cumulant (voir consoliderCiblage).
+  consoliderCiblage();
+  deduireFoyer();
   questionActuelle++;
   if (questionActuelle < QUESTIONS.length) {
     afficherQuestion();
@@ -669,10 +723,6 @@ document.getElementById('btn-multi-suivant').addEventListener('click', () => {
   // derrière « tes amis disent que tu es plutôt… ») : c'est la première
   // cochée dans l'ordre de la liste qui fait foi. Voir la fonction.
   appliquerColonnesLiees(q);
-  // Les traits de caractère et les cadeaux cherchés deviennent des
-  // rayons, et le foyer se déduit des deux (voir consoliderCiblage).
-  consoliderCiblage();
-  deduireFoyer();
   questionSuivante();
 });
 
@@ -933,7 +983,7 @@ function jourReunion(date) {
 
 function mettreEnAttente(participation) {
   try {
-    const attente = JSON.parse(localStorage.getItem(CLE_ATTENTE) || '[]');
+    const attente = purgerAttente(JSON.parse(localStorage.getItem(CLE_ATTENTE) || '[]'));
     attente.push(Object.assign({}, participation, {
       jour: jourReunion(),
       created_at: new Date().toISOString()
@@ -941,6 +991,26 @@ function mettreEnAttente(participation) {
     localStorage.setItem(CLE_ATTENTE, JSON.stringify(attente.slice(-50)));
   } catch (e) { console.warn(e); }
   programmerRenvoi();
+}
+
+// LES DONNÉES D'UN JOUEUR NE DORMENT PAS SUR LE TÉLÉPHONE (26/08/2026)
+// --------------------------------------------------------------------
+// La file d'attente sert à ne perdre aucune participation quand la 4G
+// lâche en galerie : elle garde donc, en clair, le prénom, l'adresse
+// e-mail et parfois le téléphone du joueur. C'est acceptable le temps
+// de la renvoyer ; ça ne l'est plus des semaines après, surtout sur une
+// tablette d'hôtesse utilisée par des centaines de personnes.
+// Au-delà de sept jours, une participation ne sera de toute façon plus
+// acceptée (le verrou du jour porte sur sa date) : on l'efface.
+const ATTENTE_JOURS_MAX = 7;
+
+function purgerAttente(liste) {
+  if (!Array.isArray(liste)) return [];
+  const limite = Date.now() - ATTENTE_JOURS_MAX * 86400000;
+  return liste.filter(p => {
+    const t = Date.parse(p && p.created_at);
+    return isNaN(t) ? false : t >= limite;
+  });
 }
 
 // La base ne connaît pas encore une des colonnes envoyées : mieux vaut
@@ -957,9 +1027,15 @@ let renvoiEnCours = false;
 async function renvoyerAttente() {
   if (renvoiEnCours) return;
   let attente;
-  try { attente = JSON.parse(localStorage.getItem(CLE_ATTENTE) || '[]'); }
+  try { attente = purgerAttente(JSON.parse(localStorage.getItem(CLE_ATTENTE) || '[]')); }
   catch (e) { return; }
-  if (!attente.length) { annulerRenvoi(); return; }
+  if (!attente.length) {
+    // La purge a pu vider la file : on nettoie aussi ce qui est écrit
+    // sur le téléphone, au lieu d'y laisser des adresses périmées.
+    try { localStorage.removeItem(CLE_ATTENTE); } catch (e) { /* sans importance */ }
+    annulerRenvoi();
+    return;
+  }
   // Réseau coupé : inutile de réveiller la radio du téléphone pour rien,
   // on retentera au retour du réseau ou à la prochaine relance.
   if (navigator.onLine === false) { programmerRenvoi(); return; }
@@ -1341,11 +1417,16 @@ function jeuPourNom(nom) {
 // Un nom de jeu absent de la table repart sur la roue tout seul, c'est
 // le filet de sécurité d'origine : `&jeu=justeprix` ne casse rien, il
 // fait tourner la roue.
+// La version des fichiers de jeu : elle suit celle d'index.html. Sans
+// elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
+// et ne voit jamais les corrections (constaté le 26/08/2026 sur le
+// levier du bandit manchot).
+const VERSION_JEUX = '26aout2026c';
 const FICHIERS_JEUX = {
-  bandit:   'jeux/bandit.js',
-  pingouin: 'jeux/pingouin.js',
-  paquets:  'jeux/paquets.js',
-  cartes:   'jeux/cartes.js'
+  bandit:   'jeux/bandit.js?v=' + VERSION_JEUX,
+  pingouin: 'jeux/pingouin.js?v=' + VERSION_JEUX,
+  paquets:  'jeux/paquets.js?v=' + VERSION_JEUX,
+  cartes:   'jeux/cartes.js?v=' + VERSION_JEUX
 };
 const chargements = {};
 
@@ -1486,6 +1567,9 @@ function libelleRoue(lot) {
   if (lot && lot.court) return String(lot.court);
   let t = String((lot && lot.nom) || '').replace(/\s*!+\s*$/, '').trim();
   if (!t) return '';
+  // Les cases « retente » sont nombreuses depuis l'alternance : un seul
+  // mot suffit, et il laisse respirer les cases voisines.
+  if (lot && lot.perdant) return 'Retente';
   const montant = t.match(/(\d+)\s*€/);
   if (montant) return montant[1] + ' €';
   t = t.replace(/^(un|une|le|la|les|des|du)\s+/i, '');
@@ -1494,11 +1578,40 @@ function libelleRoue(lot) {
   const gardes = [mots[0]];
   for (let i = 1; i < mots.length; i++) {
     if (LIAISONS_ROUE.test(mots[i])) break;
-    if ((gardes.join(' ') + ' ' + mots[i]).length > 15) break;
+    if ((gardes.join(' ') + ' ' + mots[i]).length > 12) break;
     gardes.push(mots[i]);
   }
-  t = gardes.join(' ').slice(0, 15).trim();
+  t = gardes.join(' ').slice(0, 12).trim();
   return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+// LA ROUE QUI A L'AIR D'UNE VRAIE ROUE (26/08/2026)
+// --------------------------------------------------
+// Romain, en jouant : « une seule case perdante sur huit, personne n'y
+// croit ». Il a raison : une roue de fête foraine alterne les cases
+// pleines et les cases vides, c'est ce qui la rend crédible. Elle
+// alterne donc maintenant, un lot puis une case « retente », tout
+// autour du cercle.
+//
+// CE QUE ÇA CHANGE, ET CE QUE ÇA NE CHANGE PAS. Le lot du joueur est
+// tiré AVANT la roue, par le serveur, selon le taux de gagnants de
+// l'opération : la roue ne décide de rien, elle révèle. Le nombre de
+// cases affichées n'a donc aucun effet sur les chances réelles, qui
+// restent celles du tirage (environ 7 joueurs sur 10 repartent avec un
+// lot). L'affichage annonce moins que la réalité, jamais l'inverse :
+// c'est le sens prudent. Les vraies chances doivent être écrites au
+// règlement, c'est là qu'elles font foi.
+let SEGMENTS = [];
+
+function construireSegments() {
+  const gagnants = LOTS.filter(l => !l.perdant);
+  const perdant = LOTS.filter(l => l.perdant)[0];
+  // Pas de case perdante configurée, ou trop peu de lots : on garde la
+  // roue telle quelle, on n'invente pas de case.
+  if (!perdant || gagnants.length < 2) return LOTS.slice();
+  const segments = [];
+  gagnants.forEach(lot => { segments.push(lot); segments.push(perdant); });
+  return segments;
 }
 
 function dessinerRoue() {
@@ -1506,22 +1619,32 @@ function dessinerRoue() {
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.getElementById('roue-svg');
   svg.innerHTML = '';
-  const n = LOTS.length;
+  SEGMENTS = construireSegments();
+  const n = SEGMENTS.length;
   const angle = 360 / n;
   const cx = 150, cy = 150, r = 148;
 
   // Dégradés : un segment sur deux clair, pour le contraste
+  // Sous le chapiteau, la roue prend les couleurs de la piste : une case
+  // dorée, une case velours rouge. Ailleurs, elle garde l'or et le brun.
+  const circus = document.body.classList.contains('theme-circus');
   const defs = document.createElementNS(NS, 'defs');
-  defs.innerHTML = `
-    <radialGradient id="seg-sombre" cx="50%" cy="50%" r="75%">
-      <stop offset="0%" stop-color="#3a2c15"/><stop offset="100%" stop-color="#1b1409"/>
-    </radialGradient>
-    <radialGradient id="seg-or" cx="50%" cy="50%" r="75%">
-      <stop offset="0%" stop-color="#F0D08C"/><stop offset="100%" stop-color="#C9962E"/>
-    </radialGradient>`;
+  defs.innerHTML = circus
+    ? `<radialGradient id="seg-sombre" cx="50%" cy="50%" r="75%">
+         <stop offset="0%" stop-color="#8E1A1E"/><stop offset="100%" stop-color="#57090C"/>
+       </radialGradient>
+       <radialGradient id="seg-or" cx="50%" cy="50%" r="75%">
+         <stop offset="0%" stop-color="#F7E6C4"/><stop offset="100%" stop-color="#D9A93F"/>
+       </radialGradient>`
+    : `<radialGradient id="seg-sombre" cx="50%" cy="50%" r="75%">
+         <stop offset="0%" stop-color="#3a2c15"/><stop offset="100%" stop-color="#1b1409"/>
+       </radialGradient>
+       <radialGradient id="seg-or" cx="50%" cy="50%" r="75%">
+         <stop offset="0%" stop-color="#F0D08C"/><stop offset="100%" stop-color="#C9962E"/>
+       </radialGradient>`;
   svg.appendChild(defs);
 
-  LOTS.forEach((lot, i) => {
+  SEGMENTS.forEach((lot, i) => {
     const pair = i % 2 === 0;
     const a0 = (i * angle - 90) * Math.PI / 180;
     const a1 = ((i + 1) * angle - 90) * Math.PI / 180;
@@ -1541,7 +1664,7 @@ function dessinerRoue() {
     const am = amDeg * Math.PI / 180;
     const ix = cx + r * 0.55 * Math.cos(am);
     const iy = cy + r * 0.55 * Math.sin(am);
-    const echelle = 0.40;
+    const echelle = n > 10 ? 0.30 : 0.40;
     const groupe = document.createElementNS(NS, 'g');
     groupe.setAttribute('transform',
       `translate(${ix} ${iy}) rotate(${i * angle + angle / 2}) scale(${echelle}) translate(-50 -50)`);
@@ -1567,7 +1690,7 @@ function dessinerRoue() {
     texte.setAttribute('text-anchor', 'middle');
     texte.setAttribute('dominant-baseline', 'middle');
     texte.setAttribute('font-family', "'Jost', Arial, sans-serif");
-    texte.setAttribute('font-size', '11.5');
+    texte.setAttribute('font-size', n > 10 ? '9.4' : '11.5');
     texte.setAttribute('font-weight', '600');
     texte.setAttribute('letter-spacing', '.2');
     texte.setAttribute('fill', pair ? '#241804' : '#F2D9A2');
@@ -1610,11 +1733,18 @@ function lancerRoue() {
   const cadre = document.getElementById('roue-cadre');
   const zone = document.querySelector('#ecran-roue .roue-zone');
   const pointeur = document.querySelector('.roue-pointeur');
-  const n = LOTS.length;
+  if (!SEGMENTS.length) SEGMENTS = construireSegments();
+  const n = SEGMENTS.length;
   const angle = 360 / n;
   // La cible est posée par JEU_ROUE.preparer : le vrai lot si la roue
-  // est la manche décisive, la case « retente » sinon.
-  const index = Math.max(0, LOTS.indexOf(cibleRoue || lotGagne));
+  // est la manche décisive, la case « retente » sinon. Un même lot peut
+  // occuper plusieurs cases (les « retente ») : on en choisit une au
+  // hasard, sinon la roue s'arrêterait toujours au même endroit.
+  const cases = [];
+  SEGMENTS.forEach((lot, i) => { if (lot === (cibleRoue || lotGagne)) cases.push(i); });
+  const index = cases.length
+    ? cases[Math.floor(Math.random() * cases.length)]
+    : Math.max(0, SEGMENTS.indexOf(cibleRoue || lotGagne));
   // Angle pour amener le milieu du segment gagnant sous le pointeur (en haut)
   const cible = 360 - (index * angle + angle / 2);
   // On ne s'arrête jamais pile au milieu : ce serait trop régulier
@@ -1744,7 +1874,7 @@ const MESSAGES_GAGNE = [
 ];
 
 const MESSAGES_PERDU = [
-  { titre: 'Pas de cadeau aujourd’hui.', texte: 'La hotte se remplit cette nuit. Reviens demain, {prenom}.' }
+  { titre: 'Pas de cadeau aujourd’hui.', texte: 'Le rideau retombe pour cette fois. Reviens demain, {prenom}, la piste rouvre chaque matin.' }
 ];
 
 function messageAleatoire(liste) {
@@ -2174,7 +2304,21 @@ async function chargerOperation() {
       .select('*')
       .eq('slug', EVENEMENT)
       .maybeSingle();
-    if (!error && data) OPERATION = { ...OPERATION, ...data };
+    if (!error && data) {
+      OPERATION = { ...OPERATION, ...data };
+      // CE QUI EST GRAPHIQUE RESTE DÉCIDÉ ICI (26/08/2026).
+      // La table roue_operations n'a pas de colonne logo, et sa colonne
+      // theme porte encore l'ancien univers (« noel ») : si on la
+      // laissait gagner, le thème du cirque tomberait dès que la base
+      // répond. Le nom, le lieu, les dates et l'ouverture, eux,
+      // continuent de venir de la base.
+      const local = OPERATIONS_LOCALES[EVENEMENT];
+      if (local) {
+        ['theme', 'logo', 'accroche'].forEach(cle => {
+          if (local[cle]) OPERATION[cle] = local[cle];
+        });
+      }
+    }
   } catch (e) {
     console.warn('Habillage par défaut utilisé :', e);
   }
@@ -2696,8 +2840,67 @@ function proposerLesOffres(suite) {
   }
   document.getElementById('offres-medaillon').innerHTML = medaillonIcone(ICONES.bon);
   document.getElementById('offres-medaillon').classList.remove('hero-photo');
+  habillerLesOffres();
   afficherEcran('ecran-offres');
 }
+
+// CE QUE LE JOUEUR VA VRAIMENT RECEVOIR, MONTRÉ AVANT QU'IL DISE OUI
+// ------------------------------------------------------------------
+// Une case à cocher demande une confiance ; un aperçu la donne. L'écran
+// reprend le prénom du joueur, le rayon qu'il vient de choisir (les
+// 100 €) et affiche la maquette de l'e-mail du jeudi, avec trois lignes
+// tirées de SON rayon. Rien n'est promis qui ne soit vrai : ce sont des
+// catégories, jamais une enseigne ni un prix, et le refus reste à un
+// clic, au même endroit qu'avant.
+const APERCU_RAYONS = {
+  mode:        ['Les nouvelles collections de la galerie', 'Les pièces qui viennent d’arriver', 'Les bons plans mode de la semaine'],
+  beaute:      ['Les offres coiffure et institut', 'Les nouveautés parfum et soin', 'Les bons plans beauté de la semaine'],
+  bijoux:      ['Les nouveautés de la bijouterie', 'Les idées cadeaux à offrir', 'Les bons plans bijoux de la semaine'],
+  hightech:    ['Les nouveautés high-tech', 'Les bons plans image et son', 'Ce qui vient d’arriver en rayon'],
+  sport:       ['Les nouveautés sport et outdoor', 'Les bons plans équipement', 'Les rendez-vous sportifs de la galerie'],
+  gourmandise: ['Le menu du midi des restaurants', 'La pâtisserie de la semaine', 'Les bons plans gourmands'],
+  enfants:     ['Les jouets qui viennent d’arriver', 'Les animations pour les enfants', 'Les bons plans famille'],
+  maison:      ['Les idées déco du moment', 'Les nouveautés maison', 'Les bons plans équipement de la maison']
+};
+const APERCU_DEFAUT = ['Les bons plans des commerçants', 'Les nouveautés de la galerie', 'Les animations de la semaine'];
+
+function habillerLesOffres() {
+  const prenom = (reponses.prenom || '').trim();
+  const rayon = (reponses.univers || '').split(',').filter(Boolean)[0] || '';
+  const titre = document.getElementById('offres-titre');
+  const sousTitre = document.getElementById('offres-soustitre');
+  const lieu = document.getElementById('apercu-lieu');
+  const objet = document.getElementById('apercu-objet');
+  const lignes = document.getElementById('apercu-lignes');
+
+  if (titre) {
+    titre.textContent = prenom
+      ? prenom + ', tes bons plans t’attendent chaque jeudi.'
+      : 'Les bons plans de la galerie, chaque jeudi.';
+  }
+  if (sousTitre) {
+    sousTitre.textContent = MOT_DU_RAYON[rayon]
+      ? 'Un e-mail par semaine, avec ce qui se passe côté ' + MOT_DU_RAYON[rayon] +
+        ', et les bons plans des autres commerçants de la galerie.'
+      : 'Les bons de réduction, la remise chez ta boutique préférée, les nouvelles collections, le menu du midi.';
+  }
+  if (lieu) lieu.textContent = (OPERATION.lieu || '').trim();
+  if (objet) objet.textContent = prenom ? 'Pour toi, ' + prenom + ' : les bons plans de la semaine' : 'Les bons plans de la semaine';
+  if (lignes) {
+    lignes.innerHTML = '';
+    (APERCU_RAYONS[rayon] || APERCU_DEFAUT).forEach(texte => {
+      const li = document.createElement('li');
+      li.textContent = texte;      // jamais innerHTML : rien d'exécutable
+      lignes.appendChild(li);
+    });
+  }
+}
+
+// Le nom lisible d'un rayon, pour parler au joueur dans sa langue.
+const MOT_DU_RAYON = {
+  mode: 'mode', beaute: 'beauté', bijoux: 'bijoux', hightech: 'high-tech',
+  sport: 'sport', gourmandise: 'gourmandise', enfants: 'enfants', maison: 'maison'
+};
 
 async function repondreOffres(accepte) {
   reponses.consentement_marketing = accepte;

@@ -4,3 +4,4 @@ envoi-mails/
 sauvegardes/
 *.md
 .DS_Store
+.claude/

@@ -100,19 +100,49 @@
     display: flex; flex-direction: column; align-items: center; gap: 6px;
   }
   .bandit-levier:focus-visible { outline: 3px solid var(--or-clair); outline-offset: 5px; border-radius: 14px; }
-  .bandit-levier svg { width: 96px; height: auto; overflow: visible; }
+  /* LE LEVIER SE VOIT (26/08/2026, Romain : « on ne comprend pas que
+     c'est là qu'il faut cliquer »). Il est plus grand, il porte un halo
+     qui bat comme une ampoule de foire, une flèche qui montre le geste,
+     et sa consigne est devenue un vrai bouton doré. */
+  .bandit-levier svg { width: 132px; height: auto; overflow: visible; }
   .bandit-levier .trait { fill: none; stroke: var(--or-clair); stroke-width: 4; stroke-linecap: round; }
   .bandit-bras { transition: transform .32s cubic-bezier(.3,1.5,.5,1); }
   .bandit-levier.tire .bandit-bras { transition-duration: .18s; }
+  .bandit-halo { transform-origin: 48px 22px; }
+  .bandit-levier:not(.joue) .bandit-halo { animation: bandit-halo 2.2s ease-out infinite; }
+  .bandit-levier.joue .bandit-halo, .bandit-levier.joue .bandit-fleche { display: none; }
+  @keyframes bandit-halo {
+    0%   { opacity: .55; transform: scale(.72); }
+    70%  { opacity: 0;   transform: scale(1.45); }
+    100% { opacity: 0;   transform: scale(1.45); }
+  }
+  .bandit-fleche { transform-origin: 48px 52px; }
+  .bandit-levier:not(.joue) .bandit-fleche { animation: bandit-fleche 1.9s ease-in-out infinite; }
+  @keyframes bandit-fleche {
+    0%, 100% { opacity: .35; transform: translateY(0); }
+    50%      { opacity: .95; transform: translateY(7px); }
+  }
 
   .bandit-consigne {
-    font-size: 12.5px; letter-spacing: 1.7px; text-transform: uppercase;
-    font-weight: 600; color: rgba(246,241,230,.6);
+    display: inline-block;
+    margin-top: 2px;
+    padding: 9px 20px;
+    border-radius: 999px;
+    border: 1px solid rgba(239,195,104,.55);
+    background: linear-gradient(180deg, rgba(239,195,104,.2) 0%, rgba(201,150,46,.1) 100%);
+    font-size: 13.5px; letter-spacing: 2.2px; text-transform: uppercase;
+    font-weight: 700; color: var(--or-blanc);
+    box-shadow: 0 8px 22px -14px rgba(0,0,0,.9);
+  }
+  .bandit-levier:not(.joue) .bandit-consigne { animation: bandit-consigne 2.6s ease-in-out infinite; }
+  @keyframes bandit-consigne {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239,195,104,.0); }
+    50%      { box-shadow: 0 0 18px 1px rgba(239,195,104,.32); }
   }
   .bandit-levier:not(.joue) .bandit-boule { animation: bandit-appelle 2.4s ease-in-out infinite; }
   @keyframes bandit-appelle {
-    0%, 78%, 100% { transform: translateY(0); }
-    86%           { transform: translateY(5px); }
+    0%, 72%, 100% { transform: translateY(0); }
+    82%           { transform: translateY(9px); }
   }
 
   .bandit-verdict {
@@ -210,7 +240,7 @@
           </div>
 
           <button type="button" class="bandit-levier" id="bandit-levier" aria-label="Tirer le levier">
-            <svg viewBox="0 0 96 116" aria-hidden="true">
+            <svg viewBox="0 0 96 124" aria-hidden="true">
               <defs>
                 <radialGradient id="bandit-boule-or" cx="36%" cy="30%" r="72%">
                   <stop offset="0" stop-color="#FFE9B8"/>
@@ -218,13 +248,22 @@
                   <stop offset="100%" stop-color="#9a6f1c"/>
                 </radialGradient>
               </defs>
-              <rect class="trait" x="22" y="90" width="52" height="20" rx="10"
+              <rect class="trait" x="20" y="94" width="56" height="22" rx="11"
                     fill="rgba(201,150,46,.16)"/>
-              <path class="trait" d="M36 100 h24" stroke-width="3" opacity=".7"/>
-              <g class="bandit-bras" id="bandit-bras" style="transform-origin: 48px 98px;">
-                <path class="trait" d="M48 94 V36" stroke-width="7"/>
-                <circle class="bandit-boule" cx="48" cy="22" r="15"
-                        fill="url(#bandit-boule-or)" stroke="#7a5410" stroke-width="1.6"/>
+              <path class="trait" d="M35 105 h26" stroke-width="3" opacity=".7"/>
+              <g class="bandit-bras" id="bandit-bras" style="transform-origin: 48px 102px;">
+                <path class="trait" d="M48 98 V34" stroke-width="8"/>
+                <!-- Le halo qui bat autour de la boule : le premier geste
+                     du jeu doit se voir depuis l'autre bout de l'écran. -->
+                <circle class="bandit-halo" cx="48" cy="22" r="20"
+                        fill="none" stroke="#FFE9B8" stroke-width="2.5"/>
+                <circle class="bandit-boule" cx="48" cy="22" r="18"
+                        fill="url(#bandit-boule-or)" stroke="#7a5410" stroke-width="1.8"/>
+              </g>
+              <!-- La flèche qui descend : elle dit le geste, pas seulement l'endroit. -->
+              <g class="bandit-fleche" stroke="#FFE9B8" stroke-width="3"
+                 stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <path d="M78 46 v18 M71 58 l7 7 l7 -7"/>
               </g>
             </svg>
             <span class="bandit-consigne" id="bandit-consigne">Tire le levier</span>
