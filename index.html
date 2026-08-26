@@ -29,19 +29,24 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=26aout2026f">
+  <link rel="stylesheet" href="style.css?v=26aout2026g">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=26aout2026f" defer></script>
+  <script src="icones.js?v=26aout2026g" defer></script>
   <script src="contenus-demo.js" defer></script>
-  <script src="app.js?v=26aout2026f" defer></script>
-  <!-- Envoi du bon par e-mail (dossier envoi-mails). Après app.js,
-       et sans effet tant que les fonctions Supabase ne sont pas en place. -->
+  <script src="app.js?v=26aout2026g" defer></script>
+  <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
+       envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
+       ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
+       L'application vérifie partout la présence de window.PullUpMails
+       avant de s'en servir : il n'y a donc rien d'autre à faire que de
+       remettre cette ligne le jour où les fonctions serveur existeront.
   <script src="envoi-mails/envoi-client.js" defer></script>
+  -->
 </head>
 <body>
 
