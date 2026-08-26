@@ -1,0 +1,2350 @@
+/* ============================================
+   LA ROUE PULL UP : design premium
+   Typo : Playfair Display (titres) + Jost (interface)
+   Fond photo bokeh doré, cartes verre fumé,
+   roue fête foraine à ampoules, flocons discrets.
+   ============================================ */
+
+@font-face { font-family: 'Jost'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/jost-400.woff2') format('woff2'); }
+@font-face { font-family: 'Jost'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/jost-600.woff2') format('woff2'); }
+@font-face { font-family: 'Jost'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/jost-700.woff2') format('woff2'); }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/playfairdisplay-600.woff2') format('woff2'); }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 800; font-display: swap; src: url('fonts/playfairdisplay-800.woff2') format('woff2'); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Un élément marqué hidden est TOUJOURS caché, même s'il a un display CSS */
+[hidden] { display: none !important; }
+
+:root {
+  --noir: #141009;
+  --encre: #1e1710;
+  --verre: rgba(20, 15, 9, .86);
+  --or: #C9962E;
+  --or-clair: #EFC368;
+  --or-blanc: #FFE9B8;
+  --creme: #F6F1E6;
+  --gris: #BCB2A1;
+  --rouge: #B3282D;
+  --rouge-clair: #E14B50;
+  --serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --sans: 'Jost', 'Avenir Next', Arial, sans-serif;
+
+  /* Échelle typographique unique : tout le texte du jeu vient d'ici.
+     Elle se resserre toute seule sur les petits téléphones (320 px). */
+  --t-etiquette: 11px;    /* petites capitales espacées */
+  --t-mention:   12.5px;  /* mentions légales, notes */
+  --t-petit:     14px;    /* détails de cartes */
+  --t-corps:     clamp(15px, 4.2vw, 16.5px);
+  --t-lead:      clamp(15.5px, 4.4vw, 17px);
+  --t-titre-s:   clamp(20px, 5.6vw, 23px);
+  --t-titre:     clamp(24px, 7vw, 29px);
+  /* Le grand écart : le titre monte, la mention descend. Sur un téléphone
+     de 375 px on passe d'un rapport de 1 à 3,5 entre le titre et le corps,
+     là où l'ancienne échelle plafonnait à 1 pour 2,7. C'est ce contraste
+     qui sépare une page de magazine d'une page de gabarit. */
+  --t-hero:      clamp(40px, 12.4vw, 54px);
+
+  /* Un seul filet dans toute l'application, toujours le même */
+  --filet:       rgba(201, 150, 46, .22);
+  --filet-fort:  rgba(201, 150, 46, .5);
+
+  /* La marge de page. Nommée une fois pour qu'un bloc puisse la franchir
+     volontairement et aller d'un bord à l'autre de l'écran. */
+  --marge:       clamp(16px, 5.5vw, 22px);
+
+  /* Échelle d'espacement : un pas de 4 px, jamais d'à-peu-près. */
+  --e1: 4px;  --e2: 8px;  --e3: 12px; --e4: 16px;
+  --e5: 20px; --e6: 28px; --e7: 36px; --e8: 48px;
+
+  /* Hauteur minimale d'une zone que le doigt doit atteindre */
+  --touche: 48px;
+
+  /* Courbes de mouvement.
+     --signature est LA courbe de la maison : un départ franc, une arrivée
+     qui s'installe. On la réutilise partout plutôt que de mélanger cinq
+     courbes différentes, c'est ce qui donne un mouvement reconnaissable. */
+  --signature: cubic-bezier(.7, 0, .3, 1);
+  --sortie: cubic-bezier(.4, 0, 1, 1);
+  --entree: cubic-bezier(.16, .84, .28, 1);
+  --rebond: cubic-bezier(.34, 1.42, .64, 1);
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--sans);
+  background: var(--noir);
+  color: var(--creme);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Photo d'ambiance : bokeh doré, voilée pour la lisibilité.
+   Le réglage précédent laissait les ronds de lumière parfaitement nets et
+   assez clairs : de gros cercles beiges passaient derrière les titres, et
+   un titre blanc en serif posé sur un cercle beige perd son contraste. Le
+   flou de 3 px transforme les ronds en nappes de lumière : on garde
+   exactement la même ambiance de galerie illuminée, mais le fond redevient
+   un fond. C'est le geste que font les campagnes de fêtes des grandes
+   maisons : la lumière est là, elle ne dispute jamais le premier plan.
+   L'échelle de 1,06 évite la frange claire que le flou crée sur les bords. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: url('img/fond-bokeh-or.jpg') center 30% / cover no-repeat;
+  filter: saturate(1.02) brightness(.5) blur(3px);
+  transform: scale(1.06);
+}
+/* Voile + vignette : c'est cette couche qui rend le texte lisible
+   en pleine galerie, sous les néons et à côté des vitrines. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 120% 65% at 50% 108%, rgba(201, 150, 46, .2) 0%, transparent 55%),
+    radial-gradient(ellipse 78% 58% at 50% 42%, transparent 0%, rgba(8, 6, 3, .55) 100%),
+    /* Le milieu de l'écran est la bande où vivent les titres et les
+       réponses. Il était le point le plus clair du voile (.66) : c'est
+       exactement l'inverse de ce qu'il faut. Il devient la bande la plus
+       tenue, et la lumière est renvoyée en haut et en bas de l'écran, là
+       où il n'y a que de l'air. */
+    linear-gradient(180deg, rgba(12, 9, 4, .78) 0%, rgba(12, 9, 4, .8) 36%, rgba(10, 7, 3, .86) 62%, rgba(10, 7, 3, .94) 100%);
+}
+body.theme-noel::after {
+  background:
+    radial-gradient(ellipse 120% 65% at 50% 108%, rgba(179, 40, 45, .26) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 40% at 50% -10%, rgba(23, 63, 41, .42) 0%, transparent 60%),
+    radial-gradient(ellipse 78% 58% at 50% 42%, transparent 0%, rgba(6, 5, 3, .55) 100%),
+    linear-gradient(180deg, rgba(10, 8, 4, .8) 0%, rgba(10, 8, 4, .8) 36%, rgba(8, 6, 3, .87) 62%, rgba(8, 6, 3, .95) 100%);
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--e4) var(--marge) var(--e7);
+  position: relative;
+  z-index: 2;
+}
+
+/* --- En-tête : l'identité de l'opération, sur tous les écrans ---
+   Le joueur qui répond à la question 3 doit savoir en levant les yeux
+   à quel jeu il joue et chez qui. Deux niveaux, alignés à gauche :
+   le nom du jeu en petites capitales dorées, la galerie juste en
+   dessous et beaucoup plus grande, puis un filet fin qui referme.
+   C'est le rapport d'échelle (1 à 2,6) qui fait la manchette, pas
+   un encadré ni un fond. */
+.entete {
+  display: block;
+  text-align: left;
+  padding: var(--e1) 0 var(--e3);
+  border-bottom: 1px solid var(--filet);
+  margin-bottom: var(--e3);
+}
+.entete-jeu {
+  display: block;
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 3.2px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 6px;
+}
+.entete-galerie { display: block; }
+.entete-lieu {
+  display: block;
+  font-family: var(--serif);
+  /* Se resserre tout seul sur les petits téléphones : un nom de galerie
+     un peu long ne doit pas déborder ni se couper. */
+  font-size: clamp(21px, 6.6vw, 26px);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: .2px;
+  color: var(--creme);
+}
+/* Sur l'accueil, le grand titre dit déjà le nom du jeu : le rappeler
+   juste au-dessus ferait doublon. */
+body.sur-accueil .entete-jeu { display: none; }
+.pastille {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--or-clair);
+  box-shadow: 0 0 14px 2px rgba(239, 195, 104, .75);
+}
+.marque {
+  font-size: var(--t-etiquette);
+  letter-spacing: 4.5px;
+  color: var(--or-clair);
+  font-weight: 600;
+}
+body.theme-noel .pastille { background: var(--rouge-clair); box-shadow: 0 0 14px 2px rgba(225, 75, 80, .75); }
+
+/* --- Écrans ---
+   L'écran entre par le côté vers lequel on va : par la droite quand on
+   avance dans le parcours, par la gauche quand on revient en arrière.
+   Le joueur sent la direction sans qu'on ait besoin de l'écrire. */
+.ecran { display: none; flex: 1; }
+.ecran.actif { display: flex; flex-direction: column; animation: ecran-avance .58s var(--signature) backwards; }
+.ecran.actif.recule { animation-name: ecran-recule; }
+
+@keyframes ecran-avance {
+  from { opacity: 0; transform: translate3d(26px, 0, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes ecran-recule {
+  from { opacity: 0; transform: translate3d(-26px, 0, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Cascade : le contenu de l'écran se pose élément par élément.
+   C'est le détail qui sépare une application de studio des autres. */
+.ecran.actif .hero > *,
+.ecran.actif .quiz-zone > *,
+.ecran.actif .roue-zone > * {
+  animation: pose .5s var(--entree) backwards;
+}
+@keyframes pose {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+.ecran.actif .hero > *:nth-child(1),
+.ecran.actif .quiz-zone > *:nth-child(1),
+.ecran.actif .roue-zone > *:nth-child(1) { animation-delay: .06s; }
+.ecran.actif .hero > *:nth-child(2),
+.ecran.actif .quiz-zone > *:nth-child(2),
+.ecran.actif .roue-zone > *:nth-child(2) { animation-delay: .12s; }
+.ecran.actif .hero > *:nth-child(3),
+.ecran.actif .quiz-zone > *:nth-child(3),
+.ecran.actif .roue-zone > *:nth-child(3) { animation-delay: .18s; }
+.ecran.actif .hero > *:nth-child(4),
+.ecran.actif .quiz-zone > *:nth-child(4),
+.ecran.actif .roue-zone > *:nth-child(4) { animation-delay: .24s; }
+.ecran.actif .hero > *:nth-child(5),
+.ecran.actif .quiz-zone > *:nth-child(5),
+.ecran.actif .roue-zone > *:nth-child(5) { animation-delay: .30s; }
+.ecran.actif .hero > *:nth-child(6),
+.ecran.actif .quiz-zone > *:nth-child(6),
+.ecran.actif .roue-zone > *:nth-child(6) { animation-delay: .36s; }
+.ecran.actif .hero > *:nth-child(n+7),
+.ecran.actif .quiz-zone > *:nth-child(n+7),
+.ecran.actif .roue-zone > *:nth-child(n+7) { animation-delay: .42s; }
+
+/* Les réponses d'une question se posent aussi une par une (délai posé en JS) */
+.option { animation: pose-ligne .5s var(--signature) backwards; }
+/* Une ligne de liste ne tombe pas, elle se déplie depuis la marge */
+@keyframes pose-ligne {
+  from { opacity: 0; transform: translate3d(-14px, 0, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* --- Un mouvement par nature d'élément ---
+   Avant, tout arrivait exactement pareil : 14 px vers le haut, opacité de
+   0 à 1, un délai régulier. C'était un tapis roulant. Un titre, une liste
+   et un chiffre de chapitre ne doivent pas entrer de la même manière. */
+.ecran.actif .hero > h1,
+.ecran.actif .quiz-zone > h2,
+.ecran.actif .roue-zone > h2 {
+  animation: pose-titre .82s var(--signature) backwards;
+}
+@keyframes pose-titre {
+  from { opacity: 0; transform: translate3d(-20px, 0, 0); }
+  to   { opacity: 1; transform: none; }
+}
+/* Le grand chiffre s'installe plus lentement que sa question : on le
+   voit arriver, il n'accompagne pas, il annonce. */
+#question-titre::before {
+  animation: pose-chiffre 1.05s var(--signature) backwards;
+  animation-delay: .04s;
+}
+@keyframes pose-chiffre {
+  from { opacity: 0; transform: translate3d(0, 16px, 0); }
+  to   { opacity: .55; transform: none; }
+}
+/* Le filet, lui, se trace au lieu d'apparaître */
+#question-titre::after {
+  animation: trace-filet .9s var(--signature) backwards;
+  animation-delay: .2s;
+  transform-origin: left center;
+}
+@keyframes trace-filet {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Le titre reçoit le focus à l'arrivée sur l'écran (pour les lecteurs
+   d'écran) : pas de cadre de sélection visible pour autant. */
+h1[tabindex]:focus, h2[tabindex]:focus { outline: none; }
+
+/* Mais la navigation au clavier, elle, reste parfaitement visible */
+.btn:focus-visible, .option:focus-visible, .btn-mini:focus-visible,
+input:focus-visible, a:focus-visible {
+  outline: 3px solid var(--or-clair);
+  outline-offset: 3px;
+}
+
+/* --- Héros (accueil, résultat, écrans d'état) ---
+   Tout était centré : le titre, le sous-titre, le bouton, les mentions.
+   Une composition centrée est le choix que l'on prend quand on n'a pas
+   décidé où doit aller l'oeil. Ici on pose un bord de référence à gauche,
+   et on ne s'en écarte que pour une raison. */
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  gap: var(--e5);
+  padding-bottom: var(--e3);
+}
+/* Le contenu du bon cadeau reste groupé à gauche lui aussi */
+.hero .code-bloc, .hero .bon-valide { align-items: flex-start; text-align: left; }
+.hero .valide-lot, .hero .valide-mention { text-align: left; }
+
+/* La barre est pleine sur l'écran des coordonnées : le parcours est fait */
+.progression-pleine { width: 100%; }
+/* Le décompte tient sur une seule ligne, quelle que soit la phrase :
+   « Plus que 2 questions » sur deux lignes faisait sauter la barre. */
+.quiz-entete .quiz-compteur { max-width: 58%; text-align: right; white-space: nowrap; }
+
+/* Le médaillon du résultat se pose comme un cachet de cire */
+.ecran.actif .hero > .hero-emoji.estampe {
+  animation: estampe .62s cubic-bezier(.2, 1.35, .35, 1) backwards;
+  animation-delay: .06s;
+}
+
+/* Un bloc qui apparaît en cours d'écran (confirmation, bon validé,
+   message d'erreur) entre lui aussi en douceur, jamais d'un coup sec. */
+.ecran.actif .hero > .apparait,
+.ecran.actif .quiz-zone > .apparait,
+.ecran.actif .roue-zone > .apparait,
+.apparait {
+  animation: pose .38s var(--entree) backwards;
+  animation-delay: 0s;
+}
+@keyframes estampe {
+  0%   { opacity: 0; transform: scale(1.5) rotate(-9deg); }
+  55%  { opacity: 1; transform: scale(.94) rotate(2deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Médaillon : l'ancien gros emoji devient un écusson doré */
+.hero-emoji {
+  width: 104px; height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  line-height: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(239, 195, 104, .28), transparent 62%),
+    radial-gradient(circle, #241a0e 0%, #171009 100%);
+  /* Un seul trait fin autour, au lieu de deux anneaux dorés concentriques
+     qui faisaient médaille de concours. */
+  border: 1px solid rgba(201, 150, 46, .55);
+  box-shadow:
+    0 16px 46px rgba(0, 0, 0, .55),
+    0 0 60px rgba(201, 150, 46, .16);
+}
+
+/* Le titre : plus grand, moins gras, plus serré.
+   Le réflexe consiste à grossir ET graisser. Les maisons de luxe font
+   l'inverse : au-delà de 40 px, la graisse baisse et les lettres se
+   rapprochent. C'est le geste qui change tout sur un titre en serif. */
+h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: var(--t-hero);
+  line-height: 1.02;
+  letter-spacing: -.028em;
+}
+/* Or plein. Le dégradé dans les lettres est l'un des marqueurs les plus
+   reconnaissables d'un visuel fabriqué à la chaîne, et à 54 px il rendait
+   le bas du mot presque invisible sur le fond sombre. */
+.or { color: var(--or-clair); }
+/* En galerie, l'écran est vu sous des néons puissants : une ombre
+   portée discrète décolle le texte de la photo de fond. */
+.hero h1, .sous-titre, .hero .mini-mention, .quiz-zone h2, .roue-zone h2,
+.question-soustitre {
+  text-shadow: 0 2px 10px rgba(8, 6, 3, .85), 0 1px 2px rgba(8, 6, 3, .6);
+}
+
+.sous-titre {
+  font-size: var(--t-lead);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--creme);
+  opacity: .92;
+  max-width: 330px;
+}
+
+/* Le nombre de questions annoncé dès l'accueil : une ligne d'étiquette,
+   en petites capitales espacées, comme le lieu. Le joueur sait où il met
+   les pieds avant de commencer. */
+.accueil-compte {
+  font-size: var(--t-etiquette);
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--or);
+  opacity: .85;
+  margin-top: 4px;
+}
+.accueil-compte:empty { display: none; }
+
+/* Le lieu n'est plus une pastille encadrée mais une mention de titre,
+   posée sous un filet court. Le filet sépare sans enfermer. */
+.lieu-badge {
+  position: relative;
+  font-size: var(--t-etiquette);
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--or);
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 15px 0 0;
+  margin-top: -6px;
+}
+.lieu-badge::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 44px; height: 1px;
+  background: var(--filet-fort);
+}
+
+/* --- Boutons --- */
+.btn {
+  position: relative;
+  overflow: hidden;
+  border: none;
+  /* Angle presque vif : l'arrondi généralisé à 16 px est le réflexe
+     qui fait « modèle de site ». Une maison de luxe garde l'angle. */
+  border-radius: 2px;
+  padding: 15px 24px;
+  min-height: var(--touche);
+  font-size: var(--t-corps);
+  font-weight: 600;
+  font-family: var(--sans);
+  letter-spacing: .6px;
+  cursor: pointer;
+  transition: transform .14s ease, box-shadow .2s ease, opacity .2s;
+}
+.btn:active { transform: scale(.98); }
+/* Or plein, une seule direction de lumière, une seule ombre.
+   Le dégradé à quatre arrêts et les trois ombres superposées faisaient
+   « bouton de démonstration ». */
+/* Or plein, une seule direction de lumière.
+   Le dégradé reste à deux arrêts, mais l'objet gagne l'épaisseur qui lui
+   manquait : une arête claire sur le bord haut, une arête sombre sur le
+   bord bas, une ombre courte qui le pose et une ombre longue et diffuse
+   qui le décolle du fond. C'est cet empilement, et non un dégradé plus
+   riche, qui fait la différence entre un aplat de couleur et une pièce
+   de métal. Le tout reste en ombres, jamais en bordures : la taille du
+   bouton ne bouge pas d'un pixel. */
+.btn-or {
+  background: linear-gradient(168deg, var(--or-clair) 0%, var(--or) 92%);
+  color: #201603;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 248, 228, .62),
+    inset 0 -1px 0 rgba(120, 78, 12, .32),
+    0 2px 4px rgba(52, 33, 4, .34),
+    0 10px 30px rgba(201, 150, 46, .22);
+}
+/* Sous le doigt, le bouton s'enfonce : l'ombre longue se raccourcit au
+   lieu de rester identique pendant que l'objet recule. */
+.btn-or:active {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 248, 228, .4),
+    inset 0 -1px 0 rgba(120, 78, 12, .28),
+    0 1px 2px rgba(52, 33, 4, .3),
+    0 4px 14px rgba(201, 150, 46, .16);
+}
+.btn-grand {
+  width: 100%;
+  padding: 20px;
+  font-size: 15px;
+  text-transform: uppercase;
+  /* Capitales largement espacées : la signature typographique du luxe.
+     L'espacement suit maintenant la largeur de l'écran. À 3,4 px fixes,
+     « OUI, JE VEUX LES BONS PLANS » cassait sur deux lignes et le pavé
+     d'or devenait un bloc de texte. Une capitale espacée n'est élégante
+     que si la ligne tient : sur un écran étroit, on resserre. */
+  letter-spacing: clamp(2.2px, .82vw, 3.4px);
+  margin-top: 10px;
+  /* Quand une phrase doit vraiment passer sur deux lignes, les deux
+     lignes sont de longueur voisine au lieu d'une longue et d'un mot
+     orphelin. */
+  text-wrap: balance;
+}
+/* Un bouton qui n'est pas encore actionnable ne doit pas ressembler à un
+   bouton actionnable en moins lumineux. Sur l'écran « Ton samedi idéal »,
+   le bouton « Choisis au moins une réponse » gardait son pavé d'or plein :
+   le joueur appuie, rien ne se passe, il croit que l'application a planté.
+   Ici l'or plein disparaît, il ne reste qu'un contour et un texte sourd :
+   la promesse d'un bouton, pas un bouton. */
+.btn:disabled { cursor: default; }
+.btn-or:disabled {
+  background: rgba(201, 150, 46, .05);
+  color: rgba(201, 150, 46, .78);
+  /* Le contour est posé en ombre intérieure, jamais en bordure : une
+     bordure ajouterait 2 px et le bouton sauterait au moment où il
+     devient actif. */
+  box-shadow: inset 0 0 0 1px rgba(201, 150, 46, .38);
+  opacity: 1;
+}
+.btn-or:disabled::after { display: none; }
+.btn:disabled:not(.btn-or) { opacity: .45; }
+/* Un bouton inactif porte une consigne, pas un ordre.
+   « CHOISIS AU MOINS UNE RÉPONSE » en grandes capitales largement
+   espacées débordait sur deux lignes et pesait plus lourd que la
+   question elle-même. Les capitales restent, l'espacement et le corps
+   se resserrent : la phrase tient sur une ligne et redescend au rang
+   d'indication. */
+.btn-grand:disabled {
+  letter-spacing: 1.6px;
+  font-size: 13px;
+}
+
+/* Les mentions obligatoires sont groupées et détachées du reste :
+   présentes et lisibles, mais elles ne disputent plus l'attention au jeu. */
+.mentions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+  align-items: center;
+  margin-top: var(--e2);
+}
+.mini-mention-tres-discrete { opacity: .72; }
+
+/* --- Le bouton qui travaille ---
+   Le libellé s'efface, un anneau tourne, mais le bouton garde
+   exactement la même taille : rien ne saute sous le doigt. */
+.btn.travaille { color: transparent !important; pointer-events: none; opacity: 1; }
+.btn.travaille::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 23px; height: 23px;
+  margin: -11.5px 0 0 -11.5px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(36, 24, 4, .3);
+  border-top-color: #241804;
+  animation: anneau .72s linear infinite;
+}
+.btn-discret.travaille::before { border-color: rgba(239, 195, 104, .3); border-top-color: var(--or-clair); }
+@keyframes anneau { to { transform: rotate(360deg); } }
+
+/* --- Le contenu qui arrive : sa forme d'abord, son texte ensuite --- */
+.squelettes { display: flex; flex-direction: column; gap: var(--e3); }
+.squelette-carte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e2);
+  border: none;
+  border-bottom: 1px solid var(--filet);
+  border-radius: 0;
+  padding: var(--e5) 0;
+  background: none;
+}
+.squelette {
+  display: block;
+  border-radius: 2px;
+  background: linear-gradient(100deg,
+    rgba(246, 241, 230, .05) 30%,
+    rgba(246, 241, 230, .13) 50%,
+    rgba(246, 241, 230, .05) 70%);
+  background-size: 240% 100%;
+  animation: balayage 1.4s ease-in-out infinite;
+}
+.squelette-ligne { height: 11px; }
+.squelette-ligne.courte  { width: 38%; height: 9px; }
+.squelette-ligne.large   { width: 88%; height: 17px; }
+.squelette-ligne.moyenne { width: 62%; }
+@keyframes balayage {
+  from { background-position: 190% 0; }
+  to   { background-position: -90% 0; }
+}
+
+.mini-mention {
+  font-size: var(--t-mention);
+  color: var(--gris);
+  line-height: 1.6;
+  max-width: 330px;
+}
+/* Le paragraphe sur les données personnelles fait huit lignes : il est
+   obligatoire et il doit rester lisible, mais tant qu'il n'était séparé
+   de rien il se lisait comme la suite du formulaire. Un filet fin et un
+   peu d'air le détachent : c'est un pied de page légal, et cela se voit
+   au premier coup d'œil sans qu'un mot ait été retiré. */
+#mention-donnees {
+  border-top: 1px solid var(--filet);
+  padding-top: var(--e4);
+  margin-top: var(--e3);
+  color: rgba(188, 178, 161, .82);
+  font-size: 12px;
+  line-height: 1.62;
+  max-width: none;
+}
+
+/* --- Quiz ---
+   Une seule ligne en tête : revenir en arrière, savoir où on en est,
+   et voir la barre avancer. Rien d'autre. */
+.quiz-entete {
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
+  margin-bottom: var(--e7);
+}
+.btn-retour {
+  flex-shrink: 0;
+  width: 40px; height: 40px;
+  margin-left: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--or-clair);
+  cursor: pointer;
+  transition: background .16s, opacity .2s, transform .12s;
+}
+.btn-retour:active { transform: scale(.9); }
+.btn-retour:disabled { opacity: .25; cursor: default; }
+.quiz-compteur {
+  flex-shrink: 0;
+  font-size: var(--t-etiquette);
+  font-weight: 700;
+  letter-spacing: .8px;
+  color: var(--gris);
+  font-variant-numeric: tabular-nums;
+}
+.quiz-compteur strong { color: var(--or-clair); font-weight: 700; }
+
+/* Le contenu de la question se cale au milieu de l'écran, et se
+   recale tout seul en haut si la liste est trop longue pour tenir. */
+/* La question commence en haut, comme un chapitre de magazine.
+   L'ancienne version poussait tout vers le bas et laissait plus de la
+   moitié de l'écran vide : ce n'était pas de la respiration, c'était un trou. */
+#ecran-quiz .quiz-zone { justify-content: flex-start; padding-top: 4px; }
+/* L'en-tête de l'opération occupe maintenant le haut de l'écran : la
+   ligne de progression se rapproche d'autant, pour que la plus longue
+   des questions (six réponses) garde son bouton visible sans faire
+   défiler, en 375x812. Mesuré à l'écran. */
+#ecran-quiz .quiz-entete { margin-bottom: var(--e6); }
+/* Essai n°1 : réponses ancrées tout en bas. Testé et abandonné, cela
+   éloignait trop la question de ses réponses.
+   Retenu : le bloc entier tient le haut de la page, le vide restant fait
+   office de marge basse, comme le bas de page d'un magazine. */
+#ecran-quiz .quiz-zone > *:last-child { margin-bottom: auto; }
+
+.progression {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(246, 241, 230, .14);
+  overflow: hidden;
+}
+.progression-barre {
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--or), var(--or-clair));
+  box-shadow: 0 0 12px rgba(239, 195, 104, .8);
+  transition: width .4s cubic-bezier(.2, .7, .3, 1);
+}
+/* La barre pleine de l'écran des coordonnées.
+   Elle était bien demandée dans la page, mais la règle qui la remplit se
+   trouvait plus haut dans le fichier que la règle qui vide la barre : la
+   seconde gagnait, et le joueur arrivait sur la dernière étape avec une
+   barre entièrement vide, comme s'il n'avait rien fait. Elle est
+   maintenant écrite après, à l'endroit qui la concerne. */
+.progression-barre.progression-pleine { width: 100%; }
+
+.quiz-zone { flex: 1; display: flex; flex-direction: column; gap: var(--e4); }
+.quiz-zone h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: var(--t-titre);
+  line-height: 1.22;
+}
+.question-soustitre { color: var(--gris); font-size: var(--t-petit); line-height: 1.55; }
+
+/* --- Numérotation éditoriale des questions ---
+   Le grand chiffre fin face à la question en petit : c'est ce contraste
+   d'échelle qui manquait le plus. Le filet part du chiffre et file vers
+   la droite, comme la tête de chapitre d'un magazine. */
+#question-titre {
+  position: relative;
+  /* 54 px laissaient le jambage du chiffre en Playfair toucher la
+     capitale de la question juste dessous : les deux niveaux se
+     lisaient comme une seule ligne au lieu d'un numéro de chapitre
+     suivi de son titre. */
+  padding-top: 64px;
+}
+#question-titre::before {
+  content: attr(data-num);
+  position: absolute;
+  top: -8px;
+  left: -2px;
+  font-family: var(--serif);
+  font-size: 60px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -2px;
+  color: var(--or);
+  /* Le chiffre était à 55 % d'opacité : sur le fond assombri il passait
+     sous le seuil de lisibilité et n'était plus qu'une tache. Un folio
+     de magazine est discret par sa finesse, pas par sa pâleur. */
+  opacity: .72;
+}
+#question-titre::after {
+  content: '';
+  position: absolute;
+  top: 22px;
+  left: 78px;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(201, 150, 46, .75), rgba(201, 150, 46, 0));
+}
+/* Sans numéro (autres écrans qui réutilisent le gabarit), rien ne s'affiche */
+#question-titre:not([data-num]) { padding-top: 0; }
+#question-titre:not([data-num])::before,
+#question-titre:not([data-num])::after { display: none; }
+
+/* --- Les réponses : des lignes, plus des cartes ---
+   Avant : trois rectangles arrondis rigoureusement identiques, fond verre
+   fumé, ombre portée, pastille ronde dorée. C'est la pile de cartes clonées,
+   le marqueur le plus reconnaissable d'une interface faite à la chaîne.
+   Maintenant : un filet fin sépare chaque réponse, rien ne les enferme. */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 26px;
+  border-top: 1px solid var(--filet);
+  /* La liste franchit la marge et va d'un bord à l'autre de l'écran.
+     Le voile sombre remplace les fonds de carte : la lisibilité en pleine
+     galerie est assurée par une seule surface, pas par dix. */
+  margin-left: calc(-1 * var(--marge));
+  margin-right: calc(-1 * var(--marge));
+  padding: 0 var(--marge);
+  background: rgba(11, 8, 4, .55);
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(201, 150, 46, .2);
+  border-radius: 0;
+  padding: 17px 6px 17px 2px;
+  min-height: 60px;
+  font-size: var(--t-corps);
+  font-weight: 400;
+  color: var(--creme);
+  font-family: var(--sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background .18s var(--entree), color .18s, padding-left .18s var(--entree);
+}
+.option:active { background: rgba(201, 150, 46, .1); }
+/* La réponse choisie ne se déplace plus vers la droite.
+   Le glissement de 10 px faisait sauter le texte au moment du choix, et
+   sur une question à choix multiples il laissait deux lignes cochées
+   décalées face à une ligne restée en place : la colonne de gauche
+   n'existait plus. Le repère est maintenant un trait d'or plein posé
+   contre le bord de la ligne, comme la marque d'un signet. Rien ne bouge,
+   et on voit de plus loin ce qui est coché. */
+.option.choisie {
+  background: linear-gradient(90deg, rgba(201, 150, 46, .18) 0%, rgba(201, 150, 46, .02) 76%, transparent 100%);
+  color: var(--or-blanc);
+}
+.option::before {
+  content: '';
+  position: absolute;
+  /* Le trait se pose dans la gouttière, pas contre le bord de l'écran :
+     collé au bord il se lisait comme un défaut d'affichage, un objet à
+     moitié sorti de la page. À une dizaine de pixels, il redevient ce
+     qu'il doit être, la marque d'un signet dans la marge. */
+  left: calc(-1 * var(--marge) + 9px);
+  top: 9px;
+  bottom: 9px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--or-blanc), var(--or));
+  transform: scaleY(0);
+  transform-origin: 50% 50%;
+  transition: transform .22s var(--entree);
+}
+.option { position: relative; }
+.option.choisie::before { transform: scaleY(1); }
+/* L'index de la réponse : une lettre fine, plus une pastille pleine */
+.option .puce {
+  flex-shrink: 0;
+  width: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border: none;
+  border-radius: 0;
+  background: none;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  color: var(--or);
+  opacity: .8;
+  transition: opacity .18s, color .18s;
+}
+.option.choisie .puce {
+  color: var(--or-blanc);
+  opacity: 1;
+}
+
+.texte-zone { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+.texte-zone input,
+.champ input {
+  min-height: 54px;
+  width: 100%;
+  background: var(--verre);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  /* Le contour est passé de 30 % à 45 % d'or : le fond de page ayant été
+     assombri, un trait à 30 % disparaissait et le champ ne se lisait plus
+     comme un endroit où écrire. */
+  border: 1px solid rgba(201, 150, 46, .45);
+  border-radius: 2px;
+  padding: 16px 18px;
+  font-size: 16.5px;
+  color: var(--creme);
+  font-family: var(--sans);
+  outline: none;
+  transition: border-color .16s, box-shadow .16s;
+}
+.texte-zone input:focus, .champ input:focus {
+  border-color: var(--or-clair);
+  box-shadow: 0 0 0 3px rgba(201, 150, 46, .18);
+}
+.texte-zone input::placeholder, .champ input::placeholder { color: rgba(167, 156, 139, .75); }
+
+/* --- Coordonnées --- */
+.champ { display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; font-weight: 600; letter-spacing: .4px; color: var(--creme); }
+.champ em { color: var(--gris); font-style: normal; font-weight: 400; }
+.case {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+  font-size: 13.5px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--creme);
+  background: var(--verre);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 150, 46, .18);
+  border-radius: 2px;
+  padding: 14px 16px;
+  min-height: var(--touche);
+  cursor: pointer;
+}
+/* La case du règlement était la case blanche du navigateur : un carré
+   bleu-blanc du système, au milieu d'un écran or et noir, juste avant le
+   bouton le plus important du parcours. On la redessine à l'identique des
+   cases dorées du quiz, pour qu'un seul objet « case à cocher » existe
+   dans toute l'application. */
+.case input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px; height: 26px;
+  flex-shrink: 0;
+  margin-top: 0;
+  border-radius: 2px;
+  border: 2px solid rgba(201, 150, 46, .55);
+  background: rgba(20, 14, 7, .6);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 15px 15px;
+  cursor: pointer;
+  transition: background-color .16s, border-color .16s, box-shadow .16s;
+}
+.case input:checked {
+  border-color: var(--or-blanc);
+  background-color: var(--or-clair);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.6l3.4 3.4L13 5' fill='none' stroke='%23241804' stroke-width='2.6' stroke-linecap='square'/%3E%3C/svg%3E");
+}
+.case input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(201, 150, 46, .3);
+}
+.erreur { color: #F08A80; font-size: 14px; font-weight: 600; }
+
+/* --- Vérification amicale de l'adresse e-mail --- */
+.suggestion {
+  background: var(--verre);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(239, 195, 104, .45);
+  border-radius: 2px;
+  padding: 13px 15px;
+  margin-top: -4px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.suggestion-texte { font-size: var(--t-petit); line-height: 1.5; color: var(--creme); }
+.suggestion-texte strong { color: var(--or-clair); font-weight: 700; overflow-wrap: anywhere; word-break: normal; white-space: nowrap; }
+.suggestion-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+.btn-mini {
+  font-family: var(--sans);
+  font-size: var(--t-petit);
+  font-weight: 600;
+  letter-spacing: .3px;
+  color: var(--creme);
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(201, 150, 46, .3);
+  border-radius: 2px;
+  padding: 9px 15px;
+  min-height: 44px;
+  cursor: pointer;
+  transition: transform .12s, border-color .16s;
+}
+.btn-mini:active { transform: scale(.97); }
+.btn-mini-or {
+  color: #241804;
+  background: linear-gradient(165deg, var(--or-blanc, #FFE9B8), var(--or));
+  border-color: var(--or-clair);
+}
+.lien-or { color: var(--or-clair); font-weight: 600; text-decoration-color: rgba(239, 195, 104, .5); }
+
+/* --- Roue fête foraine --- */
+/* La roue et le ticket restent centrés : ce sont des objets ronds ou
+   pleine largeur, les centrer est le seul choix juste. Mais leur titre,
+   lui, s'aligne à gauche comme partout ailleurs. C'est cette asymétrie
+   volontaire qui fait la différence avec une page centrée par défaut. */
+.roue-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e6);
+  text-align: center;
+}
+.roue-zone h2,
+.roue-zone > .question-soustitre {
+  align-self: stretch;
+  text-align: left;
+}
+.roue-zone h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: var(--t-titre);
+  line-height: 1.1;
+  letter-spacing: -.015em;
+  margin-bottom: -14px;
+}
+/* Le titre de ces écrans porte lui aussi son filet, plus court */
+.roue-zone h2::after {
+  content: '';
+  display: block;
+  width: 44px;
+  height: 1px;
+  margin-top: 14px;
+  background: var(--filet-fort);
+}
+
+.roue-cadre {
+  position: relative;
+  width: min(76vw, 315px);
+  height: min(76vw, 315px);
+  /* Le pointeur dépasse de 24 px au-dessus de la roue. Sans cette
+     réserve, sa pointe venait toucher le filet du titre : les deux
+     objets se lisaient comme un seul, et le triangle ressemblait à une
+     faute de mise en page plutôt qu'à l'aiguille de la roue. */
+  margin-top: 26px;
+}
+#roue-svg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 9px #221709,
+    0 0 0 11px var(--or),
+    0 0 0 12px rgba(255, 233, 184, .35),
+    0 22px 60px rgba(0, 0, 0, .65),
+    0 0 90px rgba(201, 150, 46, .3);
+  transform: rotate(0deg);
+}
+#roue-svg { transition: box-shadow .6s ease; }
+
+/* Pendant la rotation, tout l'écran participe au suspense : le halo
+   grossit, les ampoules s'affolent et le titre passe en pleine lumière. */
+.roue-cadre.emballe #roue-svg {
+  box-shadow:
+    0 0 0 9px #221709,
+    0 0 0 11px var(--or-clair),
+    0 0 0 12.5px rgba(255, 233, 184, .6),
+    0 22px 60px rgba(0, 0, 0, .7),
+    0 0 130px rgba(239, 195, 104, .55);
+}
+.roue-cadre.emballe .ampoule { animation-duration: .3s; }
+
+.roue-zone h2 { transition: color .4s ease, letter-spacing .5s ease; }
+.roue-zone.suspense h2 { color: var(--or-blanc); letter-spacing: 1.5px; }
+
+/* Le pointeur claque à chaque segment qui défile dessous */
+.roue-pointeur { transform-origin: 50% 6%; }
+.roue-pointeur.claque { animation: pointeur-claque .14s ease-out; }
+@keyframes pointeur-claque {
+  0%   { transform: translateX(-50%) rotate(0deg); }
+  38%  { transform: translateX(-50%) rotate(12deg); }
+  100% { transform: translateX(-50%) rotate(0deg); }
+}
+
+/* La case gagnante s'allume avant que l'écran du résultat n'arrive */
+.segment-gagnant { animation: segment-gagne 1.05s ease-in-out 2; }
+@keyframes segment-gagne {
+  0%, 100% { filter: none; }
+  50% { filter: brightness(1.55) drop-shadow(0 0 7px rgba(255, 233, 184, .95)); }
+}
+/* Ampoules autour de la roue (posées en JS) */
+.ampoule {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 7px; height: 7px;
+  margin: -3.5px;
+  border-radius: 50%;
+  background: var(--or-blanc);
+  box-shadow: 0 0 8px 2px rgba(255, 233, 184, .85);
+  animation: scintille 1.15s ease-in-out infinite;
+}
+.ampoule:nth-child(even) { animation-delay: .575s; }
+@keyframes scintille {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .25; }
+}
+.roue-pointeur {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .65));
+}
+.roue-pointeur svg { display: block; }
+.roue-centre {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 66px; height: 66px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(239, 195, 104, .35), transparent 60%),
+    radial-gradient(circle, #241a0e 0%, #150e07 100%);
+  border: 2px solid var(--or-clair);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+.roue-centre svg { display: block; }
+
+/* --- Résultat --- */
+/* Le bon cadeau : c'est le moment le plus important du jeu, il doit être
+   le point focal de l'écran. Il devient une bande pleine largeur, tenue
+   par deux filets, avec le code en très grand face à une étiquette de
+   10 px. C'est le grand écart d'échelle qui manquait partout. */
+.code-bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  width: calc(100% + 2 * var(--marge));
+  margin-left: calc(-1 * var(--marge));
+  background: rgba(11, 8, 4, .62);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-top: 1px solid var(--filet-fort);
+  border-bottom: 1px solid var(--filet-fort);
+  border-radius: 0;
+  padding: 22px var(--marge) 24px;
+  box-shadow: none;
+}
+.code-libelle { font-size: 10.5px; letter-spacing: .2em; color: var(--or); text-transform: uppercase; font-weight: 600; }
+.code-valeur {
+  font-size: clamp(38px, 11.5vw, 50px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: .06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--or-blanc);
+  word-break: break-all;
+}
+.code-lettre {
+  display: inline-block;
+  animation: lettre-frappe .34s cubic-bezier(.2, 1.5, .4, 1) backwards;
+}
+@keyframes lettre-frappe {
+  from { opacity: 0; transform: translateY(-9px) scale(.7); }
+  to   { opacity: 1; transform: none; }
+}
+
+.code-info { font-size: var(--t-petit); color: var(--creme); opacity: .85; max-width: 250px; line-height: 1.45; }
+
+/* Le rappel du grand tirage : une note de bas de page, pas une carte.
+   Un filet au-dessus suffit à la détacher du reste. */
+.tirage-bloc {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-top: 1px solid var(--filet);
+  border-radius: 0;
+  padding: 16px 0 2px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--gris);
+  text-align: left;
+  width: 100%;
+  box-shadow: none;
+}
+.tirage-emoji { font-size: 15px; color: var(--or); line-height: 1.5; }
+
+
+/* --- Questions à choix multiples --- */
+.multi-zone { margin-top: 6px; padding-bottom: 8px; }
+/* Même pavé d'or et mêmes capitales espacées que les autres boutons
+   d'étape : le « Continuer » du quiz était le seul bouton principal du
+   parcours écrit en minuscules serrées, entre un « C'EST PARTI ! » et un
+   « JE TENTE MA CHANCE » tous deux en grandes capitales. */
+.multi-zone .btn { width: 100%; padding: 20px; font-size: 15px; }
+.option .coche {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 2px;
+  border: 2px solid rgba(201, 150, 46, .55);
+  background: rgba(20, 14, 7, .6);
+  position: relative;
+  transition: background .16s, border-color .16s;
+}
+.option.choisie .coche {
+  background: linear-gradient(165deg, var(--or-blanc), var(--or));
+  border-color: var(--or-blanc);
+}
+.option.choisie .coche::after {
+  content: '';
+  position: absolute;
+  left: 8px; top: 3px;
+  width: 6px; height: 12px;
+  border: solid #241804;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(42deg);
+}
+
+/* --- Médaillon photo (accueil) ---
+   La photo est teintée dans la palette or et noir du jeu : sans cette
+   couche, le fond lilas du cliché jure avec tout le reste de l'écran. */
+/* La photo est ramenée à une seule couleur, l'or de la charte.
+   Le voile posé par-dessus ne suffisait pas : le rose du cliché
+   transparaissait toujours et c'était la seule zone de l'écran qui ne
+   parlait pas la langue de la marque. Le mode « color » impose la teinte
+   à l'image elle-même : il ne reste que les valeurs, du plus sombre au
+   plus clair, dans l'or de la maison. C'est le procédé des campagnes
+   monochromes de fêtes, et il a l'avantage de tenir avec n'importe quelle
+   photo qu'on mettra ici plus tard. */
+.hero-photo {
+  position: relative;
+  overflow: hidden;
+  background-image:
+    linear-gradient(0deg, var(--or) 0%, var(--or) 100%),
+    /* Vraie photographie : un paquet sombre fermé par un large nœud de
+       ruban satin. L'ancien cliché était rose lilas, et la version en
+       image de synthèse proposée à la place avait le laqué plastique des
+       banques d'images. Le cadrage est serré à 190 % sur le nœud : dans
+       un rond de 124 px, un objet entier ne se lit pas, un détail oui. */
+    url('img/photos/cadeau-medaillon-photo.jpg');
+  background-blend-mode: color;
+  background-size: cover, 190%;
+  background-position: center, 54% 50%;
+  font-size: 0;
+  /* Un peu plus grand : à 104 px le médaillon flottait en haut de page
+     sans peser assez pour être un choix. */
+  width: 124px;
+  height: 124px;
+}
+.hero-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    /* Lumière rasante en haut à gauche, ombre qui referme en bas à
+       droite : une seule direction d'éclairage, la même que celle des
+       boutons et de la roue. */
+    radial-gradient(circle at 34% 26%, rgba(255, 240, 205, .26) 0%, transparent 46%),
+    radial-gradient(circle at 50% 42%, rgba(14, 10, 4, .28) 0%, rgba(14, 10, 4, .84) 100%);
+  /* Le fin liseré d'or, posé à l'intérieur pour ne rien décaler */
+  box-shadow: inset 0 0 0 1px rgba(255, 233, 184, .28);
+}
+
+
+/* --- En-tête : logo du client + signature Pull Up --- */
+.logo-client { height: 38px; width: auto; max-width: 72%; object-fit: contain; display: block; }
+.entete-separateur {
+  width: 1px; height: 20px;
+  background: rgba(239, 195, 104, .35);
+}
+.entete-signature { display: flex; align-items: center; gap: 9px; }
+
+/* --- Case offres mise en avant --- */
+.case-titre {
+  display: block;
+  color: var(--or-blanc);
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.case:has(#check-marketing) {
+  border-color: rgba(201, 150, 46, .45);
+  background: linear-gradient(160deg, rgba(58, 42, 18, .6), var(--verre));
+}
+.case em { color: var(--gris); font-style: normal; font-size: 12.5px; }
+
+/* --- Suites après le résultat --- */
+/* Les suites du résultat : une seule action pleine, puis des lignes.
+   Quatre boutons encadrés empilés, c'est encore la pile de cartes.
+   Ici le premier choix est un bloc, les suivants sont des lignes
+   séparées par un filet : la hiérarchie se voit sans qu'on l'explique. */
+.suites { display: flex; flex-direction: column; gap: 0; width: 100%; max-width: none; margin-top: 10px; }
+.suites .btn { width: 100%; }
+.suites .btn-or { margin-bottom: 20px; }
+.suites .btn-discret {
+  border: none;
+  border-bottom: 1px solid var(--filet);
+  border-radius: 0;
+  padding: 17px 2px;
+  min-height: 54px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  transition: padding-left .2s var(--signature), background .2s;
+}
+.suites .btn-discret:first-child { border-top: 1px solid var(--filet); }
+.suites .btn-discret:active { padding-left: 12px; background: rgba(201, 150, 46, .08); }
+.btn-discret {
+  background: transparent;
+  color: var(--or-clair);
+  border: 1px solid rgba(201, 150, 46, .45);
+}
+.btn-discret:hover { background: rgba(201, 150, 46, .1); }
+
+/* --- Bons plans des commerçants --- */
+/* Chaque offre était une carte encadrée avec une barre dorée à gauche.
+   La barre de couleur sur le bord gauche est l'un des réflexes les plus
+   reconnaissables des gabarits tout faits. Ici, une liste numérotée
+   séparée par des filets, comme un sommaire de magazine. */
+.promos-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  /* Même bande pleine largeur que la liste des réponses : une seule
+     surface sombre au lieu d'un fond par carte. */
+  margin: 10px calc(-1 * var(--marge)) 20px;
+  padding: 0 var(--marge);
+  background: rgba(11, 8, 4, .55);
+  border-top: 1px solid var(--filet);
+  counter-reset: offre;
+}
+.promo {
+  position: relative;
+  counter-increment: offre;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-bottom: 1px solid var(--filet);
+  border-radius: 0;
+  padding: 20px 0 22px 42px;
+  text-align: left;
+}
+.promo::before {
+  content: counter(offre, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 22px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  font-variant-numeric: tabular-nums;
+  color: var(--or);
+  opacity: .8;
+}
+.promo-enseigne { font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--or); font-weight: 600; }
+.promo-titre { font-family: var(--serif); font-weight: 600; font-size: 22px; line-height: 1.15; letter-spacing: -.01em; margin: 7px 0 5px; }
+.promo-detail { font-size: var(--t-petit); color: var(--gris); line-height: 1.45; }
+.promo-vide { font-size: 14.5px; color: var(--gris); line-height: 1.5; text-align: center; padding: 20px 0; }
+
+
+/* --- Utilisation du bon chez le commerçant --- */
+/* « Je suis chez le commerçant » est l'action principale de l'écran du
+   gagnant : il porte donc les mêmes grandes capitales espacées que les
+   autres boutons d'étape. Il était le seul pavé d'or du parcours écrit
+   en minuscules. */
+.btn-utiliser {
+  width: 100%;
+  margin-top: 12px;
+  padding: 18px 15px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: clamp(2px, .7vw, 2.8px);
+  text-wrap: balance;
+}
+
+/* Une seule action dorée par écran.
+   Quand le joueur a gagné, son bon s'affiche avec « Je suis chez le
+   commerçant » en or, et le « Continuer » du bas était lui aussi un pavé
+   d'or plein : deux boutons de même poids, deux directions, et le regard
+   qui hésite au moment précis où il faut retenir un code. Dès qu'un bon
+   est à l'écran, « Continuer » redevient ce qu'il est, une sortie.
+   Le perdant, lui, n'a qu'un seul bouton : le sien reste en or. */
+#resultat-code-bloc:not([hidden]) ~ #btn-resultat-continuer {
+  background: transparent;
+  color: var(--or-clair);
+  box-shadow: inset 0 0 0 1px rgba(201, 150, 46, .42);
+}
+#resultat-code-bloc:not([hidden]) ~ #btn-resultat-continuer:active {
+  background: rgba(201, 150, 46, .1);
+  box-shadow: inset 0 0 0 1px rgba(201, 150, 46, .6);
+}
+
+.confirme {
+  animation: pose .4s var(--entree) backwards;
+  background: var(--verre);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(225, 75, 80, .5);
+  border-radius: 2px;
+  padding: 18px;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.confirme-texte { font-size: 14.5px; line-height: 1.5; text-align: left; }
+.confirme-texte strong { color: var(--rouge-clair); }
+.confirme-actions { display: flex; flex-direction: column; gap: 9px; }
+.confirme-actions .btn { width: 100%; padding: 13px; font-size: 15px; }
+
+/* Preuve de validation : vivante, donc incopiable */
+.ecran.actif .hero > .bon-valide,
+.bon-valide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(165deg, rgba(24, 48, 32, .92), rgba(16, 28, 20, .95));
+  border: 1.5px solid rgba(63, 191, 106, .55);
+  border-radius: 2px;
+  padding: 24px 28px;
+  max-width: 340px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .5), 0 0 50px rgba(63, 191, 106, .12);
+  animation: valide-entree .5s cubic-bezier(.2, .8, .3, 1);
+}
+@keyframes valide-entree {
+  from { opacity: 0; transform: scale(.9); }
+  to   { opacity: 1; transform: none; }
+}
+.valide-marque { animation: valide-pulse 2.2s ease-in-out infinite; }
+@keyframes valide-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+.valide-titre {
+  font-family: var(--serif);
+  font-size: 25px;
+  color: #7fe0a0;
+  letter-spacing: .5px;
+}
+.valide-lot { font-size: 16px; font-weight: 600; color: var(--creme); text-align: center; }
+.valide-horloge {
+  font-family: 'Jost', monospace;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #7fe0a0;
+  background: rgba(0, 0, 0, .35);
+  border-radius: 2px;
+  padding: 7px 16px;
+  margin-top: 2px;
+}
+.valide-mention { font-size: var(--t-mention); color: var(--gris); text-align: center; line-height: 1.5; max-width: 250px; }
+
+/* Bon déjà consommé : gris et sans animation, aucune confusion possible */
+/* Bon deja utilise : ROUGE, et le plus loin possible du vert de la
+   validation. C'est cette difference de couleur qui protege vraiment,
+   parce que le commercant decide en une seconde, sans lire. */
+.ecran.actif .hero > .bon-valide.bon-perime,
+.bon-valide.bon-perime {
+  background: linear-gradient(165deg, rgba(96, 26, 26, .95), rgba(52, 14, 14, .97));
+  border-color: rgba(226, 92, 92, .75);
+  box-shadow: 0 12px 40px rgba(78, 12, 12, .55);
+  animation: none;
+}
+.bon-perime .valide-marque { animation: none; opacity: .55; }
+.bon-perime .valide-marque svg { stroke: rgb(255, 155, 155); }
+.bon-perime .valide-titre { color: rgb(255, 176, 176); }
+.bon-perime .valide-lot { color: rgb(255, 200, 200); text-decoration: line-through; }
+.bon-perime .valide-horloge { color: rgb(255, 176, 176); }
+.bon-perime .valide-mention { color: rgb(255, 205, 205); }
+
+
+/* --- Passage du téléphone au commerçant --- */
+.confirme-mot-cle {
+  font-family: var(--serif);
+  font-size: 21px;
+  color: var(--or-blanc);
+  text-align: center;
+  line-height: 1.3;
+}
+.confirme-note { font-size: var(--t-mention); color: var(--gris); text-align: center; line-height: 1.5; }
+
+/* --- Remerciement au commerçant --- */
+.remerciement {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(127, 224, 160, .25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+}
+.remerciement-texte { font-size: 13.5px; color: var(--creme); opacity: .85; }
+.btn-merci { padding: 11px 22px; font-size: 15px; border-color: rgba(127, 224, 160, .5); color: #7fe0a0; }
+.btn-merci.envoye {
+  background: rgba(63, 191, 106, .18);
+  border-color: rgba(127, 224, 160, .7);
+  pointer-events: none;
+}
+.bon-perime .remerciement { display: none; }
+
+
+/* --- Cartes de promotion --- */
+.promo {
+  position: relative;
+  overflow: hidden;
+}
+/* Les offres et les animations se posent une par une, comme des cartes
+   qu'on étale sur une table. Le délai est calculé au moment de l'affichage. */
+.promo, .evenement { animation: pose .46s var(--entree) backwards; }
+.promo-haut { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.promo-pour-toi {
+  flex-shrink: 0;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #241804;
+  background: linear-gradient(165deg, var(--or-blanc), var(--or));
+  border-radius: 2px;
+  padding: 3px 10px;
+}
+.promo-fin { font-size: 12px; color: var(--or-clair); margin-top: 8px; display: block; }
+.promo-bon {
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  border-radius: 2px;
+}
+.promo-bon.obtenu {
+  background: rgba(63, 191, 106, .15);
+  border: 1px solid rgba(127, 224, 160, .5);
+  color: #7fe0a0;
+  box-shadow: none;
+}
+
+/* --- Programme des animations --- */
+.programme-liste { display: flex; flex-direction: column; gap: 12px; margin: 4px 0 16px; }
+.evenement {
+  background: var(--verre);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 150, 46, .25);
+  border-radius: 2px;
+  padding: 16px 18px;
+  text-align: left;
+}
+.evenement.vedette {
+  border-color: rgba(239, 195, 104, .7);
+  background: linear-gradient(160deg, rgba(58, 42, 18, .75), var(--verre));
+  box-shadow: 0 8px 30px rgba(201, 150, 46, .18);
+}
+.evenement-titre { font-family: var(--serif); font-size: 21px; line-height: 1.2; }
+.evenement-horaires {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  color: #241804;
+  background: linear-gradient(165deg, var(--or-blanc), var(--or));
+  border-radius: 2px;
+  padding: 4px 10px;
+  margin: 9px 0 7px;
+}
+.evenement-lieu { font-size: 12.5px; color: var(--or-clair); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.evenement-detail { font-size: 14px; color: var(--creme); opacity: .88; line-height: 1.5; }
+.evenement-gratuit {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #7fe0a0;
+  border: 1px solid rgba(127, 224, 160, .45);
+  border-radius: 2px;
+  padding: 5px 11px;
+}
+
+
+/* --- En-tête : le client d'abord ---
+   Le logo de la galerie tient la ligne du bas, à la place et à la
+   taille du nom écrit : c'est lui, le nom de la galerie. */
+.entete { text-align: left; }
+.logo-client { height: 38px; }
+
+/* --- Signature Pull Up en pied --- */
+.pied {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: var(--e5) 0 var(--e1);
+  opacity: .9;
+}
+.pied-marque { font-size: var(--t-etiquette); letter-spacing: 2px; color: var(--gris); text-transform: uppercase; }
+
+/* --- Le non-gain : élégant, jamais punitif ---
+   Trois joueurs sur quatre voient cet écran. Il ne doit ni s'excuser
+   ni consoler à outrance : il ouvre simplement la galerie, comme un
+   sommaire. Filet fin en haut, alignement à gauche, petites capitales
+   pour le titre, et la ligne du lendemain en Playfair pour finir sur
+   une note haute plutôt que sur une liste. */
+.consolation {
+  text-align: left;
+  border-top: 1px solid var(--filet);
+  padding-top: var(--e4);
+  margin-top: var(--e2);
+}
+.consolation-titre {
+  display: block;
+  font-size: var(--t-etiquette);
+  letter-spacing: 2.6px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--or);
+  margin-bottom: var(--e3);
+}
+.consolation-liste { list-style: none; }
+.consolation-liste li {
+  position: relative;
+  padding: 9px 0 9px 18px;
+  font-size: var(--t-petit);
+  line-height: 1.5;
+  color: var(--creme);
+  border-bottom: 1px solid rgba(246, 241, 230, .08);
+}
+.consolation-liste li:last-child { border-bottom: none; }
+.consolation-liste li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 17px;
+  width: 8px; height: 1px;
+  background: var(--or-clair);
+}
+.consolation-demain {
+  display: block;
+  margin-top: var(--e4);
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.3;
+  color: var(--or-clair);
+}
+
+/* --- Le commerçant qui offre le lot --- */
+/* Le nom du commerçant : une signature, pas une pastille encadrée */
+.commercant-offre {
+  position: relative;
+  font-family: var(--serif);
+  font-size: 24px;
+  line-height: 1.15;
+  letter-spacing: -.01em;
+  color: var(--or-blanc);
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 16px 0 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.commercant-offre::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 44px; height: 1px;
+  background: var(--filet-fort);
+}
+
+/* --- Deux choix pour le bon --- */
+/* Une action pleine, un second choix en ligne : deux boutons encadrés
+   côte à côte se disputeraient l'attention pour rien. */
+.deux-choix { display: flex; flex-direction: column; gap: 0; width: 100%; margin-top: 16px; }
+.deux-choix .btn { width: 100%; margin-top: 0; }
+.deux-choix .btn-discret {
+  border: none;
+  border-radius: 0;
+  padding: 16px 2px 2px;
+  min-height: 44px;
+  text-align: left;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(239, 195, 104, .4);
+}
+.deux-choix .btn-discret { padding: 12px; font-size: 14.5px; }
+
+/* --- La promesse des bons plans --- */
+.promesse {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  background: var(--verre);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 150, 46, .3);
+  border-radius: 2px;
+  padding: 20px;
+  max-width: 340px;
+  text-align: left;
+}
+/* --- Le bandeau de manche ---
+   Posé par l'application au-dessus de chaque jeu, y compris la roue.
+   Le joueur enchaîne trois manches autour d'un seul cadeau : il doit
+   savoir en levant les yeux où il en est. Même écriture que les
+   compteurs d'essais des jeux : chiffre en Playfair, mot en petites
+   capitales dorées, pastilles à droite, filet fin dessous. */
+.manche-bandeau {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--e3);
+  width: 100%;
+  padding-bottom: var(--e2);
+  margin-bottom: var(--e3);
+  border-bottom: 1px solid var(--filet);
+}
+.manche-mot {
+  font-size: var(--t-etiquette); font-weight: 600;
+  letter-spacing: 2.6px; text-transform: uppercase; color: var(--or);
+}
+.manche-mot strong {
+  font-family: var(--serif); font-weight: 800;
+  font-size: 19px; letter-spacing: 0; color: var(--or-blanc);
+  margin: 0 3px;
+}
+.manche-points { display: flex; gap: 7px; flex: 0 0 auto; }
+.manche-points span {
+  width: 9px; height: 9px; border-radius: 50%;
+  border: 1px solid var(--filet-fort);
+  transition: background .3s var(--signature), border-color .3s var(--signature);
+}
+.manche-points span.manche-faite { background: var(--or); border-color: var(--or); }
+.manche-points span.manche-encours {
+  background: var(--or-blanc); border-color: var(--or-blanc);
+  box-shadow: 0 0 9px rgba(239, 195, 104, .75);
+}
+@media (prefers-reduced-motion: reduce) {
+  .manche-points span { transition-duration: .01s; }
+}
+
+/* --- L'écran des bons plans : il doit donner envie de dire oui,
+   sans jamais arracher le consentement. Il est passé AVANT les jeux
+   le 25/08/2026, juste après les coordonnées : c'est le moment où le
+   joueur vient de dire ce qu'il aime, la promesse tombe donc juste.
+   La composition est éditoriale : un chapeau doré, un titre long en
+   Playfair aligné à gauche, la promesse détaillée dans son bloc, puis
+   les deux boutons et la ligne de liberté. --- */
+.hero-offres { text-align: left; align-items: flex-start; gap: var(--e3); }
+/* Le médaillon est retiré ici : sur un téléphone, chaque pixel gagné
+   en haut rapproche le bouton « oui » du pouce. Le chapeau doré et le
+   grand titre suffisent à poser l'écran. */
+.hero-offres .hero-emoji { display: none; }
+.hero-offres h1 { text-align: left; font-size: clamp(30px, 8.8vw, 40px); }
+.hero-offres .sous-titre { text-align: left; }
+.hero-offres .promesse { max-width: 100%; padding: var(--e4); gap: var(--e3); }
+/* Les deux réponses prennent toute la largeur : un « non merci »
+   rétréci dans un coin serait un faux choix, et le consentement doit
+   rester aussi facile à refuser qu'à accepter. */
+.hero-offres .btn { width: 100%; }
+.offres-kicker {
+  display: block;
+  font-size: var(--t-etiquette); font-weight: 600;
+  letter-spacing: 2.6px; text-transform: uppercase; color: var(--or);
+  margin-bottom: var(--e2);
+}
+.promesse-titre {
+  display: block;
+  font-size: var(--t-etiquette); font-weight: 600;
+  letter-spacing: 2.2px; text-transform: uppercase; color: var(--or);
+  padding-bottom: var(--e2);
+  border-bottom: 1px solid var(--filet);
+}
+.offres-liberte strong { color: var(--creme); font-weight: 600; }
+
+.promesse-ligne { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.5; }
+.promesse-ligne strong { color: var(--or-blanc); font-weight: 600; }
+.promesse-puce {
+  flex-shrink: 0;
+  width: 18px; height: 18px;
+  margin-top: 2px;
+  border-radius: 50%;
+  background: linear-gradient(165deg, var(--or-blanc), var(--or));
+  position: relative;
+}
+.promesse-puce::after {
+  content: '';
+  position: absolute;
+  left: 6px; top: 3px;
+  width: 4px; height: 8px;
+  border: solid #241804;
+  border-width: 0 2px 2px 0;
+  transform: rotate(42deg);
+}
+
+
+/* --- Ticket à gratter --- */
+/* Le ticket va d'un bord à l'autre de l'écran, sans cadre doré autour.
+   Un objet qui touche les deux bords a beaucoup plus de présence qu'un
+   objet posé au milieu avec une marge tout autour. */
+.ticket {
+  position: relative;
+  align-self: stretch;
+  margin-left: calc(-1 * var(--marge));
+  margin-right: calc(-1 * var(--marge));
+  aspect-ratio: 600 / 380;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .6);
+}
+/* Ce qui fait un ticket, c'est la découpe.
+   Sans elle, la bande dorée qui traverse l'écran se lit comme un aplat de
+   couleur : le joueur ne comprend pas qu'il a un objet entre les mains.
+   Deux rangées de perforations, en haut et en bas, suffisent à le dire,
+   et elles gardent le parti pris du bord à bord (un objet qui touche les
+   deux bords a bien plus de présence qu'un rectangle posé au milieu). */
+.ticket::before,
+.ticket::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 7px;
+  z-index: 4;
+  pointer-events: none;
+  background-repeat: repeat-x;
+  background-size: 22px 7px;
+}
+/* Les demi-lunes sont posées à l'intérieur du bord, jamais à cheval :
+   le ticket masque ce qui dépasse, un demi-cercle sorti du cadre aurait
+   simplement disparu. */
+.ticket::before {
+  top: 0;
+  background-image: radial-gradient(circle 6px at 11px 0, var(--noir) 98%, transparent 100%);
+}
+.ticket::after {
+  bottom: 0;
+  background-image: radial-gradient(circle 6px at 11px 7px, var(--noir) 98%, transparent 100%);
+}
+/* Un liseré d'or à l'intérieur du bord, comme le filet d'un billet
+   de tombola imprimé. Posé en ombre intérieure : il n'ajoute pas un
+   pixel à l'objet et ne peut donc pas décaler la mise en page. */
+.ticket-fond {
+  box-shadow: inset 0 0 0 1px rgba(201, 150, 46, .28);
+}
+.ticket-fond {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 22px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(239, 195, 104, .22), transparent 60%),
+    linear-gradient(160deg, #241a0e, #14100a);
+}
+.ticket-mention {
+  position: absolute;
+  top: 14px;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gris);
+}
+/* Or plein, pas de dégradé dans les lettres.
+   C'était le dernier endroit du jeu où subsistait le remplissage dégradé
+   à l'intérieur du texte, alors qu'il a été banni partout ailleurs : le
+   bas des lettres virait au brun sur un fond déjà brun, et c'est le
+   marqueur visuel le plus reconnaissable d'un visuel fabriqué en série. */
+.ticket-resultat {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 1.12;
+  letter-spacing: -.015em;
+  color: var(--or-clair);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .6);
+}
+.ticket-detail { font-size: 14px; color: var(--creme); opacity: .85; line-height: 1.45; }
+.ticket-voile {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+  transition: opacity .45s ease;
+}
+.ticket-voile.efface { opacity: 0; pointer-events: none; }
+
+/* Le doigt qui montre le geste : beaucoup de gens ne devinent pas
+   qu'il faut gratter. Il s'efface au premier contact. */
+.doigt-consigne {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px; height: 34px;
+  margin: -46px 0 0 -17px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, rgba(90, 58, 8, .30), rgba(58, 36, 4, .52));
+  border: 2px solid rgba(255, 250, 235, .88);
+  box-shadow: 0 0 0 6px rgba(58, 36, 4, .12), 0 6px 16px rgba(48, 30, 4, .35);
+  pointer-events: none;
+  animation: doigt-glisse 2.6s ease-in-out infinite;
+  transition: opacity .3s ease;
+}
+@keyframes doigt-glisse {
+  0%   { transform: translate(-46px, 8px) scale(.7); opacity: 0; }
+  14%  { transform: translate(-46px, 8px) scale(1);  opacity: 1; }
+  50%  { transform: translate(46px, -8px) scale(1);  opacity: 1; }
+  72%  { transform: translate(46px, -8px) scale(.7); opacity: 0; }
+  100% { transform: translate(-46px, 8px) scale(.7); opacity: 0; }
+}
+.ticket.entame .doigt-consigne { opacity: 0; animation: none; }
+
+/* Le gain remonte de sous le voile au moment où il lâche */
+.ticket-fond { transition: transform .5s var(--rebond); }
+.ticket.devoile .ticket-fond { animation: gain-remonte .6s var(--rebond) both; }
+@keyframes gain-remonte {
+  0%   { transform: scale(.88); }
+  60%  { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+/* --- Badge démo --- */
+/* La mention du mode test : une ligne fine en pied d'écran, dans un gris
+   peu contrasté. Lisible pour qui la cherche, invisible pour le public
+   pendant une démonstration. Le paramètre &demo=1 la masque tout à fait
+   (le verrou du jour, lui, ne dépend jamais d'un paramètre : il dépend
+   de l'adresse du site). Elle a d'abord été un bandeau pleine largeur,
+   trop voyant pour une visio client, puis cette ligne discrète. */
+.badge-test {
+  position: fixed;
+  bottom: 5px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--gris);
+  opacity: .42;
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  /* La ligne est fixée au bas de l'écran : elle passe donc devant tout
+     ce qui défile dessous, et sur l'écran des coordonnées elle tombait
+     en plein milieu du paragraphe sur les données personnelles. Un
+     fondu vers le noir sous la ligne règle le problème sans rien
+     déplacer : le texte s'éteint proprement avant de l'atteindre, comme
+     au bas d'une page qui se referme. */
+  padding: 26px 0 6px;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(10, 7, 3, 0) 0%, rgba(10, 7, 3, .82) 46%, rgba(10, 7, 3, .96) 100%);
+  z-index: 20;
+  pointer-events: none;
+}
+/* La hauteur de la ligne, réservée en bas de page pour qu'elle ne passe
+   jamais devant un bouton NI devant un texte.
+   Cette règle réduisait en réalité la marge basse de la page (de 36 px à
+   20 px) au lieu de l'augmenter : sur l'écran des coordonnées, la ligne
+   « mode test » passait devant l'adresse e-mail de contact du bloc données
+   personnelles. On ajoute maintenant la hauteur de la ligne à la marge
+   normale au lieu de la remplacer. */
+body.mode-test .app { padding-bottom: calc(var(--e7) + 46px); }
+
+.badge-demo {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--rouge);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .4px;
+  padding: 7px 15px;
+  border-radius: 2px;
+  z-index: 20;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
+}
+
+/* --- Confettis --- */
+#confettis { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 10; }
+.confetti {
+  position: absolute;
+  top: -24px;
+  width: 9px; height: 15px;
+  border-radius: 2px;
+  animation: tombe cubic-bezier(.35, .12, .72, .9) forwards;
+}
+@keyframes tombe {
+  to { transform: translate(var(--derive, 0), 112vh) rotate(var(--vrille, 720deg)); opacity: .55; }
+}
+
+/* --- Poussière lumineuse (thème Noël, posée en JS) ---
+   Le script pose des petits éléments qui contiennent le caractère flocon
+   (U+2744, le flocon du clavier). Ce caractère est rendu en dessin coloré par la plupart des
+   téléphones : c'est un pictogramme de clavier, exactement le détail qui
+   fait basculer un écran de « campagne de marque » à « gabarit gratuit ».
+   On le rend donc invisible et on dessine à sa place une particule de
+   lumière dorée, de la même famille que le bokeh du fond. Rien à changer
+   dans le script : la taille et la vitesse posées par le JS continuent de
+   donner la variété, la forme vient d'ici. */
+#flocons { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.flocon {
+  position: absolute;
+  top: -4vh;
+  /* Le caractère disparaît, sa boîte reste : c'est elle qui porte la taille
+     variable posée par le script. */
+  color: transparent !important;
+  text-shadow: none !important;
+  width: 1.1em;
+  height: 1.1em;
+  animation: neige linear infinite;
+}
+.flocon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  /* Un grain de lumière : cœur chaud, halo qui s'éteint. Deux arrêts,
+     pas cinq : au-delà, le point devient une bulle de savon. */
+  background: radial-gradient(circle at 50% 50%,
+              rgba(255, 244, 218, .95) 0%,
+              rgba(239, 195, 104, .55) 38%,
+              rgba(201, 150, 46, 0) 72%);
+  filter: blur(.3px);
+}
+/* Une particule sur trois est un peu plus froide : la lumière d'une
+   galerie n'est jamais d'une seule température. Elle reste plus discrète
+   que les dorées, sinon elle se lit comme un point blanc posé sur
+   l'écran plutôt que comme une lumière du décor. */
+.flocon:nth-child(3n)::before {
+  background: radial-gradient(circle at 50% 50%,
+              rgba(255, 255, 255, .6) 0%,
+              rgba(214, 226, 232, .28) 42%,
+              rgba(180, 200, 214, 0) 76%);
+}
+@keyframes neige {
+  to { transform: translateY(108vh) translateX(6vw); }
+}
+
+/* --- Accessibilité mouvement --- */
+/* --- Accessibilité mouvement ---
+   Si le téléphone est réglé sur « réduire les animations », on garde
+   le jeu complet mais on enlève tout ce qui bouge sans raison. */
+@media (prefers-reduced-motion: reduce) {
+  .ecran.actif,
+  .ecran.actif .hero > *, .ecran.actif .quiz-zone > *, .ecran.actif .roue-zone > *,
+  .option, .btn-grand::after, .ampoule, .flocon, .confetti,
+  .valide-marque, .bon-valide, .roue-pointeur.claque, .segment-gagnant,
+  .doigt-consigne, .squelette, .promo, .evenement, .code-lettre,
+  .ticket.devoile .ticket-fond {
+    animation: none !important;
+  }
+  #roue-svg { transition-duration: .8s; }
+  * { scroll-behavior: auto !important; }
+}
+
+
+/* ============================================
+   L'ESPACE DÉCOUVERTE
+   Après le jeu, le joueur choisit ce qu'il veut
+   voir : les promos ou les nouveautés. Deux
+   grandes cartes en photo, puis une barre
+   d'onglets pour passer de l'une à l'autre.
+   ============================================ */
+
+.decouverte-zone { justify-content: center; gap: var(--e5); }
+
+/* --- Les deux grandes cartes --- */
+.choix-univers { display: flex; flex-direction: column; gap: var(--e3); }
+
+.carte-univers {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 172px;
+  padding: 0;
+  border: 1px solid rgba(201, 150, 46, .38);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--encre);
+  color: var(--creme);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--sans);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+  transition: border-color .25s ease, transform .25s var(--entree), box-shadow .25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.carte-univers:hover,
+.carte-univers:focus-visible {
+  border-color: rgba(239, 195, 104, .85);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, .55), 0 0 34px rgba(201, 150, 46, .16);
+}
+.carte-univers:active { transform: scale(.985); }
+
+.carte-photo {
+  position: absolute;
+  inset: 0;
+  /* Le dégradé sert de filet de sécurité : si la photo ne charge pas,
+     la carte reste belle au lieu d'être un trou noir. */
+  background-color: var(--encre);
+  background-image: linear-gradient(150deg, #3a2a12, #171009);
+  background-size: cover;
+  background-position: center;
+  transition: transform .45s var(--entree);
+}
+.carte-univers:hover .carte-photo { transform: scale(1.05); }
+
+.carte-promos .carte-photo {
+  background-image: linear-gradient(150deg, rgba(58, 42, 18, .35), rgba(23, 16, 9, .35)), url('img/photos/promos.jpg');
+}
+.carte-nouveautes .carte-photo {
+  background-image: linear-gradient(150deg, rgba(58, 42, 18, .35), rgba(23, 16, 9, .35)), url('img/photos/nouveautes.jpg');
+}
+
+/* Le voile : c'est lui qui rend le texte lisible sur n'importe quelle photo */
+.carte-voile {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(12, 9, 5, .97) 6%, rgba(14, 10, 6, .89) 42%, rgba(20, 15, 9, .46) 78%, rgba(20, 15, 9, .18) 100%);
+}
+
+.carte-texte {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e1);
+  padding: var(--e5) var(--e4) var(--e4);
+}
+.carte-etiquette {
+  font-size: var(--t-etiquette);
+  letter-spacing: 2.6px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--or-clair);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .8);
+}
+.carte-titre {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(21px, 6vw, 26px);
+  line-height: 1.18;
+  color: var(--creme);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, .75);
+}
+.carte-detail {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--creme);
+  opacity: .78;
+  margin-top: 2px;
+}
+.carte-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: var(--e2);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: .3px;
+  color: var(--or-clair);
+}
+.carte-univers:hover .carte-action svg { transform: translateX(3px); }
+.carte-action svg { transition: transform .25s var(--entree); }
+
+/* Sur un écran large, les deux cartes se placent côte à côte */
+@media (min-width: 560px) {
+  .choix-univers { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e4); }
+  .carte-univers { min-height: 230px; }
+}
+
+/* --- Les deux accès discrets sous les cartes --- */
+.lien-sobre {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e2);
+  min-height: var(--touche);
+  padding: var(--e3);
+  background: transparent;
+  border: 1px solid rgba(201, 150, 46, .28);
+  border-radius: 2px;
+  color: var(--or-clair);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+.lien-sobre:hover { background: rgba(201, 150, 46, .1); border-color: rgba(201, 150, 46, .5); }
+.lien-sobre-fin {
+  border: none;
+  color: var(--gris);
+  font-size: var(--t-mention);
+  min-height: 40px;
+  margin-top: calc(-1 * var(--e3));
+}
+.lien-sobre-fin:hover { background: transparent; color: var(--or-clair); }
+
+
+/* ============================================
+   LA BARRE D'ONGLETS DE LA GALERIE
+   Promos, nouveautés, programme : on passe de
+   l'un à l'autre sans jamais revenir en arrière.
+   ============================================ */
+.onglets-zone { margin-bottom: calc(-1 * var(--e2)); }
+.onglets {
+  display: flex;
+  gap: var(--e1);
+  padding: 4px;
+  background: rgba(10, 7, 4, .55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(201, 150, 46, .22);
+  border-radius: 2px;
+}
+.onglet {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 40px;
+  padding: 9px 4px;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--gris);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: .2px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background .22s ease, color .22s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.onglet:hover { color: var(--or-clair); }
+.onglet.actif {
+  background: linear-gradient(165deg, var(--or-blanc), var(--or));
+  color: #241804;
+  font-weight: 700;
+  box-shadow: 0 3px 12px rgba(201, 150, 46, .3);
+}
+
+
+/* ============================================
+   LE BANDEAU PHOTO EN TÊTE DES TROIS ÉCRANS
+   ============================================ */
+.bandeau-vue {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(201, 150, 46, .25);
+  border-radius: 2px;
+  padding: var(--e6) var(--e4) var(--e4);
+  text-align: left;
+}
+.bandeau-vue::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--encre);
+  background-image: linear-gradient(150deg, #3a2a12, #171009);
+  background-size: cover;
+  background-position: center;
+}
+.bandeau-vue::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(12, 9, 5, .95) 8%, rgba(14, 10, 6, .8) 46%, rgba(20, 15, 9, .48) 100%);
+}
+.bandeau-vue h2,
+.bandeau-vue .question-soustitre { position: relative; z-index: 1; }
+.bandeau-vue .question-soustitre { margin-top: var(--e2); color: var(--creme); opacity: .8; }
+
+.bandeau-promos::before     { background-image: url('img/photos/promos-large.jpg'); }
+.bandeau-nouveautes::before { background-image: url('img/photos/nouveautes-large.jpg'); }
+.bandeau-programme::before  { background-image: url('img/photos/mall-noel-1.jpg'); }
+
+
+/* ============================================
+   LES CARTES DE NOUVEAUTÉ
+   Volontairement différentes des promos : pas de
+   filet doré à gauche mais un filet en haut, et
+   une pastille crème au lieu d'une pastille or.
+   La promo crie une affaire, la nouveauté pose
+   une envie.
+   ============================================ */
+.nouveautes-liste { display: flex; flex-direction: column; gap: var(--e3); margin: var(--e1) 0 var(--e4); }
+
+.nouveaute {
+  position: relative;
+  overflow: hidden;
+  background: var(--verre);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(246, 241, 230, .16);
+  border-radius: 2px;
+  padding: var(--e4) var(--e4) var(--e3);
+  text-align: left;
+}
+/* Le filet en haut, signature visuelle des nouveautés */
+.nouveaute::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(246, 241, 230, .75), rgba(201, 150, 46, .25));
+}
+.nouveaute.tendance {
+  border-color: rgba(239, 195, 104, .5);
+  background: linear-gradient(160deg, rgba(58, 42, 18, .6), var(--verre));
+}
+.nouveaute.tendance::before {
+  background: linear-gradient(90deg, var(--or-blanc), var(--or));
+}
+
+.nouveaute-haut {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--e2);
+}
+.nouveaute-enseigne {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--creme);
+  opacity: .92;
+}
+.nouveaute-marque {
+  flex-shrink: 0;
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--creme);
+  border: 1px solid rgba(246, 241, 230, .38);
+  border-radius: 2px;
+  padding: 3px 9px;
+}
+.nouveaute.tendance .nouveaute-marque {
+  color: var(--or-blanc);
+  border-color: rgba(239, 195, 104, .7);
+}
+.nouveaute-titre {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.24;
+  margin: var(--e2) 0 var(--e1);
+}
+.nouveaute-detail { font-size: var(--t-petit); color: var(--gris); line-height: 1.45; }
+.nouveaute-arrivage {
+  display: block;
+  margin-top: var(--e2);
+  font-size: 12px;
+  color: var(--creme);
+  opacity: .6;
+}
+.nouveaute-pied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e2);
+  margin-top: var(--e3);
+  padding-top: var(--e2);
+  border-top: 1px solid rgba(246, 241, 230, .12);
+}
+.nouveaute-prix {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--or-clair);
+}
+
+/* --- Les très petits téléphones (320 px) --- */
+@media (max-width: 359px) {
+  .onglet { font-size: 12px; padding: 9px 2px; letter-spacing: 0; }
+  .carte-univers { min-height: 152px; }
+  .carte-texte { padding: var(--e4) var(--e3) var(--e3); }
+  .carte-detail { font-size: 12.5px; }
+  .bandeau-vue { padding: var(--e5) var(--e3) var(--e3); }
+  .nouveaute { padding: var(--e3); }
+  .nouveaute-enseigne { font-size: 11px; letter-spacing: 1.2px; }
+  .nouveaute-marque { font-size: 9px; letter-spacing: 1px; padding: 3px 7px; }
+}
+
+/* --- Si le téléphone demande moins d'animations --- */
+@media (prefers-reduced-motion: reduce) {
+  .nouveaute, .carte-univers, .carte-photo, .carte-action svg {
+    animation: none !important;
+    transition: none !important;
+  }
+}

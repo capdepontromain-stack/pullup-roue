@@ -1,0 +1,6 @@
+# Fichiers qui ne doivent JAMAIS partir en ligne
+*.sql
+envoi-mails/
+sauvegardes/
+*.md
+.DS_Store

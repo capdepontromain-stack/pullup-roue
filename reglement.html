@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Règlement du jeu</title>
+  <meta name="robots" content="noindex">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #F1ECE2;
+      color: #1C1A17;
+      line-height: 1.6;
+      padding: 24px 20px 60px;
+    }
+    .page { max-width: 640px; margin: 0 auto; }
+    .entete { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .pastille { width: 12px; height: 12px; border-radius: 50%; background: #C9962E; }
+    .marque { font-size: 12px; letter-spacing: 3px; color: #C9962E; font-weight: bold; }
+    h1 { font-size: 26px; margin-bottom: 6px; }
+    .sous-titre { color: #5A554B; margin-bottom: 28px; }
+    h2 {
+      font-size: 17px; margin: 28px 0 10px;
+      padding-bottom: 6px; border-bottom: 2px solid #C9962E;
+    }
+    p, li { font-size: 14.5px; margin-bottom: 10px; }
+    ul { padding-left: 20px; }
+    .a-completer { background: #fff3cd; padding: 1px 6px; border-radius: 4px; font-weight: bold; }
+    .avis-travail {
+      background: #fff3cd; border: 2px solid #C9962E; border-radius: 10px;
+      padding: 14px 16px; margin-bottom: 26px; font-size: 13.5px;
+    }
+    .avis-travail strong { display: block; margin-bottom: 6px; }
+    .avis-travail p:last-child { margin-bottom: 0; }
+    .version { margin-top: 30px; font-size: 12.5px; color: #5A554B; }
+    .retour {
+      display: inline-block; margin-top: 30px;
+      background: #C9962E; color: #1C1A17; font-weight: bold;
+      padding: 12px 22px; border-radius: 12px; text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <!--
+    ==========================================================================
+    NOTE INTERNE (invisible pour les joueurs), mise à jour le 25/08/2026.
+
+    Ce règlement décrit le jeu réellement en place : un gain immédiat, un bon
+    cadeau à retirer chez un commerçant de la galerie. Il n'y a PLUS de grand
+    tirage au sort de fin d'opération (décision du 25/08/2026). Ne jamais
+    réintroduire de tirage final, de dotation globale, ni de montant du type
+    « 5 000 € de lots ».
+
+    MISE À JOUR DU 26/08/2026 (contrôle de cohérence). Trois corrections :
+      - Article 3 et article 4 : la promesse d'une « seconde partie » offerte
+        par le ticket à gratter est SUPPRIMÉE. Elle n'existe plus dans le jeu
+        depuis le 25/08/2026, et la base ne sait enregistrer qu'une
+        participation, un lot et un code par personne et par jour. Le seul
+        avantage que le ticket peut révéler est « Chance doublée ».
+        Ne jamais la réintroduire sans l'avoir d'abord développée.
+      - Article 4 : la liste des jeux ne cite plus « Suis le Cadeau »,
+        « Le Juste Prix » ni le jeu de mémoire, qui ne sont atteignables par
+        aucun joueur. Elle cite les cinq jeux réellement disponibles, et elle
+        décrit le parcours en plusieurs manches enchaînées dans la même partie.
+      - Avant toute modification de cette liste, ouvrir app.js et lire la
+        table FICHIERS_JEUX : elle est la seule source de vérité.
+
+    RÈGLE ABSOLUE : tant que le jeu comporte une case perdante (« Retente
+    demain ! »), il est interdit d'écrire « 100 % gagnant », « tout le monde
+    gagne » ou « chaque joueur repart avec un cadeau », ici comme sur les
+    affiches, les mails et l'application.
+
+    À COMPLÉTER AVANT LA MISE EN LIGNE (toutes les zones surlignées en jaune) :
+      1. le nom de l'opération et le nom de la galerie ;
+      2. le numéro SIREN de Pull Up Événements ;
+      3. les dates de début et de fin, et l'adresse du site du jeu ;
+      4. la liste des lots avec la valeur en euros de chacun ;
+      5. la date de validité des bons ;
+      6. la liste des enseignes partenaires ;
+      7. la région d'hébergement Supabase, après l'avoir vérifiée dans le compte ;
+      8. la date de la version, en bas de page ;
+    puis supprimer le bloc « avis-travail » ci-dessous, enregistrer un PDF daté
+    du règlement, et faire relire le tout par un juriste.
+    ==========================================================================
+  -->
+  <div class="page">
+    <header class="entete">
+      <span class="pastille"></span>
+      <span class="marque">PULL UP ÉVÉNEMENTS</span>
+    </header>
+
+    <div class="avis-travail">
+      <strong>Version de travail, à ne pas mettre en ligne en l'état.</strong>
+      <p>Les passages surlignés en jaune sont à compléter avant l'ouverture du jeu. Ce bloc est à supprimer une fois le règlement complet et relu.</p>
+    </div>
+
+    <h1>Règlement du jeu « <span class="a-completer">[NOM DE L'OPÉRATION, EX. : LA HOTTE DES COMMERÇANTS]</span> »</h1>
+    <p class="sous-titre">Jeu gratuit sans obligation d'achat, organisé par Pull Up Événements</p>
+
+    <h2>Article 1 : Organisateur</h2>
+    <p>Le jeu « <span class="a-completer">[NOM DE L'OPÉRATION]</span> » (ci-après « le Jeu ») est organisé par <strong>Pull Up Événements</strong>, société par actions simplifiée, dont le siège social est situé 6 Impasse des Sœurs Brontë, 97430 Le Tampon, La Réunion (ci-après « l'Organisateur »), immatriculée au RCS sous le numéro <span class="a-completer">[NUMÉRO SIREN À COMPLÉTER]</span>, en partenariat avec les commerçants participants de <span class="a-completer">[NOM DE LA GALERIE]</span>.</p>
+    <p>Toute question relative au Jeu peut être adressée à l'Organisateur par e-mail à <strong>romain@pullup.re</strong>.</p>
+
+    <h2>Article 2 : Durée et lieu du Jeu</h2>
+    <p>Le Jeu se déroule du <span class="a-completer">[DATE DE DÉBUT]</span> au <span class="a-completer">[DATE DE FIN]</span> inclus, sur le site <span class="a-completer">[ADRESSE DU SITE WEB DU JEU]</span>, accessible notamment via les QR codes affichés dans la galerie et chez les commerçants participants.</p>
+    <p>L'Organisateur peut ouvrir et fermer le Jeu chaque jour selon les horaires d'ouverture de la galerie. En dehors des périodes d'ouverture, l'application affiche un message indiquant que l'opération n'est pas en cours.</p>
+
+    <h2>Article 3 : Conditions de participation</h2>
+    <ul>
+      <li>Le Jeu est gratuit et sans obligation d'achat. Aucun achat, aucun ticket de caisse et aucune dépense ne sont exigés pour participer ni pour recevoir un lot.</li>
+      <li>Les éventuels frais de connexion à internet restent à la charge du participant et ne donnent lieu à aucun remboursement.</li>
+      <li>Le Jeu est ouvert à toute personne physique majeure, ainsi qu'aux mineurs disposant de l'autorisation préalable d'un parent ou représentant légal.</li>
+      <li>Une seule participation par personne (même adresse e-mail) et par jour est admise, quel que soit le nombre de jeux enchaînés au cours de cette participation. Une même participation ne peut donner lieu qu'à un seul lot.</li>
+      <li>Toute participation multiple frauduleuse (adresses e-mail multiples, fausses identités, moyens automatisés) pourra entraîner la disqualification du participant et l'annulation des lots obtenus.</li>
+      <li>Sont exclus de toute participation au Jeu les salariés et collaborateurs de l'Organisateur, de la galerie et des commerçants partenaires, ainsi que les membres de leur foyer.</li>
+      <li>La participation implique l'acceptation pleine et entière du présent règlement.</li>
+    </ul>
+
+    <h2>Article 4 : Principe du Jeu</h2>
+    <p>Après avoir répondu à un court questionnaire et renseigné son adresse e-mail, le participant gratte un ticket virtuel, puis accède aux jeux du jour.</p>
+    <p>L'Organisateur propose plusieurs jeux : roue de la fortune, bandit manchot, jeu des trois pingouins, jeu des trois paquets et jeu des trois cadeaux identiques. Une même participation peut enchaîner plusieurs de ces jeux à la suite, et la composition retenue peut varier d'un jour à l'autre pendant la durée de l'opération. Tous les participants d'une même journée jouent la même composition. Quel que soit le nombre de jeux enchaînés, la participation ne donne lieu qu'à un seul résultat et, le cas échéant, à un seul lot.</p>
+    <p>Quel que soit le jeu affiché, <strong>le résultat est déterminé par un tirage aléatoire effectué avant le déroulement du jeu</strong>. Le jeu ne fait que révéler ce résultat de manière ludique : l'habileté, la rapidité, la mémoire, l'exactitude d'une réponse ou l'attention du participant n'ont aucune influence sur le lot attribué, et aucun participant ne peut augmenter ses chances par sa façon de jouer. Les réponses au questionnaire n'ont, elles non plus, aucune influence sur le résultat.</p>
+    <p>Le ticket à gratter préalable peut révéler, de manière également aléatoire, un avantage : des chances de gain augmentées sur la partie en cours. Le plus souvent, il ne révèle aucun avantage et donne simplement accès aux jeux du jour. Le ticket ne donne jamais droit à une seconde participation.</p>
+    <p><strong>Le Jeu ne comporte aucun tirage au sort de fin d'opération.</strong> Chaque participation délivre son résultat immédiatement, à l'écran, et il n'existe ni dotation globale, ni gagnants désignés après la fin du Jeu.</p>
+    <p>Indépendamment du résultat de sa participation, le participant accède depuis l'application aux offres et nouveautés communiquées par les commerçants de la galerie ainsi qu'au programme des animations. Ces informations sont fournies et mises à jour par la galerie et ses commerçants, sous leur responsabilité ; leur consultation est libre et ne conditionne ni la participation au Jeu, ni l'attribution ou le retrait d'un lot.</p>
+
+    <h2>Article 5 : Les lots</h2>
+    <p>Les lots sont offerts par les commerçants partenaires de la galerie et, le cas échéant, par la galerie elle-même. La liste des lots en jeu, avec leur valeur commerciale unitaire, est la suivante : <span class="a-completer">[LISTE DES LOTS ET VALEUR DE CHACUN, EX. : BON D'ACHAT DE 10 € (VALEUR 10 €), VIENNOISERIE OFFERTE (VALEUR 2 €), BRUSHING CHEZ LE COIFFEUR DE LA GALERIE (VALEUR 25 €), À COMPLÉTER POUR CHAQUE LOT]</span>, dans la limite des stocks indiqués par les commerçants partenaires.</p>
+    <p><strong>Toutes les participations ne sont pas gagnantes</strong> : selon le résultat du tirage aléatoire, le participant peut ne remporter aucun lot. Les différents résultats possibles n'ont pas tous la même probabilité d'être tirés. L'Organisateur ne garantit à aucun moment que toute participation est gagnante.</p>
+    <p>Le lot gagné s'affiche à l'écran du participant, avec un code unique et au nom du commerçant qui l'offre. Le participant présente cet écran au commerçant concerné, qui valide lui-même la remise du lot au moyen du bouton de validation réservé à cet usage. L'écran de validation comporte une horloge défilant en temps réel : une capture d'écran ou une photographie de cet écran ne permet pas d'obtenir le lot.</p>
+    <ul>
+      <li><strong>Chaque bon ne peut être utilisé qu'une seule fois</strong> : après validation par le commerçant, le lot apparaît barré et ne peut plus être présenté.</li>
+      <li>Le code affiché à l'écran suffit à obtenir le lot : le participant est invité à le noter ou à conserver son écran. Lorsque le service d'envoi est en fonctionnement, le bon est également adressé par e-mail à l'adresse renseignée, à titre de confort ; ce second envoi ne conditionne jamais la remise du lot.</li>
+      <li>Le bon est valable jusqu'au <span class="a-completer">[DATE DE VALIDITÉ DES BONS]</span> inclus, pendant les heures d'ouverture de la boutique concernée, sauf mention contraire portée sur le bon lui-même. Passé cette date, il ne peut plus être utilisé.</li>
+      <li>Les lots ne sont ni repris, ni échangés, ni remboursés, ni cédés à un tiers, ni convertibles en espèces. Aucune contrepartie en argent ne peut être demandée à l'Organisateur, à la galerie ou aux commerçants partenaires, sous quelque forme et pour quelque motif que ce soit.</li>
+      <li>Le lot d'un participant mineur est remis en présence d'un parent ou représentant légal.</li>
+      <li>Si un lot venait à être indisponible pour une raison indépendante de la volonté de l'Organisateur, celui-ci pourrait le remplacer par un lot de nature et de valeur équivalentes, sans qu'aucune réclamation ne puisse être formée.</li>
+    </ul>
+    <p>Avec leur accord exprès, le prénom des gagnants pourra être annoncé sur les supports de communication de l'opération. Aucune photographie d'un gagnant n'est publiée sans son autorisation écrite, et sans celle de ses parents s'il est mineur.</p>
+
+    <h2 id="commercants">Commerçants partenaires de l'opération</h2>
+    <p>La liste des enseignes participantes est la suivante : <span class="a-completer">[LISTE DES ENSEIGNES À COMPLÉTER POUR CHAQUE OPÉRATION]</span>. Cette liste désigne les commerçants qui offrent les lots du Jeu et dont les offres peuvent être relayées par Pull Up Événements auprès des participants ayant donné leur accord pour les recevoir.</p>
+
+    <h2 id="donnees">Article 6 : Données personnelles (RGPD)</h2>
+    <p>Les informations recueillies (prénom, réponses au questionnaire, adresse e-mail, numéro de téléphone facultatif) sont enregistrées par <strong>Pull Up Événements</strong>, 6 Impasse des Sœurs Brontë, 97430 Le Tampon, responsable de traitement, pour les finalités suivantes :</p>
+    <ul>
+      <li><strong>Gestion du Jeu</strong> (validation des participations, attribution et remise des lots, envoi du bon par e-mail, gestion des réclamations) : base légale = exécution du règlement accepté par le participant.</li>
+      <li><strong>Envoi d'offres adaptées</strong> de Pull Up Événements et des commerçants partenaires : uniquement si le participant a donné son accord au moment prévu à cet effet dans l'application. Ce consentement est facultatif, il n'est pas une condition de participation, et il peut être retiré à tout moment.</li>
+    </ul>
+    <p>Les réponses au questionnaire servent à choisir, parmi les offres des commerçants partenaires, celles qui correspondent le mieux aux goûts du participant. Ce classement ne produit aucun effet juridique à son égard, ne conditionne aucun avantage et n'a aucune influence sur le résultat du Jeu.</p>
+    <p>Le numéro de téléphone, dont la communication est facultative, est utilisé exclusivement pour joindre un gagnant en cas de difficulté sur son lot. Il ne fait l'objet d'aucune prospection téléphonique ni d'aucun envoi de SMS commercial, et n'est transmis à aucun tiers.</p>
+    <p><strong>Durées de conservation.</strong> Les données des participants n'ayant pas donné leur accord pour recevoir des offres sont supprimées au plus tard 1 an après la fin de l'opération. Les données des participants ayant donné cet accord sont conservées 3 ans après leur dernier contact, puis supprimées.</p>
+    <p><strong>Destinataires.</strong> Les données ne sont ni vendues, ni louées, ni transmises à des tiers : les offres des commerçants partenaires sont envoyées par Pull Up Événements elle-même, uniquement aux participants ayant donné leur accord. Les commerçants et la galerie ne reçoivent jamais les données des participants, seulement des statistiques anonymes. Les données sont hébergées par le prestataire Supabase, agissant en qualité de sous-traitant au sens du RGPD, <span class="a-completer">[RÉGION D'HÉBERGEMENT, À VÉRIFIER DANS LE COMPTE SUPABASE AVANT DE L'ÉCRIRE, EX. : SUR DES SERVEURS SITUÉS DANS L'UNION EUROPÉENNE]</span>.</p>
+    <p>Conformément au Règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés, chaque participant dispose d'un droit d'accès, de rectification, d'opposition, d'effacement, de limitation du traitement et de portabilité de ses données, ainsi que du droit de retirer son consentement à tout moment pour les offres commerciales, sans que ce retrait remette en cause ce qui a été envoyé avant. Ces droits s'exercent par e-mail à <strong>romain@pullup.re</strong>, et il y est répondu dans un délai maximum d'un mois. Chaque participant peut également introduire une réclamation auprès de la CNIL (www.cnil.fr).</p>
+    <p>Les offres par e-mail sont réservées aux participants majeurs. Aucune offre commerciale n'est adressée aux mineurs. Chaque e-mail envoyé comporte un lien de désinscription en un clic.</p>
+
+    <h2>Article 7 : Responsabilité</h2>
+    <p>L'Organisateur ne saurait être tenu responsable en cas de dysfonctionnement du réseau internet, du terminal du participant, ou de tout événement indépendant de sa volonté empêchant le bon déroulement du Jeu. L'Organisateur se réserve le droit d'écourter, de modifier ou d'annuler le Jeu en cas de force majeure ; sa responsabilité ne pourra être engagée de ce fait.</p>
+    <p>L'Organisateur ne saurait davantage être tenu responsable de la qualité des produits et services offerts par les commerçants partenaires au titre des lots, ni de l'exactitude des offres, promotions et informations que la galerie et ses commerçants publient dans l'application.</p>
+
+    <h2>Article 8 : Acceptation et consultation du règlement</h2>
+    <p>Le présent règlement est accessible gratuitement et à tout moment depuis l'application du Jeu, y compris avant toute participation. Une copie peut être obtenue gratuitement sur simple demande à romain@pullup.re.</p>
+
+    <h2>Article 9 : Dépôt du règlement</h2>
+    <p>Le dépôt du présent règlement auprès d'un commissaire de justice n'est pas requis par la réglementation applicable aux jeux et loteries publicitaires. Lorsqu'il est réalisé, il l'est à la seule initiative de l'Organisateur, à titre de garantie supplémentaire apportée aux participants.</p>
+
+    <h2>Article 10 : Modification du règlement</h2>
+    <p>L'Organisateur se réserve la possibilité de modifier le présent règlement en cas de nécessité. Toute modification fait l'objet d'une mise à jour datée sur cette page et prend effet à compter de sa mise en ligne, sans porter atteinte aux droits acquis des participants ayant déjà gagné un lot. Lorsque le règlement a fait l'objet d'un dépôt auprès d'un commissaire de justice, la modification lui est également communiquée sous forme d'avenant.</p>
+
+    <h2>Article 11 : Droit applicable et réclamations</h2>
+    <p>Le présent règlement est soumis au droit français. Toute question ou réclamation relative au Jeu doit être adressée à romain@pullup.re au plus tard trente (30) jours après la date de fin du Jeu. Les parties rechercheront une solution amiable avant toute action ; à défaut d'accord, le litige sera porté devant les juridictions compétentes.</p>
+
+    <p class="version">Version 1 du <span class="a-completer">[DATE DE MISE EN LIGNE]</span>. Toute modification ultérieure est publiée sur cette page avec sa date.</p>
+
+    <a class="retour" href="index.html">← Retour au jeu</a>
+  </div>
+</body>
+</html>

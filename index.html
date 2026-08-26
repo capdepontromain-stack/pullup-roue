@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>La Roue Pull Up : tente ta chance !</title>
+  <meta name="description" content="Joue à la Roue Pull Up et tente de gagner un cadeau offert par les commerçants partenaires !">
+  <!-- La liaison avec la base est ouverte tout de suite, avant même que
+       les scripts soient là : sur la 4G d'une galerie, la poignée de
+       main met facilement 300 ms, autant ne pas les attendre. -->
+  <link rel="preconnect" href="https://vincxrmtfjbenlzhjwby.supabase.co" crossorigin>
+  <!-- Les deux polices du premier écran sont demandées en même temps que
+       la feuille de style, au lieu d'attendre qu'elle soit lue. -->
+  <link rel="preload" href="fonts/playfairdisplay-600.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/jost-400.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Les deux images du premier écran, demandées tout de suite au lieu
+       d'attendre que la feuille de style soit lue et appliquée. -->
+  <link rel="preload" href="img/fond-bokeh-or.jpg" as="image">
+  <link rel="preload" href="img/photos/cadeau-medaillon-photo.jpg" as="image">
+  <!-- Le numéro derrière le nom du fichier force le téléphone à recharger
+       la feuille de style au lieu de ressortir celle qu'il avait gardée en
+       mémoire. À changer à chaque mise en ligne d'une modification visuelle,
+       sinon un joueur déjà venu continue de voir l'ancienne version. -->
+  <link rel="stylesheet" href="style.css?v=26aout2026">
+  <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
+       commence tout de suite, en même temps que la lecture de la page,
+       et l'exécution attend que la page soit construite. En fin de page,
+       ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
+       est garanti par defer. -->
+  <script src="supabase-lib.js" defer></script>
+  <script src="icones.js" defer></script>
+  <script src="contenus-demo.js" defer></script>
+  <script src="app.js" defer></script>
+  <!-- Envoi du bon par e-mail (dossier envoi-mails). Après app.js,
+       et sans effet tant que les fonctions Supabase ne sont pas en place. -->
+  <script src="envoi-mails/envoi-client.js" defer></script>
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- En-tête : l'identité de l'opération, présente sur TOUS les écrans.
+         Deux niveaux, comme une manchette de magazine : le nom du jeu en
+         petites capitales dorées, la galerie juste en dessous, beaucoup
+         plus grande (son logo quand elle en a un, sinon son nom en
+         Playfair), et un filet fin qui referme le bloc.
+         Le nom du jeu est masqué sur l'écran d'accueil : le grand titre
+         y dit déjà la même chose. -->
+    <header class="entete">
+      <span class="entete-jeu" id="entete-jeu" hidden></span>
+      <span class="entete-galerie">
+        <img id="logo-client" class="logo-client" alt="" hidden>
+        <span class="entete-lieu" id="entete-lieu" hidden></span>
+      </span>
+    </header>
+
+    <!-- Écran 1 : accueil -->
+    <section id="ecran-accueil" class="ecran actif">
+      <div class="hero">
+        <div class="hero-emoji hero-photo" id="accueil-medaillon"></div>
+        <h1>La Roue<br><span class="or">Pull Up</span></h1>
+        <p id="accueil-lieu" class="lieu-badge" hidden></p>
+        <p class="sous-titre">Un mini test de personnalité, tu fais tourner la roue, et tu repars peut-être avec un cadeau&nbsp;!</p>
+        <p class="accueil-compte" id="accueil-compte"></p>
+        <button class="btn btn-or btn-grand" id="btn-jouer">C'est parti&nbsp;!</button>
+        <div class="mentions">
+          <p class="mini-mention">Jeu gratuit sans obligation d'achat · 1 participation par personne et par jour · cadeaux offerts par nos commerçants partenaires · <a href="reglement.html" target="_blank" class="lien-or">Règlement du jeu</a></p>
+          <p class="mini-mention mini-mention-tres-discrete">Moins de 18 ans&nbsp;? Demande d'abord l'accord d'un parent pour jouer.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Écran 2 : quiz -->
+    <section id="ecran-quiz" class="ecran">
+      <div class="quiz-entete">
+        <button type="button" class="btn-retour" id="btn-question-retour" aria-label="Revenir à la question précédente">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 5 L8 12 L15 19"/>
+          </svg>
+        </button>
+        <div class="progression"><div class="progression-barre" id="barre-progression"></div></div>
+        <span class="quiz-compteur" id="quiz-compteur"></span>
+      </div>
+      <div class="quiz-zone">
+        <h2 id="question-titre"></h2>
+        <p id="question-soustitre" class="question-soustitre"></p>
+        <div id="question-options" class="options"></div>
+        <div id="question-texte-zone" class="texte-zone" hidden>
+          <input type="text" id="question-texte-input" autocomplete="off">
+          <button class="btn btn-or btn-grand" id="btn-texte-suivant">Continuer</button>
+        </div>
+        <div id="question-multi-zone" class="multi-zone" hidden>
+          <button class="btn btn-or btn-grand" id="btn-multi-suivant">Continuer</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Écran 3 : coordonnées -->
+    <section id="ecran-coordonnees" class="ecran">
+      <div class="quiz-entete">
+        <button type="button" class="btn-retour" id="btn-coordonnees-retour" aria-label="Revenir à la dernière question">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 5 L8 12 L15 19"/>
+          </svg>
+        </button>
+        <div class="progression"><div class="progression-barre progression-pleine"></div></div>
+        <span class="quiz-compteur">Dernière étape</span>
+      </div>
+      <div class="quiz-zone">
+        <h2>Tes coordonnées</h2>
+        <p class="question-soustitre">Ton mail sert à valider ta participation. Une seule par jour, pas de triche.</p>
+        <label class="champ">
+          <span>Ton adresse e-mail *</span>
+          <input type="email" id="input-email" placeholder="ton.mail@exemple.com" autocomplete="email" inputmode="email">
+        </label>
+        <div id="suggestion-email" class="suggestion" hidden>
+          <p class="suggestion-texte">Petite vérification&nbsp;: tu voulais peut-être écrire <strong id="suggestion-valeur"></strong>&nbsp;?</p>
+          <div class="suggestion-actions">
+            <button type="button" class="btn-mini btn-mini-or" id="btn-suggestion-oui">Oui, corriger</button>
+            <button type="button" class="btn-mini" id="btn-suggestion-non">Non, c'est la bonne</button>
+          </div>
+        </div>
+        <label class="champ">
+          <span>Ton numéro de téléphone <em>(facultatif)</em></span>
+          <input type="tel" id="input-tel" placeholder="0692 12 34 56" autocomplete="tel" inputmode="tel">
+        </label>
+        <label class="case">
+          <input type="checkbox" id="check-reglement">
+          <span>J'ai lu et j'accepte le <a href="reglement.html" target="_blank" class="lien-or">règlement du jeu</a> et l'enregistrement de mes réponses par Pull Up Événements. *</span>
+        </label>
+
+        <p id="erreur-coordonnees" class="erreur" hidden></p>
+        <!-- Ce bouton ouvre le ticket à gratter, et le jeu du jour n'est
+             pas toujours la roue : « Je tente ma chance » reste vrai. -->
+        <button class="btn btn-or btn-grand" id="btn-valider">Je tente ma chance</button>
+        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. À la fin de la partie, on te demandera si tu veux aussi recevoir les offres des commerçants&nbsp;: c'est un choix libre, et il ne change rien à ta participation. Données conservées trois ans au maximum, jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" class="lien-or">En savoir plus sur tes données</a></p>
+      </div>
+    </section>
+
+    <!-- Écran 4a : le ticket à gratter -->
+    <section id="ecran-grattage" class="ecran">
+      <div class="roue-zone">
+        <h2 id="grattage-titre">Ton ticket surprise</h2>
+        <p class="question-soustitre" id="grattage-consigne">Gratte avec ton doigt pour découvrir ce qu'il cache.</p>
+        <div class="ticket" id="ticket">
+          <div class="ticket-fond" id="ticket-fond">
+            <!-- Le nom de la galerie est écrit par appliquerOperation() :
+                 en dur, il partait au nom de Cap Sacré-Cœur chez toutes
+                 les autres galeries. -->
+            <span class="ticket-mention" id="ticket-mention">Ticket</span>
+            <span class="ticket-resultat" id="ticket-resultat"></span>
+            <span class="ticket-detail" id="ticket-detail"></span>
+          </div>
+          <canvas class="ticket-voile" id="ticket-voile" width="600" height="380"></canvas>
+          <span class="doigt-consigne" id="doigt-consigne" aria-hidden="true"></span>
+        </div>
+        <button class="btn btn-or btn-grand" id="btn-grattage-suite" hidden>Continuer</button>
+      </div>
+    </section>
+
+    <!-- Écran 4 : la roue -->
+    <section id="ecran-roue" class="ecran">
+      <div class="roue-zone">
+        <div class="manche-bandeau" id="manche-roue" hidden></div>
+        <h2 id="roue-titre">À toi de jouer</h2>
+        <div class="roue-cadre" id="roue-cadre">
+          <div class="roue-pointeur">
+            <svg width="30" height="26" viewBox="0 0 30 26" aria-hidden="true">
+              <defs>
+                <linearGradient id="grad-pointeur" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#FFE9B8"/>
+                  <stop offset="0.55" stop-color="#EFC368"/>
+                  <stop offset="1" stop-color="#C9962E"/>
+                </linearGradient>
+              </defs>
+              <path d="M2 2 L28 2 L15 24 Z" fill="url(#grad-pointeur)" stroke="#7a5410" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <svg id="roue-svg" viewBox="0 0 300 300"></svg>
+          <div class="roue-centre">
+            <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+              <path d="M15 1.5 L18.2 10.6 L27.8 10.9 L20.2 16.8 L22.9 26.1 L15 20.7 L7.1 26.1 L9.8 16.8 L2.2 10.9 L11.8 10.6 Z"
+                    fill="none" stroke="#EFC368" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        <button class="btn btn-or btn-grand" id="btn-tourner">Tourner la roue</button>
+      </div>
+    </section>
+
+    <!-- Écran 4c : les autres jeux (les trois paquets, le memory…).
+         Chaque jeu du dossier jeux/ construit lui-même son contenu ici. -->
+    <section id="ecran-jeu" class="ecran">
+      <div class="manche-bandeau" id="manche-jeu" hidden></div>
+      <div class="roue-zone jeu-zone" id="jeu-zone"></div>
+    </section>
+
+    <!-- Écran 5 : résultat -->
+    <section id="ecran-resultat" class="ecran">
+      <div class="hero">
+        <div class="hero-emoji medaillon-resultat" id="resultat-emoji"></div>
+        <h1 id="resultat-titre"></h1>
+        <p class="sous-titre" id="resultat-texte"></p>
+        <p id="resultat-commercant" class="commercant-offre" hidden></p>
+        <div id="resultat-code-bloc" class="code-bloc" hidden>
+          <span class="code-libelle">Ton bon cadeau</span>
+          <span class="code-valeur" id="resultat-code"></span>
+          <span class="code-info" id="resultat-code-info">Note ton code : il te suffit pour retirer ton lot.</span>
+          <!-- Affiché uniquement aux joueurs de moins de 18 ans : le
+               règlement, article 5, impose la remise du lot en présence
+               d'un parent. Ni l'enfant ni le commerçant ne le savaient. -->
+          <span class="code-info" id="resultat-mineur" hidden>Tu as moins de 18 ans : viens chercher ton lot avec un parent.</span>
+          <div class="deux-choix">
+            <button class="btn btn-or btn-utiliser" id="btn-utiliser">Je suis chez le commerçant</button>
+            <button class="btn btn-discret" id="btn-garder-bon">Je garde mon bon pour plus tard</button>
+          </div>
+        </div>
+
+        <!-- Bon validé : preuve vivante pour le commerçant -->
+        <div id="bon-valide" class="bon-valide" hidden>
+          <span class="valide-marque" aria-hidden="true">
+            <svg viewBox="0 0 52 52" width="46" height="46" fill="none" stroke="#3fbf6a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="26" cy="26" r="22"/><path d="M15 27 l8 8 l15 -17"/>
+            </svg>
+          </span>
+          <span class="valide-titre">Bon utilisé</span>
+          <span class="valide-lot" id="valide-lot"></span>
+          <span class="valide-horloge" id="valide-horloge"></span>
+          <span class="valide-mention">Cet écran est la preuve. Le bon ne peut plus servir.</span>
+          <div id="remerciement" class="remerciement">
+            <p class="remerciement-texte">Un petit mot pour ton commerçant ?</p>
+            <button class="btn btn-discret btn-merci" id="btn-merci">Merci beaucoup !</button>
+          </div>
+        </div>
+
+        <!-- Confirmation avant de brûler le bon -->
+        <div id="confirme-utilisation" class="confirme" hidden>
+          <p class="confirme-mot-cle">Passe ton téléphone au commerçant</p>
+          <p class="confirme-texte" id="confirme-detail"></p>
+          <div class="confirme-actions">
+            <button class="btn btn-or" id="btn-confirme-oui">Je valide ce bon</button>
+            <button class="btn btn-discret" id="btn-confirme-non">Annuler</button>
+          </div>
+          <p class="confirme-note">Ce bouton est réservé au commerçant. Une fois validé, le bon ne peut plus servir.</p>
+        </div>
+        <!-- Un seul bouton sur cet écran (25/08/2026). Romain veut une
+             page de résultat nue : le résultat, le bon s'il y en a un,
+             et « Continuer ». Tout le reste (les promos, le programme,
+             le retour à l'accueil) vit derrière ce bouton, dans
+             l'espace découverte. -->
+        <button class="btn btn-or btn-grand" id="btn-resultat-continuer">Continuer</button>
+        <p class="mini-mention" id="resultat-mention"></p>
+
+        <!-- Les anciens boutons de suite restent dans la page, masqués :
+             ils portent des comportements encore utiles (le second tour
+             du bonus, le retour à l'accueil) que l'espace découverte
+             réutilise. Ne pas les retirer sans reprendre app.js. -->
+        <div class="suites" id="resultat-suites" hidden>
+          <button class="btn btn-or" id="btn-rejouer-bonus" hidden>Il te reste un tour, vas-y !</button>
+          <button class="btn btn-or" id="btn-voir-promos">Découvrir la galerie</button>
+          <button class="btn btn-discret" id="btn-voir-programme">Le programme des animations</button>
+          <button class="btn btn-discret" id="btn-retour-accueil">Revenir à l'accueil</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Écran : l'espace découverte, le joueur choisit ce qu'il veut voir -->
+    <section id="ecran-decouverte" class="ecran">
+      <div class="quiz-zone decouverte-zone">
+        <h2 id="decouverte-titre">Et maintenant ?</h2>
+        <p class="question-soustitre" id="decouverte-soustitre">Qu'est-ce que tu as envie de voir dans la galerie&nbsp;?</p>
+
+        <!-- Le joueur qui ne gagne pas ne repart pas les mains vides.
+             Ce bloc était sur l'écran de résultat ; il est passé ici le
+             25/08/2026, quand l'écran de résultat est devenu nu.
+             Affiché par afficherResultat(), uniquement en cas de non-gain. -->
+        <div id="resultat-consolation" class="consolation" hidden>
+          <span class="consolation-titre">Ce qui t’attend quand même</span>
+          <ul class="consolation-liste">
+            <li>Les promos du jour, utilisables tout de suite dans la galerie.</li>
+            <li>Les nouveautés des boutiques, classées selon ce que tu aimes.</li>
+            <li>Le programme des animations de l’opération.</li>
+          </ul>
+          <span class="consolation-demain">Et une nouvelle chance demain, dès l’ouverture.</span>
+        </div>
+
+        <div class="choix-univers">
+          <button type="button" class="carte-univers carte-promos" id="carte-promos">
+            <span class="carte-photo" aria-hidden="true"></span>
+            <span class="carte-voile" aria-hidden="true"></span>
+            <span class="carte-texte">
+              <span class="carte-etiquette">En ce moment</span>
+              <span class="carte-titre">Les promos du moment</span>
+              <span class="carte-detail">Les bonnes affaires de tes commerçants, réunies au même endroit.</span>
+              <span class="carte-action">
+                <span class="carte-action-mot">Voir les promos</span>
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12 h13"/><path d="M12 5 l7 7 l-7 7"/>
+                </svg>
+              </span>
+            </span>
+          </button>
+
+          <button type="button" class="carte-univers carte-nouveautes" id="carte-nouveautes">
+            <span class="carte-photo" aria-hidden="true"></span>
+            <span class="carte-voile" aria-hidden="true"></span>
+            <span class="carte-texte">
+              <span class="carte-etiquette">Ça vient d'arriver</span>
+              <span class="carte-titre">Les nouveautés et tendances</span>
+              <span class="carte-detail">Les nouveaux produits et les envies du moment dans les boutiques.</span>
+              <span class="carte-action">
+                <span class="carte-action-mot">Voir les nouveautés</span>
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12 h13"/><path d="M12 5 l7 7 l-7 7"/>
+                </svg>
+              </span>
+            </span>
+          </button>
+        </div>
+
+        <button type="button" class="lien-sobre" id="btn-decouverte-programme">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+               stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10 h17"/>
+            <path d="M8 3 v4"/><path d="M16 3 v4"/>
+          </svg>
+          <span>Le programme des animations</span>
+        </button>
+        <button type="button" class="lien-sobre lien-sobre-fin" id="btn-decouverte-retour">Revenir à mon résultat</button>
+      </div>
+    </section>
+
+    <!-- Écran : les bons plans des commerçants -->
+    <section id="ecran-promos" class="ecran">
+      <div class="quiz-zone vue-galerie">
+        <div class="onglets-zone" data-vue="promos"></div>
+        <div class="bandeau-vue bandeau-promos">
+          <h2>Les promos du moment</h2>
+          <p class="question-soustitre" id="promos-soustitre">Toutes les offres de la galerie, réunies au même endroit.</p>
+        </div>
+        <div id="promos-liste" class="promos-liste"></div>
+        <button class="btn btn-discret" id="btn-promos-retour">Retour</button>
+      </div>
+    </section>
+
+    <!-- Écran : les nouveautés et les tendances des boutiques -->
+    <section id="ecran-nouveautes" class="ecran">
+      <div class="quiz-zone vue-galerie">
+        <div class="onglets-zone" data-vue="nouveautes"></div>
+        <div class="bandeau-vue bandeau-nouveautes">
+          <h2>Les nouveautés</h2>
+          <p class="question-soustitre" id="nouveautes-soustitre">Ce qui vient d'arriver dans les boutiques de la galerie.</p>
+        </div>
+        <div id="nouveautes-liste" class="nouveautes-liste"></div>
+        <button class="btn btn-discret" id="btn-nouveautes-retour">Retour</button>
+      </div>
+    </section>
+
+    <!-- Écran : proposition des bons plans, une fois le joueur conquis -->
+    <section id="ecran-offres" class="ecran">
+      <div class="hero hero-offres">
+        <div class="hero-emoji" id="offres-medaillon"></div>
+        <span class="offres-kicker">Avant de jouer</span>
+        <h1>Les bons plans de la galerie, chaque jeudi.</h1>
+        <p class="sous-titre">La remise du boucher, la nouvelle collection, le menu du midi. On peut te les envoyer, triés selon ce que tu viens de nous dire.</p>
+
+        <div class="promesse">
+          <span class="promesse-titre">Ce qu'on t'envoie</span>
+          <div class="promesse-ligne"><span class="promesse-puce" aria-hidden="true"></span><span><strong>Un seul e-mail, le jeudi.</strong> Pas un de plus.</span></div>
+          <div class="promesse-ligne"><span class="promesse-puce" aria-hidden="true"></span><span><strong>Rien que les commerçants d'ici</strong>, selon les rayons que tu aimes. Jamais de publicité extérieure, jamais ton adresse revendue.</span></div>
+          <div class="promesse-ligne"><span class="promesse-puce" aria-hidden="true"></span><span><strong>Tu pars en un clic</strong>, lien de désinscription dans chaque e-mail.</span></div>
+        </div>
+
+        <button class="btn btn-or btn-grand" id="btn-offres-oui">Oui, je veux les bons plans</button>
+        <button class="btn btn-discret" id="btn-offres-non">Non merci, juste le jeu</button>
+        <p id="offres-mineurs" class="mini-mention" hidden>Les offres par e-mail sont réservées aux joueurs majeurs.</p>
+        <p class="mini-mention offres-liberte">Ton choix ne change <strong>rien</strong> à ta partie, ni à tes chances, ni à ton lot, et tu peux en changer quand tu veux. <a href="reglement.html#donnees" target="_blank" class="lien-or">Ce qu'on fait de tes données</a></p>
+      </div>
+    </section>
+
+    <!-- Écran : le programme des animations -->
+    <section id="ecran-programme" class="ecran">
+      <div class="quiz-zone vue-galerie">
+        <div class="onglets-zone" data-vue="programme"></div>
+        <div class="bandeau-vue bandeau-programme">
+          <h2>Le programme</h2>
+          <p class="question-soustitre">Tout ce qui se passe dans la galerie pendant l'opération.</p>
+        </div>
+        <div id="programme-liste" class="programme-liste"></div>
+        <button class="btn btn-discret" id="btn-programme-retour">Retour</button>
+      </div>
+    </section>
+
+    <!-- Fenêtre : bon obtenu depuis une promo -->
+    <section id="ecran-bon-promo" class="ecran">
+      <div class="hero">
+        <div class="hero-emoji" id="bon-promo-medaillon"></div>
+        <h1>Ton bon est prêt</h1>
+        <p class="sous-titre" id="bon-promo-enseigne"></p>
+        <div class="code-bloc">
+          <span class="code-libelle" id="bon-promo-libelle">Ton bon</span>
+          <span class="code-valeur" id="bon-promo-code"></span>
+          <span class="code-info" id="bon-promo-detail"></span>
+          <button class="btn btn-or btn-utiliser" id="btn-promo-utiliser">Je suis chez le commerçant</button>
+        </div>
+        <div id="bon-promo-valide" class="bon-valide" hidden>
+          <span class="valide-marque" aria-hidden="true">
+            <svg viewBox="0 0 52 52" width="46" height="46" fill="none" stroke="#3fbf6a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="26" cy="26" r="22"/><path d="M15 27 l8 8 l15 -17"/>
+            </svg>
+          </span>
+          <span class="valide-titre" id="bon-promo-valide-titre">Bon utilisé</span>
+          <span class="valide-lot" id="bon-promo-valide-lot"></span>
+          <span class="valide-horloge" id="bon-promo-horloge"></span>
+          <span class="valide-mention" id="bon-promo-valide-mention">Cet écran est la preuve. Le bon ne peut plus servir.</span>
+        </div>
+        <div id="confirme-promo" class="confirme" hidden>
+          <p class="confirme-mot-cle">Passe ton téléphone au commerçant</p>
+          <p class="confirme-texte" id="confirme-promo-detail"></p>
+          <div class="confirme-actions">
+            <button class="btn btn-or" id="btn-promo-confirme-oui">Je valide ce bon</button>
+            <button class="btn btn-discret" id="btn-promo-confirme-non">Annuler</button>
+          </div>
+          <p class="confirme-note">Ce bouton est réservé au commerçant.</p>
+        </div>
+        <button class="btn btn-discret" id="btn-bon-promo-retour">Retour aux promos</button>
+      </div>
+    </section>
+
+    <!-- Écran : opération fermée -->
+    <section id="ecran-ferme" class="ecran">
+      <div class="hero">
+        <div class="hero-emoji">
+          <svg viewBox="0 0 100 100" width="50" height="50" aria-hidden="true" fill="none"
+               stroke="#EFC368" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="50" cy="50" r="32"/><path d="M50 30 v22 l15 9"/>
+          </svg>
+        </div>
+        <h1>À bientôt&nbsp;!</h1>
+        <p class="sous-titre">Cette opération n'est pas ouverte en ce moment.<br>Reviens vite tenter ta chance&nbsp;!</p>
+      </div>
+    </section>
+
+    <!-- Écran : déjà joué -->
+    <section id="ecran-deja-joue" class="ecran">
+      <div class="hero">
+        <div class="hero-emoji">
+          <svg viewBox="0 0 100 100" width="50" height="50" aria-hidden="true" fill="none"
+               stroke="#EFC368" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M56 22 l7 18 l19 2 l-14 13 l4 19 l-16 -10 l-16 10 l4 -19 l-14 -13 l19 -2 z"/>
+            <path d="M28 30 h-14 M24 44 h-12 M30 58 h-10"/>
+          </svg>
+        </div>
+        <h1>Pas si vite&nbsp;!</h1>
+        <p class="sous-titre">Tu as déjà tenté ta chance aujourd'hui avec cette adresse mail.<br><strong>Reviens demain pour rejouer&nbsp;!</strong></p>
+      </div>
+    </section>
+
+    <footer class="pied">
+      <span class="pastille"></span>
+      <span class="pied-marque">Animation Pull Up Événements</span>
+    </footer>
+
+    <div id="badge-demo" class="badge-demo" hidden>Mode démo : données non enregistrées</div>
+    <div id="badge-test" class="badge-test" hidden>Mode test · parties illimitées</div>
+  </div>
+
+  <!-- Décors hors du conteneur : ils restent en arrière-plan du contenu -->
+  <div id="flocons"></div>
+  <div id="confettis"></div>
+
+  <!-- Les scripts sont déclarés dans l'en-tête, avec « defer ».
+       Les jeux, eux, ne sont pas chargés du tout au démarrage : seul le
+       jeu du jour est téléchargé, et pendant que le joueur répond aux
+       questions (voir chargerFichierJeu() dans app.js). Un fichier = un
+       jeu. Voir LISEZ-MOI.md, section « Les jeux ». -->
+</body>
+</html>
