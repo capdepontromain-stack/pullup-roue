@@ -1402,13 +1402,22 @@ let cibleRoue = null;
 // (c'est elle qui porte le nom du jeu, elle reste le clou). « Trois
 // Cadeaux Pareils » n'est pas supprimé pour autant : il reste jouable,
 // il suffit de l'écrire dans la colonne jeu de roue_operations.
-// LE PROGRAMME DU CHAPITEAU (26/08/2026)
-// Trois numéros, dans l'ordre où un spectacle monte : la machine de
-// foire et son levier, le chamboule-tout, puis le tour du magicien.
-// La roue de la fortune reste disponible (?jeu=roue) et peut prendre
-// la place de l'un des trois d'un jour à l'autre, via la colonne
-// « jeu » de roue_operations.
-const MANCHES_DEFAUT = ['bandit', 'chamboule', 'chapeau'];
+// LE PARCOURS PAR DÉFAUT NE CHANGE QUE SUR DÉCISION DE ROMAIN
+// (26/08/2026, remis en état en fin de soirée)
+// Onze jeux existent maintenant dans jeux/, tous jouables par
+// « ?jeu=<nom> », et il en arrive de nouveaux à chaque atelier. La
+// tentation est grande d'installer le dernier écrit dans le parcours :
+// c'est exactement ce qu'il ne faut pas faire. Romain a dit qu'il
+// essaierait les jeux et dirait lesquels il garde (voir la page
+// « _choix-des-jeux.html »). Tant qu'il n'a pas tranché, le parcours
+// reste celui qu'il connaît et qu'il a montré à un client :
+//     la machine à sous, le chamboule-tout, puis la roue.
+// La roue finit exprès : c'est elle qui porte le nom du jeu, et c'est
+// le clou de la partie.
+// En cours de soirée, « chapeau » avait pris la place de la roue ici.
+// Ce n'était pas une décision de Romain : la ligne est remise. Pour
+// essayer un jeu sans toucher au parcours, il y a « ?jeu=chapeau ».
+const MANCHES_DEFAUT = ['bandit', 'chamboule', 'roue'];
 let MANCHES = MANCHES_DEFAUT.slice();
 let mancheActuelle = 0;
 let mancheSecondTour = false;
@@ -2033,6 +2042,20 @@ function afficherResultat() {
     mention.textContent = validite
       ? 'Ton bon est valable jusqu’au ' + validite + '.'
       : 'Ton bon est valable pendant toute la durée de l’opération.';
+
+    // LE BON ENTRE DANS LE PORTEFEUILLE (26/08/2026)
+    // Sans ça, le joueur qui quitte cet écran n'a plus aucun endroit où
+    // retrouver son code, dix minutes plus tard, devant la caisse.
+    if (window.PullUpBons) {
+      window.PullUpBons.ajouter({
+        code: codeLot,
+        lot: lotGagne.nom,
+        commercant: lotGagne.commercant || '',
+        source: 'jeu',
+        validite: validite
+      });
+      rafraichirOngletBons();
+    }
 
     // Envoi du bon par e-mail. Volontairement sans await : si le
     // service d'envoi est lent ou en panne, le joueur ne le voit
@@ -2785,6 +2808,28 @@ async function afficherPromos() {
   }
 
   liste.innerHTML = '';
+
+  // LE RAPPEL DES BONS DÉJÀ EN POCHE (26/08/2026)
+  // Le joueur qui a déjà un bon arrive ici pour en prendre d'autres. Sans
+  // ce rappel, rien ne lui dit qu'il en a un qui l'attend, et il ressort
+  // de la galerie sans l'utiliser. Une ligne, cliquable, qui mène droit
+  // au portefeuille.
+  if (window.PullUpBons) {
+    const enPoche = window.PullUpBons.combienValables();
+    if (enPoche > 0) {
+      const rappel = document.createElement('button');
+      rappel.type = 'button';
+      rappel.className = 'rappel-bons';
+      rappel.innerHTML =
+        '<span class="rappel-bons-mot">' +
+          (enPoche > 1 ? 'Tu as déjà <strong>' + enPoche + ' bons</strong> à utiliser'
+                       : 'Tu as déjà <strong>un bon</strong> à utiliser') +
+        '</span><span class="rappel-bons-lien">Les voir</span>';
+      rappel.addEventListener('click', function () { afficherMesBons(); });
+      liste.appendChild(rappel);
+    }
+  }
+
   offres.forEach((o, index) => {
     const pourToi = gouts.indexOf(o.univers) !== -1;
     const carte = document.createElement('article');
@@ -2801,11 +2846,26 @@ async function afficherPromos() {
 
     if (o.bon) {
       const btn = document.createElement('button');
-      const deja = bonsUtilises()['PROMO-' + index];
+      btn.addEventListener('click', function () { retourDuBonPromo = 'promos'; });
+      // La clé d'un bon de promotion est SON CODE, pas sa position dans
+      // la liste : les offres sont triées selon les goûts du joueur, donc
+      // la position change d'une visite à l'autre. Avec l'ancienne clé,
+      // un bon déjà utilisé pouvait réapparaître comme neuf sur une autre
+      // carte, et un bon neuf s'afficher comme déjà utilisé.
+      const deja = bonsUtilises()[codePromo(o.enseigne, index)];
       btn.className = 'btn btn-or promo-bon' + (deja ? ' obtenu' : '');
       btn.textContent = deja ? 'Bon déjà utilisé' : 'Obtenir mon bon';
       btn.addEventListener('click', () => ouvrirBonPromo(o, index));
       carte.appendChild(btn);
+    } else {
+      // Pas de bon à retirer : c'est une offre qui s'applique
+      // directement en boutique. Sans cette ligne, la carte s'arrête
+      // sans dire quoi faire, et le joueur cherche un bouton qui
+      // n'existe pas.
+      const mention = document.createElement('span');
+      mention.className = 'promo-directe';
+      mention.textContent = 'Offre valable directement en boutique, sans code.';
+      carte.appendChild(mention);
     }
     liste.appendChild(carte);
   });
@@ -2817,9 +2877,17 @@ async function afficherPromos() {
 // commerçant valide, l'horloge fait la preuve.
 // --------------------------------------------
 let promoEnCours = null;
+// L'écran du bon de promotion s'ouvre depuis deux endroits : la liste
+// des promos, et le portefeuille « Mes bons ». Le bouton de retour doit
+// ramener d'où l'on vient, pas toujours au même endroit.
+let retourDuBonPromo = 'promos';
 
 function ouvrirBonPromo(offre, index) {
-  promoEnCours = { offre: offre, cle: 'PROMO-' + index, code: codePromo(offre.enseigne, index) };
+  // `offre.codeFige` arrive quand on rouvre un bon depuis « Mes bons » :
+  // le code doit être celui qui a été donné au joueur, pas un code
+  // recalculé depuis une position dans une liste qui a pu bouger.
+  const code = offre.codeFige || codePromo(offre.enseigne, index);
+  promoEnCours = { offre: offre, cle: code, code: code };
   document.getElementById('bon-promo-medaillon').innerHTML = medaillonIcone(iconePourLot(offre.titre));
   document.getElementById('bon-promo-medaillon').classList.remove('hero-photo');
   document.getElementById('bon-promo-enseigne').textContent = offre.enseigne || '';
@@ -2827,6 +2895,22 @@ function ouvrirBonPromo(offre, index) {
   document.getElementById('bon-promo-detail').textContent = offre.bon || '';
   document.getElementById('confirme-promo').hidden = true;
   document.getElementById('btn-promo-utiliser').disabled = false;
+  const retour = document.getElementById('btn-bon-promo-retour');
+  if (retour) retour.textContent = retourDuBonPromo === 'mesbons' ? 'Retour à mes bons' : 'Retour aux promos';
+
+  // Le bon entre dans le portefeuille dès qu'il est pris : c'est là que
+  // le joueur le considère comme sien.
+  if (window.PullUpBons) {
+    window.PullUpBons.ajouter({
+      code: promoEnCours.code,
+      lot: offre.titre || '',
+      commercant: offre.enseigne || '',
+      detail: offre.bon || '',
+      source: 'promo',
+      validite: offre.valable_jusqu_au || ''
+    });
+    rafraichirOngletBons();
+  }
 
   const deja = bonsUtilises()[promoEnCours.cle];
   const bloc = document.getElementById('bon-promo-valide');
@@ -2888,7 +2972,10 @@ document.getElementById('btn-promo-confirme-oui').addEventListener('click', () =
   marquerBonUtilise(promoEnCours.cle, promoEnCours.offre.bon);
   afficherBonPromoUtilise(promoEnCours.offre.bon, null);
 });
-document.getElementById('btn-bon-promo-retour').addEventListener('click', afficherPromos);
+document.getElementById('btn-bon-promo-retour').addEventListener('click', function () {
+  if (retourDuBonPromo === 'mesbons') { afficherMesBons(); return; }
+  afficherPromos();
+});
 
 // --------------------------------------------
 // LES BONS PLANS
@@ -2998,6 +3085,11 @@ function afficherDecouverte() {
     ? 'Choisis ton univers, on classe tout selon ce que tu aimes.'
     : 'Qu’est-ce que tu as envie de voir dans la galerie ?';
 
+  // La carte « Mes bons » n'apparaît que si le joueur a quelque chose à
+  // présenter. Elle est recalculée à chaque passage : un bon utilisé
+  // entre-temps doit la faire disparaître.
+  rafraichirOngletBons();
+
   afficherEcran('ecran-decouverte');
 }
 
@@ -3007,6 +3099,12 @@ function afficherDecouverte() {
 // à l'autre sans jamais revenir en arrière.
 // --------------------------------------------
 const VUES_GALERIE = [
+  // « Mes bons » ouvre la marche : c'est la seule vue qui porte quelque
+  // chose à faire tout de suite, dans la galerie, devant un commerçant.
+  // Son onglet ne s'affiche que si le joueur a réellement un bon (voir
+  // rafraichirOngletBons) : un onglet qui ouvre sur une page vide est
+  // une porte qui ne mène nulle part.
+  { cle: 'mesbons',    libelle: 'Bons',       ouvrir: function () { afficherMesBons(); } },
   { cle: 'promos',     libelle: 'Promos',     ouvrir: function () { afficherPromos(); } },
   { cle: 'nouveautes', libelle: 'Nouveautés', ouvrir: function () { afficherNouveautes(); } },
   { cle: 'programme',  libelle: 'Programme',  ouvrir: function () { afficherProgramme(); } }
@@ -3041,6 +3139,69 @@ function activerOnglet(cle) {
     bouton.classList.toggle('actif', actif);
     bouton.setAttribute('aria-current', actif ? 'true' : 'false');
   });
+}
+
+// --------------------------------------------
+// MES BONS (26/08/2026)
+// --------------------------------------------
+// Tout ce que le joueur peut présenter à un commerçant, réuni : le lot
+// gagné en jouant et les bons pris sur les promotions. La liste et les
+// tickets sont dessinés par bons.js ; ici, on ne fait que l'ouvrir et
+// brancher le bouton de validation sur l'écran de confirmation qui
+// existe déjà.
+function afficherMesBons() {
+  const liste = document.getElementById('mes-bons-liste');
+  const soustitre = document.getElementById('mesbons-soustitre');
+  activerOnglet('mesbons');
+  afficherEcran('ecran-mes-bons');
+  if (!window.PullUpBons || !liste) return;
+
+  const valables = window.PullUpBons.combienValables();
+  if (soustitre) {
+    soustitre.textContent = valables > 1
+      ? 'Présente le code du bon que tu utilises. Un bon ne sert qu’une fois.'
+      : 'Présente ton code au commerçant. Un bon ne sert qu’une fois.';
+  }
+
+  window.PullUpBons.rendre(liste, function (bon) {
+    // Le bon du jeu et les bons de promotion n'ont pas le même écran de
+    // validation : chacun a le sien depuis toujours, avec son horloge et
+    // sa preuve. On renvoie donc le joueur sur le bon des deux, plutôt
+    // que d'en fabriquer un troisième qui dirait la même chose.
+    if (bon.source === 'promo') {
+      retourDuBonPromo = 'mesbons';
+      ouvrirBonPromo({
+        enseigne: bon.commercant,
+        titre: bon.lot,
+        bon: bon.detail,
+        codeFige: bon.code
+      }, null);
+    } else {
+      afficherResultat();
+    }
+  });
+}
+
+// L'onglet et la carte « Mes bons » n'existent que quand il y a un bon.
+// Appelé après chaque gain et après chaque bon pris sur une promotion.
+function rafraichirOngletBons() {
+  const combien = window.PullUpBons ? window.PullUpBons.combienValables() : 0;
+  const total = window.PullUpBons ? window.PullUpBons.liste().length : 0;
+
+  document.querySelectorAll('.onglet[data-vue="mesbons"]').forEach(function (b) {
+    b.hidden = total === 0;
+    // Le libellé de l'onglet est court exprès : à quatre onglets sur un
+    // écran de 375 px, « Mes bons » se fait couper au milieu d'un mot.
+    // Le titre de l'écran, lui, dit bien « Mes bons ».
+    b.textContent = combien > 1 ? 'Bons · ' + combien : 'Bons';
+  });
+
+  const carte = document.getElementById('carte-mesbons');
+  if (carte) {
+    carte.hidden = combien === 0;
+    const titre = document.getElementById('carte-mesbons-titre');
+    if (titre) titre.textContent = combien > 1 ? 'Mes ' + combien + ' bons' : 'Mon bon';
+  }
 }
 
 // --------------------------------------------
@@ -3110,6 +3271,8 @@ async function afficherNouveautes() {
   });
 }
 
+document.getElementById('carte-mesbons').addEventListener('click', function () { afficherMesBons(); });
+document.getElementById('btn-mes-bons-retour').addEventListener('click', function () { afficherDecouverte(); });
 document.getElementById('carte-promos').addEventListener('click', function () { afficherPromos(); });
 document.getElementById('carte-nouveautes').addEventListener('click', function () { afficherNouveautes(); });
 document.getElementById('btn-decouverte-programme').addEventListener('click', function () { afficherProgramme(); });
@@ -3121,6 +3284,10 @@ document.getElementById('btn-nouveautes-retour').addEventListener('click', funct
 });
 
 installerOnglets();
+// L'onglet « Mes bons » est caché tant qu'il n'y a rien dedans. Au
+// chargement, il peut déjà y avoir un bon : celui d'hier, resté dans le
+// téléphone et encore valable.
+rafraichirOngletBons();
 
 // --------------------------------------------
 // PROGRAMME DES ANIMATIONS

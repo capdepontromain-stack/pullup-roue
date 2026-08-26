@@ -39,6 +39,11 @@
   <script src="icones.js?v=26aout2026i" defer></script>
   <script src="icones-quiz.js?v=26aout2026i" defer></script>
   <script src="contenus-demo.js" defer></script>
+  <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
+       Il tient la liste des bons du joueur et sait la dessiner. Chargé
+       avant app.js, qui l'appelle à deux endroits : quand un lot est
+       gagné, et quand un bon de promotion est pris. Voir bons.js. -->
+  <script src="bons.js?v=26aout2026h" defer></script>
   <script src="app.js?v=26aout2026i" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
@@ -327,7 +332,30 @@
           <span class="consolation-demain">Et une nouvelle chance demain, dès l’ouverture.</span>
         </div>
 
+        <!-- MES BONS, EN PREMIER (26/08/2026, demande de Romain :
+             « que les bons soient mis en avant »). La carte n'apparaît
+             que si le joueur a réellement un bon à présenter : proposer
+             un portefeuille vide à quelqu'un qui vient de perdre serait
+             une petite cruauté. C'est app.js qui la montre ou la cache,
+             dans afficherDecouverte(). -->
         <div class="choix-univers">
+          <button type="button" class="carte-univers carte-mesbons" id="carte-mesbons" hidden>
+            <span class="carte-photo" aria-hidden="true"></span>
+            <span class="carte-voile" aria-hidden="true"></span>
+            <span class="carte-texte">
+              <span class="carte-etiquette">À utiliser en galerie</span>
+              <span class="carte-titre" id="carte-mesbons-titre">Mon bon</span>
+              <span class="carte-detail">Ton code, à présenter au commerçant pour retirer ton cadeau.</span>
+              <span class="carte-action">
+                <span class="carte-action-mot">Voir mon bon</span>
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12 h13"/><path d="M12 5 l7 7 l-7 7"/>
+                </svg>
+              </span>
+            </span>
+          </button>
+
           <button type="button" class="carte-univers carte-promos" id="carte-promos">
             <span class="carte-photo" aria-hidden="true"></span>
             <span class="carte-voile" aria-hidden="true"></span>
@@ -386,6 +414,24 @@
           </button>
         </div>
         <button type="button" class="lien-sobre lien-sobre-fin" id="btn-decouverte-retour">Revenir à mon résultat</button>
+      </div>
+    </section>
+
+    <!-- Écran : le portefeuille de bons (26/08/2026)
+         Tout ce que le joueur peut présenter à un commerçant, au même
+         endroit : le lot gagné en jouant ET les bons pris sur les
+         promotions. Avant, chacun vivait sur son propre écran et le
+         joueur qui en avait deux ne les voyait jamais ensemble.
+         Le contenu est dessiné par bons.js, appelé depuis app.js. -->
+    <section id="ecran-mes-bons" class="ecran">
+      <div class="quiz-zone vue-galerie">
+        <div class="onglets-zone" data-vue="mesbons"></div>
+        <div class="bandeau-vue bandeau-mesbons">
+          <h2>Mes bons</h2>
+          <p class="question-soustitre" id="mesbons-soustitre">Présente ton code au commerçant. Un bon ne sert qu’une fois.</p>
+        </div>
+        <div id="mes-bons-liste" class="mes-bons-liste"></div>
+        <button class="btn btn-discret" id="btn-mes-bons-retour">Retour</button>
       </div>
     </section>
 

@@ -433,14 +433,14 @@
         const obus = document.createElement('span');
         obus.className = 'cnn-obus';
         obus.innerHTML = OBUS;
-        obus.style.left = '104px';
+        obus.style.left = Math.round(cadre.width * 0.30) + 'px';
         obus.style.top  = (cadre.height - 120) + 'px';
         piste.appendChild(obus);
 
         // Où finit-il ? Dans le filet s'il gagne, juste devant sinon.
         const boiteFilet = filet.getBoundingClientRect();
         const arrivee = (boiteFilet.left - cadre.left) + (gagne ? 18 : -46);
-        const depart = 104;
+        const depart = Math.round(cadre.width * 0.30);
         const dx = arrivee - depart;
         const dy = gagne ? 44 : 62;
         const duree = ctx.sobre ? 1 : 1250;

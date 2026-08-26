@@ -2411,6 +2411,12 @@ body.mode-test .app { padding-bottom: calc(var(--e7) + 46px); }
   -webkit-tap-highlight-color: transparent;
 }
 .onglet:hover { color: var(--or-clair); }
+/* La barre porte quatre onglets depuis l'arrivée de « Bons ». Sur les
+   téléphones étroits, on resserre le texte d'un demi-point plutôt que
+   de le laisser se faire couper par les points de suspension. */
+@media (max-width: 380px) {
+  .onglet { font-size: 12.5px; padding: 9px 2px; letter-spacing: 0; }
+}
 .onglet.actif {
   background: linear-gradient(165deg, var(--or-blanc), var(--or));
   color: #241804;
@@ -3012,4 +3018,212 @@ body.theme-circus .ticket-detail { color: var(--toile); }
 
 @media (prefers-reduced-motion: reduce) {
   .onde { display: none; }
+}
+
+/* ============================================================
+   MES BONS (26/08/2026)
+   ------------------------------------------------------------
+   Le portefeuille du joueur : le lot gagné en jouant et les bons
+   pris sur les promotions, réunis. Avant, chacun vivait sur son
+   propre écran et celui qui en avait deux ne les voyait jamais
+   ensemble.
+   Les tickets réutilisent volontairement la matière de
+   « .bon-ticket » (le carton doré à encoches de l'écran de
+   résultat) : c'est le même objet, il doit avoir la même main.
+   ============================================================ */
+
+/* LA CARTE DE L'ESPACE DÉCOUVERTE
+   Pas de photographie ici, et c'est voulu : les trois autres cartes
+   montrent un lieu, celle-ci montre un objet qu'on a en poche. Un
+   dégradé d'or, la même matière que le ticket, suffit à la
+   distinguer au premier coup d'œil. */
+.carte-mesbons .carte-photo {
+  background-image:
+    linear-gradient(150deg, rgba(255, 246, 222, .92) 0%, rgba(240, 217, 166, .88) 44%, rgba(201, 150, 46, .9) 100%);
+}
+/* Le voile des cartes photo écraserait cet or : sur celle-ci, il se
+   contente d'assombrir le bas pour que le texte reste lisible. */
+.carte-mesbons .carte-voile {
+  background:
+    linear-gradient(to top, rgba(12, 9, 5, .96) 10%, rgba(14, 10, 6, .84) 46%, rgba(20, 15, 9, .3) 82%, transparent 100%);
+}
+.carte-mesbons { box-shadow: 0 14px 38px rgba(0, 0, 0, .5), 0 0 30px rgba(201, 150, 46, .3); }
+.carte-mesbons .carte-etiquette { color: var(--or-blanc); }
+
+/* LA LISTE */
+.mes-bons-liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e4);
+  width: 100%;
+}
+
+.bons-section {
+  margin: var(--e3) 0 0;
+  font-size: var(--t-etiquette);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--or);
+}
+.bons-section-passee { color: var(--gris); margin-top: var(--e6); }
+
+.bons-vide {
+  padding: var(--e7) var(--e4);
+  text-align: center;
+  font-family: var(--serif);
+  font-size: var(--t-titre-s);
+  line-height: 1.4;
+  color: var(--gris);
+}
+
+/* UN TICKET
+   Il hérite du carton doré de .bon-ticket. Ne sont définis ici que
+   ses contenus propres, en encre brune : c'est du texte imprimé sur
+   un carton, pas de la lumière sur un écran noir. */
+.bon-ticket-haut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--e2);
+  margin-bottom: var(--e1);
+}
+.bon-origine {
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #8A6A21;
+}
+.bon-commercant {
+  font-size: var(--t-mention);
+  color: #4A3A16;
+}
+.bon-lot {
+  font-family: var(--serif);
+  font-size: 21px;
+  line-height: 1.2;
+  color: #241804;
+}
+.bon-detail {
+  font-size: var(--t-petit);
+  line-height: 1.5;
+  color: #4A3A16;
+  margin-top: var(--e1);
+}
+
+/* La ligne de perforations qui sépare la souche du code. */
+.bon-perfo {
+  height: 2px;
+  margin: var(--e3) 0;
+  background: repeating-linear-gradient(90deg,
+    rgba(42, 29, 6, .38) 0 5px,
+    transparent 5px 11px);
+}
+
+.bon-code-zone { display: flex; flex-direction: column; gap: 2px; }
+.bon-code-libelle {
+  font-size: 10.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #8A6A21;
+}
+.bon-code {
+  font-family: var(--serif);
+  font-size: clamp(28px, 8.4vw, 36px);
+  letter-spacing: .1em;
+  line-height: 1.05;
+  color: #241804;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+}
+
+.bon-validite {
+  display: block;
+  margin-top: var(--e2);
+  font-size: var(--t-mention);
+  color: #6B5520;
+}
+
+.bon-utiliser {
+  margin-top: var(--e3);
+  width: 100%;
+}
+
+/* LE TICKET DÉJÀ UTILISÉ
+   Il reste visible, et c'est important : le joueur doit pouvoir
+   vérifier qu'il a bien utilisé celui-là et pas un autre. Mais il
+   ne ressemble plus à un bon qu'on présente. */
+.bon-ticket-passe {
+  background: linear-gradient(158deg, #6E6459 0%, #554C42 50%, #423A32 100%);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .45);
+}
+.bon-ticket-passe .bon-origine,
+.bon-ticket-passe .bon-code-libelle { color: rgba(246, 241, 230, .55); }
+.bon-ticket-passe .bon-lot,
+.bon-ticket-passe .bon-code {
+  color: rgba(246, 241, 230, .7);
+  text-shadow: none;
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+.bon-ticket-passe .bon-commercant,
+.bon-ticket-passe .bon-detail { color: rgba(246, 241, 230, .5); }
+.bon-ticket-passe .bon-perfo {
+  background: repeating-linear-gradient(90deg,
+    rgba(246, 241, 230, .28) 0 5px,
+    transparent 5px 11px);
+}
+.bon-passe-note {
+  display: block;
+  margin-top: var(--e2);
+  font-size: var(--t-mention);
+  color: rgba(246, 241, 230, .6);
+}
+
+/* Le bandeau de l'écran, dans la même famille que les autres vues. */
+.bandeau-mesbons h2 { color: var(--or-blanc); }
+
+/* Le rappel des bons déjà en poche, en tête des promos (26/08/2026).
+   Le joueur vient chercher d'autres offres : il faut qu'il reparte avec
+   celle qu'il a déjà, pas seulement avec une de plus. */
+.rappel-bons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e3);
+  width: 100%;
+  min-height: var(--touche);
+  margin-bottom: var(--e4);
+  padding: 13px 16px;
+  border: 1px solid rgba(201, 150, 46, .45);
+  border-radius: 3px;
+  background: linear-gradient(120deg, rgba(201, 150, 46, .16), rgba(201, 150, 46, .06));
+  color: var(--creme);
+  font-family: var(--sans);
+  font-size: var(--t-petit);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .22s ease, border-color .22s ease;
+}
+.rappel-bons:hover { background: rgba(201, 150, 46, .24); border-color: var(--or); }
+.rappel-bons:active { transform: scale(.99); }
+.rappel-bons-mot strong { color: var(--or-blanc); font-weight: 600; }
+.rappel-bons-lien {
+  flex: none;
+  font-size: var(--t-etiquette);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--or-clair);
+  white-space: nowrap;
+}
+
+/* Une offre sans code : elle s'applique en caisse, il faut le dire. */
+.promo-directe {
+  display: block;
+  margin-top: var(--e3);
+  font-size: var(--t-mention);
+  color: var(--gris);
+  font-style: italic;
 }

@@ -181,13 +181,17 @@
     background: linear-gradient(180deg, #FFE9B8, #B98421);
     box-shadow: 0 2px 7px rgba(0,0,0,.55);
   }
-  .trp-gauche { left: 104px; animation: trp-balance 2.6s ease-in-out infinite; }
+  /* Les deux points d'accroche sont donnés en POURCENTAGE et non en
+     pixels : un iPhone SE fait 320 px de large, un grand téléphone 430.
+     Avec des pixels, l'attrapeur sortait du chapiteau sur les petits
+     écrans, coupé net par le bord du cadre. */
+  .trp-gauche { left: 30%; animation: trp-balance 2.6s ease-in-out infinite; }
   /* L'attrapeur travaille sur une corde plus courte et une amplitude
      plus sage : c'est le rôle. Celui qui reçoit tient sa place, c'est
      le voltigeur qui vient à lui. Accessoirement, ça garde le point
      de rendez-vous à l'intérieur du chapiteau sur un écran de 320 px. */
   .trp-droite {
-    left: 236px; height: 88px;
+    left: 68%; height: 88px;
     animation: trp-balance-court 2.6s ease-in-out infinite reverse;
   }
   @keyframes trp-balance {
