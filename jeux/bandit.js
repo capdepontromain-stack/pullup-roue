@@ -31,6 +31,46 @@
     position: relative;
   }
 
+  /* LES AMPOULES DE LA MACHINE (26/08/2026)
+     Une machine à sous de fête foraine porte ses ampoules sur le
+     pourtour. Quatre dégradés répétés (haut, bas, gauche, droite) les
+     posent sans un seul élément supplémentaire dans la page ; elles
+     respirent lentement, en décalé du reste de l'écran. */
+  .bandit-machine::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 18px;
+    pointer-events: none;
+    z-index: 4;
+    background:
+      radial-gradient(circle 2.6px at 50% 50%, #FFF3D4 0 60%, rgba(239,195,104,.22) 61%, transparent 100%) repeat-x left top    / 26px 10px,
+      radial-gradient(circle 2.6px at 50% 50%, #FFF3D4 0 60%, rgba(239,195,104,.22) 61%, transparent 100%) repeat-x left bottom / 26px 10px,
+      radial-gradient(circle 2.6px at 50% 50%, #FFF3D4 0 60%, rgba(239,195,104,.22) 61%, transparent 100%) repeat-y left top    / 10px 26px,
+      radial-gradient(circle 2.6px at 50% 50%, #FFF3D4 0 60%, rgba(239,195,104,.22) 61%, transparent 100%) repeat-y right top   / 10px 26px;
+    animation: bandit-ampoules 3.4s ease-in-out infinite;
+  }
+  @keyframes bandit-ampoules {
+    0%, 100% { opacity: .5; }
+    50%      { opacity: 1; }
+  }
+
+  /* LE FRONTON : le bandeau qui nomme la machine, comme sur la piste. */
+  .bandit-fronton {
+    display: block;
+    text-align: center;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 2.6px;
+    text-transform: uppercase;
+    color: #241804;
+    background: linear-gradient(165deg, var(--or-blanc), var(--or));
+    border-radius: 2px;
+    padding: 5px 0 4px;
+    margin: 0 22px 11px;
+    box-shadow: 0 4px 14px rgba(201,150,46,.3);
+  }
+
   .bandit-rouleaux { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 
   .bandit-fenetre {
@@ -38,7 +78,7 @@
     height: calc(var(--case) * 3);
     overflow: hidden;
     border-radius: 12px;
-    background: linear-gradient(180deg, #0f0b05 0%, #1d1610 50%, #0f0b05 100%);
+    background: linear-gradient(180deg, #0d0904 0%, #2a1f12 50%, #0d0904 100%);
     border: 1px solid rgba(201,150,46,.4);
     box-shadow: inset 0 0 18px rgba(0,0,0,.75);
   }
@@ -61,7 +101,12 @@
   .bandit-bande.file { filter: blur(1.5px); }
 
   .bandit-case { height: var(--case); display: flex; align-items: center; justify-content: center; }
-  .bandit-case svg { width: 60%; height: auto; max-height: 76%; }
+  .bandit-case svg {
+    width: 68%; height: auto; max-height: 80%;
+    /* La lueur donne à l'or son épaisseur : sans elle, un trait fin sur
+       fond noir paraît toujours éteint. */
+    filter: drop-shadow(0 0 6px rgba(239,195,104,.35));
+  }
 
   /* La ligne de gain : deux repères dorés et un liseré au milieu */
   .bandit-ligne {
@@ -218,7 +263,7 @@
         for (let b = 0; b < BOUCLES; b++) {
           ordres[i].forEach(lot => {
             html += `<div class="bandit-case"><svg viewBox="0 0 100 100" fill="none" stroke="#EFC368"
-                     stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+                     stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"
                      aria-hidden="true">${ctx.icone(lot.nom)}</svg></div>`;
           });
         }
@@ -230,6 +275,7 @@
         <p class="question-soustitre">Trois symboles alignés sur la ligne dorée, c’est gagné.</p>
         <div class="bandit-plateau">
           <div class="bandit-machine" id="bandit-machine" style="--case:${CASE}px">
+            <span class="bandit-fronton">Tente ta chance</span>
             <div class="bandit-rouleaux">
               ${[0, 1, 2].map(i => `
                 <div class="bandit-fenetre">
@@ -242,10 +288,11 @@
           <button type="button" class="bandit-levier" id="bandit-levier" aria-label="Tirer le levier">
             <svg viewBox="0 0 96 124" aria-hidden="true">
               <defs>
-                <radialGradient id="bandit-boule-or" cx="36%" cy="30%" r="72%">
-                  <stop offset="0" stop-color="#FFE9B8"/>
-                  <stop offset="52%" stop-color="#E3B85A"/>
-                  <stop offset="100%" stop-color="#9a6f1c"/>
+                <radialGradient id="bandit-boule-or" cx="34%" cy="28%" r="76%">
+                  <stop offset="0" stop-color="#FF9A8E"/>
+                  <stop offset="34%" stop-color="#D8383E"/>
+                  <stop offset="78%" stop-color="#A81F26"/>
+                  <stop offset="100%" stop-color="#6E1218"/>
                 </radialGradient>
               </defs>
               <rect class="trait" x="20" y="94" width="56" height="22" rx="11"
@@ -258,7 +305,10 @@
                 <circle class="bandit-halo" cx="48" cy="22" r="20"
                         fill="none" stroke="#FFE9B8" stroke-width="2.5"/>
                 <circle class="bandit-boule" cx="48" cy="22" r="18"
-                        fill="url(#bandit-boule-or)" stroke="#7a5410" stroke-width="1.8"/>
+                        fill="url(#bandit-boule-or)" stroke="#EFC368" stroke-width="1.6"/>
+                <!-- Le reflet : c'est lui qui fait la boule laquée. -->
+                <ellipse cx="42" cy="14.5" rx="6" ry="4" fill="#FFFFFF" opacity=".5"
+                         transform="rotate(-22 42 14.5)"/>
               </g>
               <!-- La flèche qui descend : elle dit le geste, pas seulement l'endroit. -->
               <g class="bandit-fleche" stroke="#FFE9B8" stroke-width="3"
