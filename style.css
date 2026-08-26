@@ -813,6 +813,34 @@ h1 {
   opacity: 1;
 }
 
+/* L'ICÔNE DE LA RÉPONSE (26/08/2026)
+   Un petit dessin au trait devant chaque proposition. Il tient dans un
+   carré fixe : les libellés restent alignés les uns sous les autres,
+   qu'ils aient une icône ou non. L'or est celui du reste de l'écran,
+   à peine retenu tant que la réponse n'est pas choisie. */
+.option-icone {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  color: var(--or);
+  opacity: .62;
+  transition: opacity .2s var(--entree), color .2s, transform .2s var(--entree);
+}
+.option.choisie .option-icone {
+  color: var(--or-blanc);
+  opacity: 1;
+  transform: scale(1.08);
+}
+/* Sur une question à cases à cocher, la coche vient AVANT le dessin :
+   c'est elle qui dit l'état, le dessin ne fait qu'illustrer. On resserre
+   donc l'espace entre les deux pour qu'ils forment un seul bloc. */
+.option-avec-icone { gap: 12px; }
+.option-avec-icone .coche + .option-icone { margin-left: -2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .option.choisie .option-icone { transform: none; }
+}
+
 .texte-zone { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
 .texte-zone input,
 .champ input {
@@ -1074,16 +1102,60 @@ h1 {
   align-items: flex-start;
   width: calc(100% + 2 * var(--marge));
   margin-left: calc(-1 * var(--marge));
-  background: rgba(11, 8, 4, .62);
+  background: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border: none;
-  border-top: 1px solid var(--filet-fort);
-  border-bottom: 1px solid var(--filet-fort);
   border-radius: 0;
-  padding: 22px var(--marge) 24px;
+  padding: 20px var(--marge) 24px;
   box-shadow: none;
+  gap: 16px;
 }
+/* LE TICKET DU BON CADEAU (26/08/2026)
+   Un carton doré posé sur le noir de l'écran : c'est l'objet de la
+   soirée, celui qu'on montre au commerçant. Les deux encoches sont
+   découpées au masque, la souche est séparée par une ligne de
+   perforations. Sur un navigateur sans masque, il reste un rectangle
+   doré : le bon se lit toujours. */
+.bon-ticket {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 20px 22px 22px 34px;
+  border-radius: 8px;
+  background:
+    linear-gradient(158deg, #FFF6DE 0%, #F0D9A6 46%, #DDB264 100%);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .6);
+  color: #2A1D06;
+  -webkit-mask-image:
+    radial-gradient(circle 11px at 0 50%, transparent 11px, #000 11.5px),
+    radial-gradient(circle 11px at 100% 50%, transparent 11px, #000 11.5px);
+  mask-image:
+    radial-gradient(circle 11px at 0 50%, transparent 11px, #000 11.5px),
+    radial-gradient(circle 11px at 100% 50%, transparent 11px, #000 11.5px);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+/* La souche : la ligne de perforations, à gauche, comme sur un vrai
+   ticket de tombola. */
+.bon-ticket-souche {
+  position: absolute;
+  left: 20px;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  background: repeating-linear-gradient(180deg,
+    rgba(42, 29, 6, .42) 0 4px,
+    transparent 4px 9px);
+}
+/* Dans le ticket, l'or de l'écran laisse la place à l'encre brune :
+   c'est du texte imprimé sur un carton, pas de la lumière. */
+.bon-ticket .code-libelle { color: #8A6A21; }
+.bon-ticket .code-valeur  { color: #241804; text-shadow: 0 1px 0 rgba(255, 255, 255, .45); }
+.bon-ticket .code-info    { color: #4A3A16; opacity: 1; }
+
 .code-libelle { font-size: 10.5px; letter-spacing: .2em; color: var(--or); text-transform: uppercase; font-weight: 600; }
 .code-valeur {
   font-size: clamp(38px, 11.5vw, 50px);
@@ -2208,6 +2280,11 @@ body.mode-test .app { padding-bottom: calc(var(--e7) + 46px); }
 .carte-nouveautes .carte-photo {
   background-image: linear-gradient(150deg, rgba(58, 42, 18, .35), rgba(23, 16, 9, .35)), url('img/photos/nouveautes.jpg');
 }
+/* La carte du programme : le chapiteau de nuit, la seule photographie
+   du jeu qui dise « il se passe quelque chose ici ce soir ». */
+.carte-programme .carte-photo {
+  background-image: linear-gradient(150deg, rgba(110, 17, 19, .34), rgba(23, 16, 9, .4)), url('img/photos/chapiteau-nuit.jpg');
+}
 
 /* Le voile : c'est lui qui rend le texte lisible sur n'importe quelle photo */
 .carte-voile {
@@ -2544,6 +2621,99 @@ body.theme-circus .app::before {
   opacity: .9;
 }
 
+/* ============================================================
+   LE RIDEAU D'OUVERTURE
+   ============================================================
+   Deux pans de velours qui s'écartent au premier chargement, et
+   une frise qui remonte. Trois secondes de spectacle, une seule
+   fois : c'est ce qui fait la différence entre « une page web » et
+   « le début de quelque chose ».
+   L'ouverture est une animation CSS qui démarre seule. Le rideau ne
+   reçoit jamais les doigts (pointer-events: none) : impossible qu'il
+   empêche de jouer, même s'il restait affiché. */
+.rideau {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  overflow: hidden;
+}
+.rideau.parti { display: none; }
+
+.rideau-pan {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 52%;
+  /* Le velours : des plis verticaux plus ou moins éclairés. Un simple
+     aplat rouge ferait rideau de théâtre en carton. */
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(0, 0, 0, .34) 0px,
+      rgba(255, 255, 255, .07) 13px,
+      rgba(0, 0, 0, .3) 27px,
+      rgba(0, 0, 0, .34) 40px),
+    linear-gradient(90deg, #4E0B0D 0%, #8E1418 42%, #6E1113 100%);
+  box-shadow: 0 0 60px rgba(0, 0, 0, .6);
+  animation: rideau-ouvre 1.45s cubic-bezier(.62, .02, .28, 1) .45s both;
+}
+.rideau-gauche  { left: 0;  transform-origin: left center; }
+.rideau-droite  { right: 0; transform-origin: right center; }
+.rideau-pan::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 6px;
+  background: linear-gradient(90deg, rgba(201,150,46,0), #EFC368 45%, #8A6A21 100%);
+  box-shadow: 0 0 16px rgba(239, 195, 104, .55);
+}
+.rideau-gauche::after { right: 0; }
+.rideau-droite::after { left: 0; transform: scaleX(-1); }
+.rideau-gauche  { animation-name: rideau-ouvre-gauche; }
+.rideau-droite  { animation-name: rideau-ouvre-droite; }
+
+/* La frise du haut : la draperie festonnée, qui remonte un peu plus
+   tard, comme au spectacle. */
+.rideau-frise {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 74px;
+  background:
+    radial-gradient(circle 38px at 34px 0, #8E1418 0 33px, transparent 34px) repeat-x left top / 68px 74px,
+    linear-gradient(180deg, #4E0B0D 0%, #7A1215 100%);
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .5));
+  animation: rideau-frise 1.15s cubic-bezier(.62, .02, .28, 1) .75s both;
+}
+/* Les pompons dorés au creux de chaque feston. */
+.rideau-frise::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 62px;
+  height: 12px;
+  background: radial-gradient(circle 5px at 34px 4px, #FFE9B8 0 55%, #C9962E 56%, transparent 100%) repeat-x left top / 68px 12px;
+}
+
+@keyframes rideau-ouvre-gauche {
+  0%   { transform: translateX(0)      scaleX(1); }
+  18%  { transform: translateX(1.6%)   scaleX(1.02); }   /* le petit élan avant l'ouverture */
+  100% { transform: translateX(-101%)  scaleX(.86); }
+}
+@keyframes rideau-ouvre-droite {
+  0%   { transform: translateX(0)      scaleX(1); }
+  18%  { transform: translateX(-1.6%)  scaleX(1.02); }
+  100% { transform: translateX(101%)   scaleX(.86); }
+}
+@keyframes rideau-frise {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-102%); }
+}
+
+/* Écrans qui n'aiment pas le mouvement : le rideau ne se joue pas, il
+   n'est simplement jamais là. */
+@media (prefers-reduced-motion: reduce) {
+  .rideau { display: none; }
+}
+
 /* La guirlande d'ampoules, sous l'en-tête. Elle scintille très
    lentement et en décalé, comme une vraie enseigne de foire. */
 .guirlande { display: none; }
@@ -2678,3 +2848,109 @@ body.theme-circus .ticket-fond {
 }
 body.theme-circus .ticket-mention { color: var(--or-clair); opacity: .85; }
 body.theme-circus .ticket-detail { color: var(--toile); }
+
+/* ============================================================
+   LA SCÈNE D'ACCUEIL (thème cirque)
+   ------------------------------------------------------------
+   Un projecteur descend du haut de l'écran, s'élargit, et pose
+   un rond de lumière sur la piste. Le Père Noël se tient dedans,
+   bras ouverts, en Monsieur Loyal. Trois couches, rien de plus :
+   le faisceau, la vedette, la piste.
+   ============================================================ */
+.scene {
+  position: relative;
+  width: 100%;
+  height: clamp(230px, 44vw, 300px);
+  margin: calc(var(--e2) * -1) 0 var(--e3);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  isolation: isolate;
+}
+
+/* Le faisceau : un cône de lumière chaude, très diffus, qui descend du
+   haut de l'écran. Il est en « screen » pour ajouter de la lumière au
+   fond au lieu de le recouvrir. */
+.scene-faisceau {
+  position: absolute;
+  top: -14%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 128%;
+  height: 118%;
+  z-index: 0;
+  clip-path: polygon(42% 0%, 58% 0%, 92% 100%, 8% 100%);
+  background:
+    linear-gradient(180deg,
+      rgba(255, 244, 214, .30) 0%,
+      rgba(255, 233, 184, .16) 42%,
+      rgba(255, 226, 168, .07) 74%,
+      rgba(255, 226, 168, 0) 100%);
+  filter: blur(9px);
+  mix-blend-mode: screen;
+  animation: faisceau 7s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes faisceau {
+  0%, 100% { opacity: .82; transform: translateX(-50%) rotate(-.5deg); }
+  50%      { opacity: 1;   transform: translateX(-50%) rotate(.5deg); }
+}
+
+/* La vedette, posée sur la piste, avec l'ombre portée du projecteur. */
+.scene-vedette {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  width: auto;
+  max-width: 74%;
+  object-fit: contain;
+  object-position: bottom center;
+  margin-bottom: 2%;
+  filter: drop-shadow(0 18px 26px rgba(0, 0, 0, .55)) saturate(1.05);
+  animation: vedette-entre 1.1s var(--signature) backwards;
+}
+@keyframes vedette-entre {
+  from { opacity: 0; transform: translateY(14px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Le rond de lumière au sol : c'est lui qui « pose » le personnage.
+   Sans lui, le Père Noël flottait au milieu de l'écran. Deux couches :
+   la piste éclairée, et l'ombre de contact juste sous les bottes. */
+.scene-piste {
+  position: absolute;
+  z-index: 1;
+  bottom: 1%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 82%;
+  height: 17%;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 50%,
+      rgba(255, 240, 200, .5) 0%,
+      rgba(236, 196, 128, .3) 34%,
+      rgba(184, 126, 54, .12) 60%,
+      transparent 80%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+.scene::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  bottom: 1%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40%;
+  height: 6%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(20, 4, 4, .68) 0%, transparent 72%);
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-faisceau { animation: none; }
+  .scene-vedette { animation: none; }
+}

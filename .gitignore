@@ -5,3 +5,6 @@ sauvegardes/
 *.md
 .DS_Store
 .claude/
+
+# Outil interne d'aperçu des jeux (ne part jamais en ligne)
+_apercu-jeux.html

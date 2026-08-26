@@ -29,16 +29,17 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=26aout2026g">
+  <link rel="stylesheet" href="style.css?v=26aout2026h">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=26aout2026g" defer></script>
+  <script src="icones.js?v=26aout2026h" defer></script>
+  <script src="icones-quiz.js?v=26aout2026h" defer></script>
   <script src="contenus-demo.js" defer></script>
-  <script src="app.js?v=26aout2026g" defer></script>
+  <script src="app.js?v=26aout2026h" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -66,6 +67,19 @@
         <span class="entete-lieu" id="entete-lieu" hidden></span>
       </span>
     </header>
+
+    <!-- LE RIDEAU D'OUVERTURE (26/08/2026)
+         Le premier écran de la soirée : deux pans de velours qui
+         s'écartent sur le jeu. L'ouverture est une animation CSS pure,
+         qui part toute seule : même si le JavaScript ne se charge pas,
+         le rideau s'ouvre et personne ne reste enfermé dehors. Le
+         script ne fait que retirer l'élément une fois le spectacle
+         commencé. -->
+    <div class="rideau" id="rideau" aria-hidden="true">
+      <span class="rideau-pan rideau-gauche"></span>
+      <span class="rideau-pan rideau-droite"></span>
+      <span class="rideau-frise"></span>
+    </div>
 
     <!-- La guirlande d'ampoules du chapiteau : visible seulement quand
          l'opération est en univers cirque (voir .theme-circus). -->
@@ -222,13 +236,23 @@
         <p class="sous-titre" id="resultat-texte"></p>
         <p id="resultat-commercant" class="commercant-offre" hidden></p>
         <div id="resultat-code-bloc" class="code-bloc" hidden>
-          <span class="code-libelle">Ton bon cadeau</span>
-          <span class="code-valeur" id="resultat-code"></span>
-          <span class="code-info" id="resultat-code-info">Note ton code : il te suffit pour retirer ton lot.</span>
-          <!-- Affiché uniquement aux joueurs de moins de 18 ans : le
-               règlement, article 5, impose la remise du lot en présence
-               d'un parent. Ni l'enfant ni le commerçant ne le savaient. -->
-          <span class="code-info" id="resultat-mineur" hidden>Tu as moins de 18 ans : viens chercher ton lot avec un parent.</span>
+          <!-- LE BON EST UN VRAI TICKET (26/08/2026)
+               Un code écrit sur le fond noir de l'écran restait une
+               ligne de texte parmi d'autres. Posé sur un carton doré à
+               encoches, il devient l'objet qu'on garde et qu'on montre
+               au commerçant. Les encoches sont un masque CSS : sur un
+               navigateur qui ne le gère pas, le ticket reste un beau
+               rectangle doré, rien ne casse. -->
+          <div class="bon-ticket">
+            <span class="bon-ticket-souche" aria-hidden="true"></span>
+            <span class="code-libelle">Ton bon cadeau</span>
+            <span class="code-valeur" id="resultat-code"></span>
+            <span class="code-info" id="resultat-code-info">Note ton code : il te suffit pour retirer ton lot.</span>
+            <!-- Affiché uniquement aux joueurs de moins de 18 ans : le
+                 règlement, article 5, impose la remise du lot en présence
+                 d'un parent. Ni l'enfant ni le commerçant ne le savaient. -->
+            <span class="code-info" id="resultat-mineur" hidden>Tu as moins de 18 ans : viens chercher ton lot avec un parent.</span>
+          </div>
           <div class="deux-choix">
             <button class="btn btn-or btn-utiliser" id="btn-utiliser">Je suis chez le commerçant</button>
             <button class="btn btn-discret" id="btn-garder-bon">Je garde mon bon pour plus tard</button>
@@ -337,16 +361,30 @@
               </span>
             </span>
           </button>
-        </div>
 
-        <button type="button" class="lien-sobre" id="btn-decouverte-programme">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
-               stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10 h17"/>
-            <path d="M8 3 v4"/><path d="M16 3 v4"/>
-          </svg>
-          <span>Le programme des animations</span>
-        </button>
+          <!-- LE PROGRAMME PASSE EN CARTE (26/08/2026)
+               Il était un lien discret sous les deux cartes photo :
+               personne ne le voyait, alors que c'est ce qui fait venir
+               les familles à la galerie. Il prend maintenant la même
+               place que les autres. L'identifiant ne bouge pas :
+               app.js continue de l'écouter tel quel. -->
+          <button type="button" class="carte-univers carte-programme" id="btn-decouverte-programme">
+            <span class="carte-photo" aria-hidden="true"></span>
+            <span class="carte-voile" aria-hidden="true"></span>
+            <span class="carte-texte">
+              <span class="carte-etiquette">Tous les jours</span>
+              <span class="carte-titre">Le programme des animations</span>
+              <span class="carte-detail">Le Père Noël, les ateliers, les spectacles : les heures et les lieux.</span>
+              <span class="carte-action">
+                <span class="carte-action-mot">Voir le programme</span>
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12 h13"/><path d="M12 5 l7 7 l-7 7"/>
+                </svg>
+              </span>
+            </span>
+          </button>
+        </div>
         <button type="button" class="lien-sobre lien-sobre-fin" id="btn-decouverte-retour">Revenir à mon résultat</button>
       </div>
     </section>

@@ -152,8 +152,14 @@ function appliquerOperation() {
   // LE MÉDAILLON D'ACCUEIL : un vrai Père Noël, en photographie
   // (26/08/2026, demande de Romain). Le portrait est cadré serré : dans
   // un rond de 124 px, un visage se lit, une silhouette entière non.
+  // L'accueil du cirque montre la scène (le projecteur et le Père Noël
+  // en pied) ; les autres univers gardent le médaillon rond.
+  const circusAccueil = OPERATION.theme === 'circus';
+  const scene = document.getElementById('accueil-scene');
   const medaillon = document.getElementById('accueil-medaillon');
+  if (scene) scene.hidden = !circusAccueil;
   if (medaillon) {
+    medaillon.hidden = circusAccueil;
     medaillon.classList.add('hero-photo', 'medaillon-pere-noel');
     medaillon.innerHTML = '';
   }
@@ -350,9 +356,9 @@ const QUESTIONS = [
     id: 'genre', type: 'choix',
     titre: 'Tu es…',
     options: [
-      { v: 'homme', l: 'Un homme' },
-      { v: 'femme', l: 'Une femme' },
-      { v: 'autre', l: 'Je garde le mystère' }
+      { v: 'homme', l: 'Un homme', ic: 'homme' },
+      { v: 'femme', l: 'Une femme', ic: 'femme' },
+      { v: 'autre', l: 'Je garde le mystère', ic: 'mystere' }
     ]
   },
   {
@@ -380,10 +386,10 @@ const QUESTIONS = [
     titre: 'Si tu montais sur la piste, tu serais…',
     soustitre: 'Plusieurs réponses possibles.',
     options: [
-      { v: 'acrobate',   l: 'L’acrobate, toujours en mouvement',       rayons: ['sport'],            aussi: { frequence: 'liste' } },
-      { v: 'loyal',      l: 'Monsieur Loyal, tiré à quatre épingles',   rayons: ['mode'],             aussi: { frequence: 'flaner' } },
-      { v: 'costumiere', l: 'La costumière, l’œil pour les paillettes', rayons: ['beaute', 'bijoux'], aussi: { frequence: 'flaner' } },
-      { v: 'clown',      l: 'Le clown, celui qui met l’ambiance',       rayons: ['gourmandise'],      aussi: { frequence: 'famille' } }
+      { v: 'acrobate',   l: 'L’acrobate, toujours en mouvement',       ic: 'acrobate',    rayons: ['sport'],            aussi: { frequence: 'liste' } },
+      { v: 'loyal',      l: 'Monsieur Loyal, tiré à quatre épingles',   ic: 'hautdeforme', rayons: ['mode'],             aussi: { frequence: 'flaner' } },
+      { v: 'costumiere', l: 'La costumière, l’œil pour les paillettes', ic: 'paillettes',  rayons: ['beaute', 'bijoux'], aussi: { frequence: 'flaner' } },
+      { v: 'clown',      l: 'Le clown, celui qui met l’ambiance',       ic: 'clown',       rayons: ['gourmandise'],      aussi: { frequence: 'famille' } }
     ]
   },
   {
@@ -398,10 +404,10 @@ const QUESTIONS = [
     titre: 'On t’offre 100 € à dépenser dans la galerie.',
     soustitre: 'Tu files où en premier ? Plusieurs réponses possibles.',
     options: [
-      { v: 'mode',        l: 'M’habiller de la tête aux pieds',  rayons: ['mode'] },
-      { v: 'beaute',      l: 'Coiffeur, institut, parfum',       rayons: ['beaute'] },
-      { v: 'bijoux',      l: 'Un bijou, un vrai',                rayons: ['bijoux'] },
-      { v: 'gourmandise', l: 'Un festin, resto et gourmandises', rayons: ['gourmandise'] }
+      { v: 'mode',        l: 'M’habiller de la tête aux pieds',  ic: 'mode',        rayons: ['mode'] },
+      { v: 'beaute',      l: 'Coiffeur, institut, parfum',       ic: 'beaute',      rayons: ['beaute'] },
+      { v: 'bijoux',      l: 'Un bijou, un vrai',                ic: 'bijoux',      rayons: ['bijoux'] },
+      { v: 'gourmandise', l: 'Un festin, resto et gourmandises', ic: 'gourmandise', rayons: ['gourmandise'] }
     ]
   },
   {
@@ -409,10 +415,10 @@ const QUESTIONS = [
     titre: 'Il t’en reste 100 €.',
     soustitre: 'Tu craques sur quoi ?',
     options: [
-      { v: 'hightech', l: 'Du high-tech qui fait envie',   rayons: ['hightech'] },
-      { v: 'sport',    l: 'De quoi bouger, du sport',      rayons: ['sport'] },
-      { v: 'enfants',  l: 'Des jouets pour les enfants',   rayons: ['enfants'] },
-      { v: 'maison',   l: 'De quoi embellir la maison',    rayons: ['maison'] }
+      { v: 'hightech', l: 'Du high-tech qui fait envie',   ic: 'hightech', rayons: ['hightech'] },
+      { v: 'sport',    l: 'De quoi bouger, du sport',      ic: 'sport',    rayons: ['sport'] },
+      { v: 'enfants',  l: 'Des jouets pour les enfants',   ic: 'enfants',  rayons: ['enfants'] },
+      { v: 'maison',   l: 'De quoi embellir la maison',    ic: 'maison',   rayons: ['maison'] }
     ]
   },
   {
@@ -423,10 +429,10 @@ const QUESTIONS = [
     titre: 'Ton samedi idéal, c’est plutôt…',
     soustitre: 'Coche tout ce qui te tente.',
     options: [
-      { v: 'enfants', l: 'En famille, avec les enfants', rayons: ['enfants'],     aussi: { frequence: 'famille' } },
-      { v: 'mode',    l: 'Flâner entre amis',            rayons: ['mode'] },
-      { v: 'sport',   l: 'Dehors, à bouger',              rayons: ['sport'] },
-      { v: 'maison',  l: 'Au calme, à la maison',         rayons: ['maison'] }
+      { v: 'enfants', l: 'En famille, avec les enfants', ic: 'famille', rayons: ['enfants'],     aussi: { frequence: 'famille' } },
+      { v: 'mode',    l: 'Flâner entre amis',            ic: 'amis',    rayons: ['mode'] },
+      { v: 'sport',   l: 'Dehors, à bouger',              ic: 'dehors',  rayons: ['sport'] },
+      { v: 'maison',  l: 'Au calme, à la maison',         ic: 'maison',  rayons: ['maison'] }
     ]
   },
   {
@@ -437,10 +443,10 @@ const QUESTIONS = [
     titre: 'Cette année, tu offres un cadeau à qui ?',
     soustitre: 'Dernière question, et ensuite on joue.',
     options: [
-      { v: 'amoureux', l: 'Mon amoureux, mon amoureuse', rayons: ['bijoux', 'beaute'] },
-      { v: 'enfants',  l: 'Mes enfants',                 rayons: ['enfants'] },
-      { v: 'parents',  l: 'Mes parents, ma famille',     rayons: ['maison'] },
-      { v: 'moi',      l: 'Mes amis, ou moi-même',       rayons: ['gourmandise', 'mode'] }
+      { v: 'amoureux', l: 'Mon amoureux, mon amoureuse', ic: 'amoureux', rayons: ['bijoux', 'beaute'] },
+      { v: 'enfants',  l: 'Mes enfants',                 ic: 'enfants',  rayons: ['enfants'] },
+      { v: 'parents',  l: 'Mes parents, ma famille',     ic: 'famille',  rayons: ['maison'] },
+      { v: 'moi',      l: 'Mes amis, ou moi-même',       ic: 'moi',      rayons: ['gourmandise', 'mode'] }
     ]
   }
 ];
@@ -613,9 +619,16 @@ function afficherQuestion() {
       const btn = document.createElement('button');
       btn.className = 'option';
       const lettre = String.fromCharCode(65 + index);
+      // L'ICÔNE DE LA RÉPONSE (26/08/2026)
+      // Chaque proposition porte son petit dessin au trait : c'est ce
+      // qui fait la différence entre un formulaire et un test de
+      // magazine. Une réponse sans dessin (les tranches d'âge) garde
+      // simplement sa lettre ou sa case, l'écran ne bouge pas.
+      const dessin = (opt.ic && typeof iconeQuiz === 'function') ? iconeQuiz(opt.ic) : '';
+      if (dessin) btn.classList.add('option-avec-icone');
       btn.innerHTML = multiple
-        ? `<span class="coche" aria-hidden="true"></span><span>${opt.l}</span>`
-        : `<span class="puce">${lettre}</span><span>${opt.l}</span>`;
+        ? `<span class="coche" aria-hidden="true"></span>${dessin}<span>${opt.l}</span>`
+        : `${dessin || `<span class="puce">${lettre}</span>`}<span>${opt.l}</span>`;
       if (multiple && choisies.has(opt.v)) btn.classList.add('choisie');
       // Retour en arrière : on remontre ce qui avait été répondu
       if (!multiple && reponses[q.id] === opt.v) btn.classList.add('choisie');
@@ -1374,7 +1387,13 @@ let cibleRoue = null;
 // gagnant rate les deux premières et emporte la troisième ; le
 // perdant rate les trois, la dernière à un cheveu. Personne ne peut
 // mieux jouer, et l'écran de chaque manche dit combien il en reste.
-const MANCHES_DEFAUT = ['bandit', 'roue', 'cartes'];
+// LE PARCOURS PAR DÉFAUT (26/08/2026, soir)
+// Le chamboule-tout entre dans le parcours : la machine à sous pour
+// commencer, la planche de la fête foraine ensuite, la roue pour finir
+// (c'est elle qui porte le nom du jeu, elle reste le clou). « Trois
+// Cadeaux Pareils » n'est pas supprimé pour autant : il reste jouable,
+// il suffit de l'écrire dans la colonne jeu de roue_operations.
+const MANCHES_DEFAUT = ['bandit', 'chamboule', 'roue'];
 let MANCHES = MANCHES_DEFAUT.slice();
 let mancheActuelle = 0;
 let mancheSecondTour = false;
@@ -1427,12 +1446,13 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '26aout2026g';
+const VERSION_JEUX = '26aout2026h';
 const FICHIERS_JEUX = {
   bandit:   'jeux/bandit.js?v=' + VERSION_JEUX,
   pingouin: 'jeux/pingouin.js?v=' + VERSION_JEUX,
   paquets:  'jeux/paquets.js?v=' + VERSION_JEUX,
-  cartes:   'jeux/cartes.js?v=' + VERSION_JEUX
+  cartes:   'jeux/cartes.js?v=' + VERSION_JEUX,
+  chamboule: 'jeux/chamboule.js?v=' + VERSION_JEUX
 };
 const chargements = {};
 
@@ -3162,6 +3182,24 @@ document.getElementById('btn-voir-programme').addEventListener('click', afficher
 document.getElementById('btn-programme-retour').addEventListener('click', () => afficherDecouverte());
 
 document.getElementById('btn-tourner').addEventListener('click', lancerRoue);
+
+// LE RIDEAU D'OUVERTURE
+// ---------------------
+// Il ne se joue qu'une fois par visite : au deuxième écran, plus
+// personne n'a envie de rouvrir le rideau. Le JavaScript ne l'ouvre
+// pas (c'est l'affaire du CSS, voir .rideau), il ne fait que deux
+// choses : le retirer de la page une fois le spectacle passé, et le
+// sauter d'emblée si le joueur revient dans la même session.
+(function rideauDOuverture() {
+  const rideau = document.getElementById('rideau');
+  if (!rideau) return;
+  let dejaVu = false;
+  try { dejaVu = sessionStorage.getItem('rideau-vu') === '1'; } catch (e) { /* navigation privée */ }
+  if (dejaVu) { rideau.classList.add('parti'); return; }
+  try { sessionStorage.setItem('rideau-vu', '1'); } catch (e) { /* sans importance */ }
+  // 2,2 s : le temps de l'ouverture (1,45 s) plus son attente de départ.
+  setTimeout(() => rideau.classList.add('parti'), 2200);
+})();
 
 // L'écran d'accueil est déjà à l'écran au chargement : afficherEcran()
 // n'est pas encore passé, on pose l'état de départ à la main.
