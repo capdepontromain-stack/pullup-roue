@@ -833,7 +833,14 @@ function tirerLot() {
   const perdants = actifs.filter(l => l.perdant);
 
   const force = resultatForce();
-  if (force === true && gagnants.length) return tirerDansListe(gagnants);
+  if (force === true && gagnants.length) {
+    // La démonstration gagnante montre TOUJOURS le même lot : les
+    // samoussas chez Taïlu (choix de Romain). Une démo doit être
+    // prévisible. Si ce lot disparaît de la liste, le premier gagnant
+    // prend le relais.
+    const demo = gagnants.filter(l => l.commercant === 'Taïlu')[0];
+    return demo || gagnants[0];
+  }
   if (force === false && perdants.length) return tirerDansListe(perdants);
 
   // Filets : une opération mal remplie ne doit jamais planter.
@@ -1542,7 +1549,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026h';
+const VERSION_JEUX = '27aout2026i';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -2389,6 +2396,9 @@ async function validerCoordonnees() {
 }
 
 async function lancerLaPartie() {
+  if (PARTIES_ILLIMITEES && window.PullUpBons && window.PullUpBons.toutEffacer) {
+    window.PullUpBons.toutEffacer();
+  }
   // Le bonus du ticket est tiré ICI, avant le lot : c'est ce qui permet
   // à « Chance doublée » de vraiment doubler les chances du joueur.
   // Le ticket, plus tard, ne fait que révéler cette carte.
@@ -2569,6 +2579,14 @@ function neutraliserEnseignes(liste) {
 async function chargerLots() {
   const secours = OPERATIONS_LOCALES[EVENEMENT];
   if (secours && secours.lots) LOTS = secours.lots;
+  // SUR LA VERSION D'ESSAI, LES LOTS LOCAUX PRIMENT (27/08/2026).
+  // La table roue_lots porte encore les anciens noms génériques
+  // (« Bon d'achat 10 € », « la boulangerie de la galerie »...) : la
+  // démonstration montrait ces lots-là au lieu de ceux dictés par
+  // Romain (samoussas Taïlu, cookie Madame Cookie...). Même logique
+  // que pour le thème et le logo : en essai, l'habillage local fait
+  // foi. En vraie galerie, c'est la base qui commande, comme toujours.
+  if (PARTIES_ILLIMITEES && secours && secours.lots) return;
   try {
     const { data, error } = await sb
       .from('roue_lots')
