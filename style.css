@@ -982,6 +982,12 @@ h1 {
   line-height: 1.1;
   letter-spacing: -.015em;
   margin-bottom: -14px;
+  /* LA ROUE NE BOUGE PLUS (27/08/2026, bug vu par Romain) : le titre
+     alterne des phrases courtes (« Ça tourne… ») et longues (« La roue
+     passe la main. Il reste 4 manches. »). Sans hauteur réservée, le
+     passage de une à deux lignes déplaçait toute la roue en pleine
+     rotation. Deux lignes sont réservées d'office. */
+  min-height: calc(var(--t-titre) * 2.2);
 }
 /* Le titre de ces écrans porte lui aussi son filet, plus court */
 .roue-zone h2::after {
@@ -1029,8 +1035,8 @@ h1 {
 }
 .roue-cadre.emballe .ampoule { animation-duration: .3s; }
 
-.roue-zone h2 { transition: color .4s ease, letter-spacing .5s ease; }
-.roue-zone.suspense h2 { color: var(--or-blanc); letter-spacing: 1.5px; }
+.roue-zone h2 { transition: color .4s ease; }
+.roue-zone.suspense h2 { color: var(--or-blanc); }
 
 /* Le pointeur claque à chaque segment qui défile dessous */
 .roue-pointeur { transform-origin: 50% 6%; }

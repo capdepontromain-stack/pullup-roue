@@ -1549,7 +1549,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026j';
+const VERSION_JEUX = '27aout2026k';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus

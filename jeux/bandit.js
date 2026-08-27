@@ -246,9 +246,18 @@
         cibles = [i, i, i];
       } else {
         // Perdu : deux symboles identiques, le troisième à côté.
+        // BLINDAGE DU 27/08/2026 : deux lots différents peuvent porter
+        // le même dessin (deux gourmandises, ou deux lots sans icône
+        // propre). Le troisième rouleau doit montrer un dessin
+        // RÉELLEMENT différent de la paire, sinon l'écran aligne trois
+        // images identiques en annonçant « perdu » : inacceptable.
         const melange = melanger(symboles.map((l, i) => i));
         const paire = melange[0];
-        const seul = melange[1] !== undefined ? melange[1] : (paire + 1) % n;
+        const dessinPaire = ctx.icone(symboles[paire].nom);
+        const differents = melange.slice(1).filter(i =>
+          ctx.icone(symboles[i].nom) !== dessinPaire);
+        const seul = differents.length ? differents[0]
+          : (melange[1] !== undefined ? melange[1] : (paire + 1) % n);
         cibles = [paire, paire, seul];
       }
 

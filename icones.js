@@ -65,6 +65,35 @@ const ICONES = {
   trefle: `<circle cx="38" cy="42" r="12" /><circle cx="62" cy="42" r="12" />
            <circle cx="38" cy="62" r="12" /><circle cx="62" cy="62" r="12" />
            <path d="M50 66 v18" />`
+,
+
+  // Le samoussa : le triangle feuilleté, trois pointes
+  samoussa: `<path d="M50 18 L84 74 L16 74 Z" />
+             <path d="M50 18 L50 74" /><path d="M33 46 L67 46" />`,
+
+  // Le cookie : le rond et ses pépites
+  cookie: `<circle cx="50" cy="52" r="30" />
+           <circle cx="40" cy="42" r="3.5" /><circle cx="60" cy="46" r="3.5" />
+           <circle cx="46" cy="62" r="3.5" /><circle cx="62" cy="62" r="3" />`,
+
+  // La crêpe : pliée en éventail sur son assiette
+  crepe: `<path d="M22 62 L78 62 L50 24 Z" />
+          <path d="M36 62 L50 24" /><path d="M64 62 L50 24" />
+          <path d="M16 70 h68" />`,
+
+  // La glace : le cornet et ses deux boules
+  glace: `<circle cx="42" cy="34" r="12" /><circle cx="60" cy="36" r="11" />
+          <path d="M34 46 L50 86 L66 46" />
+          <path d="M40 58 h22" />`,
+
+  // Le maquillage : le rouge à lèvres sorti de son tube
+  maquillage: `<rect x="40" y="44" width="20" height="34" rx="3" />
+               <path d="M43 44 v-14 c0 -8 14 -8 14 0 v14" />
+               <path d="M43 30 c4 -6 10 -6 14 0" />`,
+
+  // Le soin de peau : la goutte et son reflet
+  soin: `<path d="M50 14 C68 40 76 52 76 64 a26 26 0 0 1 -52 0 C24 52 32 40 50 14 Z" />
+         <path d="M38 62 a12 12 0 0 0 10 14" />`
 };
 
 // Associe un lot à son icône, d'après son nom.
@@ -79,6 +108,12 @@ function iconePourLot(nom) {
   if (/photo|cliché|portrait/.test(t)) return ICONES.photo;
   if (/cinéma|cinema|film/.test(t)) return ICONES.cinema;
   if (/boisson|café|thé|jus/.test(t)) return ICONES.boisson;
+  if (/samoussa/.test(t)) return ICONES.samoussa;
+  if (/cookie|biscuit/.test(t)) return ICONES.cookie;
+  if (/crêpe|crepe|gaufre/.test(t)) return ICONES.crepe;
+  if (/glace|sorbet/.test(t)) return ICONES.glace;
+  if (/maquillage|rouge à lèvres|beauté/.test(t)) return ICONES.maquillage;
+  if (/bilan peau|peau|soin|diagnostic/.test(t)) return ICONES.soin;
   if (/noël|noel|sapin|fête/.test(t)) return ICONES.sapin;
   if (/retente|demain|chance|perdu/.test(t)) return ICONES.etoile;
   return ICONES.cadeau;
