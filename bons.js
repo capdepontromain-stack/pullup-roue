@@ -69,6 +69,17 @@
     // prend un bon sur une promotion. Un même code n'entre qu'une
     // fois : rejouer la même promotion ne crée pas un doublon.
     // --------------------------------------------------------
+    // TOUT EFFACER : réservé à la version d'essai (le bouton « Rejouer
+    // quand même »), pour que chaque partie de démonstration reparte
+    // d'un portefeuille vierge. Chez une vraie galerie, rien n'appelle
+    // jamais cette fonction : les bons d'un joueur ne s'effacent pas.
+    toutEffacer() {
+      try {
+        localStorage.removeItem(CLE_PORTEFEUILLE);
+        localStorage.removeItem(CLE_UTILISES);
+      } catch (e) { /* navigation privée : rien à effacer */ }
+    },
+
     ajouter(bon) {
       if (!bon || !bon.code) return null;
       const tout = lire(CLE_PORTEFEUILLE, '{}');

@@ -130,15 +130,20 @@ const OPERATIONS_LOCALES = {
     // support qui ne supporterait pas le rouge.
     logo: 'img/client/logo-csc-couleur.png',
     texte_tirage: '',
+    // LES LOTS D'EXEMPLE, DICTÉS PAR ROMAIN LE 27/08/2026. Ce sont de
+    // vraies enseignes de la galerie, données par lui pour la version
+    // d'essai : elles remplacent les noms génériques. La « photo dans
+    // la Hotte géante » a disparu : cette animation N'EXISTE PAS, ne
+    // jamais la faire réapparaître, ni ici ni dans le programme.
     lots: [
-      { nom: "Bon d'achat 10 €",        commercant: 'Le supermarché de la galerie',        poids: 8,  perdant: false },
-      { nom: 'Casquette de Noël',       commercant: 'La boutique de mode homme',            poids: 12, perdant: false },
-      { nom: 'Un menu offert',          commercant: 'Le comptoir à burgers',      poids: 4,  perdant: false },
-      { nom: 'Un brushing offert',      commercant: 'Le salon de coiffure',      poids: 4,  perdant: false },
-      { nom: 'Une viennoiserie offerte',commercant: 'La boulangerie de la galerie',    poids: 20, perdant: false },
-      { nom: 'Photo dans la Hotte géante', commercant: 'La galerie',    poids: 12, perdant: false },
-      { nom: 'Un échantillon beauté',   commercant: 'L’institut beauté',      poids: 12, perdant: false },
-      { nom: 'Retente demain !',        commercant: '',                 poids: 28, perdant: true }
+      { nom: '5 samoussas offerts',     commercant: 'Taïlu',          poids: 12, perdant: false },
+      { nom: 'Un cookie offert',        commercant: 'Madame Cookie',  poids: 12, perdant: false },
+      { nom: "Bon d'achat de 5 €",      commercant: 'La galerie',     poids: 8,  perdant: false },
+      { nom: 'Un maquillage flash',     commercant: 'Nocibé',         poids: 8,  perdant: false },
+      { nom: 'Un bilan peau offert',    commercant: 'Avril',          poids: 8,  perdant: false },
+      { nom: 'Une crêpe offerte',       commercant: "My Crep's",      poids: 12, perdant: false },
+      { nom: 'Une glace offerte',       commercant: 'LGM',            poids: 12, perdant: false },
+      { nom: 'Retente demain !',        commercant: '',               poids: 28, perdant: true }
     ]
   }
 };
@@ -1461,8 +1466,12 @@ let mancheSecondTour = false;
 // 27/08/2026 : Romain l'a écarté après l'avoir joué. Le fichier
 // jeux/sapin.js reste sur le disque et jouable par « ?jeu=sapin »,
 // mais il n'est plus proposé nulle part.
+// « La Hotte Géante » (les cadeaux qui tombent dans la corbeille) est
+// sortie du parcours le 27/08/2026 : Romain l'a écartée après l'avoir
+// jouée (« les cadeaux dans la corbeille, tu peux l'enlever »). Le
+// fichier reste jouable par « ?jeu=hotte », rien d'autre.
 const PARCOURS_COMPLET = [
-  'bandit', 'chamboule', 'trapeze', 'hotte',
+  'bandit', 'chamboule', 'trapeze',
   'etoiles', 'canon', 'chapeau', 'cartes', 'roue'
 ];
 
@@ -1522,7 +1531,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026a';
+const VERSION_JEUX = '27aout2026b';
 const FICHIERS_JEUX = {
   bandit:   'jeux/bandit.js?v=' + VERSION_JEUX,
   pingouin: 'jeux/pingouin.js?v=' + VERSION_JEUX,
@@ -2437,6 +2446,11 @@ const btnRejouerEssai = document.getElementById('btn-rejouer-essai');
 if (btnRejouerEssai) {
   btnRejouerEssai.addEventListener('click', () => {
     if (!PARTIES_ILLIMITEES) return;
+    // La partie d'essai repart de ZÉRO (27/08/2026, Romain) : les bons
+    // gagnés aux parties précédentes sont effacés, l'expérience
+    // redevient vierge. Uniquement sur la version d'essai : chez une
+    // vraie galerie, les bons d'un joueur ne s'effacent jamais.
+    if (window.PullUpBons && window.PullUpBons.toutEffacer) window.PullUpBons.toutEffacer();
     lotGagne = tirerLot();
     codeLot = genererCode();
     preparerBonus();
@@ -3167,7 +3181,7 @@ const VUES_GALERIE = [
   // accède par la grande carte « Obtenir mes cadeaux » de l'écran de
   // découverte, et par le bouton de fin de partie : deux portes larges
   // valent mieux qu'un quatrième onglet qui serre les trois autres.
-  { cle: 'promos',     libelle: 'Promos',     ouvrir: function () { afficherPromos(); } },
+  { cle: 'promos',     libelle: 'Réductions', ouvrir: function () { afficherPromos(); } },
   { cle: 'nouveautes', libelle: 'Nouveautés', ouvrir: function () { afficherNouveautes(); } },
   { cle: 'programme',  libelle: 'Programme',  ouvrir: function () { afficherProgramme(); } }
 ];

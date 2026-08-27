@@ -17,13 +17,11 @@
 // Les horaires ci-dessous sont un EXEMPLE, à remplacer par ceux de la
 // galerie (table roue_programme dans Supabase, colonnes jour et heure).
 const PROGRAMME_DEMO = [
-  {
-    titre: 'La photo dans la Hotte Géante',
-    lieu: 'Place centrale',
-    horaires: 'Aux heures d’ouverture de la galerie',
-    detail: 'Installe-toi dans la hotte, sors ton téléphone et prends autant de photos que tu veux. C’est gratuit, sans achat et sans limite.',
-    vedette: true
-  },
+  // La « photo dans la Hotte Géante » a été retirée le 27/08/2026 :
+  // cette animation N'EXISTE PAS (Romain : « il faut que tu oublies
+  // cette idée de photo dans la hotte géante »). Ne jamais la remettre,
+  // ni ici, ni dans les lots, ni dans un texte du jeu.
+
   // ---- Samedi 12 décembre ----
   {
     jour: 'Samedi 12 décembre', heure: '10h30',
@@ -112,54 +110,52 @@ const PROGRAMME_DEMO = [
   }
 ];
 
+// LES OFFRES D'EXEMPLE, DICTÉES PAR ROMAIN (27/08/2026). Ce sont de
+// vraies enseignes de la galerie, données par lui pour la version
+// d'essai. Chaque offre EST un bon : quelque chose à présenter au
+// commerçant, jamais une simple annonce.
 const OFFRES_DEMO = [
   {
-    enseigne: 'La boutique de mode homme', univers: 'mode',
-    titre: 'Le deuxième article à moins 50 %',
-    detail: 'Sur toute la collection de fin d\'année, le moins cher des deux à moitié prix.',
-    valable_jusqu_au: '31 décembre', bon: 'Le deuxième article à moitié prix'
+    enseigne: 'L’igloo', univers: 'gourmandise',
+    titre: 'Une boisson offerte pour l’achat d’une glace',
+    detail: 'Sur présentation de ce bon, la boisson accompagne ta glace, sans minimum.',
+    valable_jusqu_au: '31 décembre', bon: 'Une boisson offerte pour l’achat d’une glace'
   },
   {
-    enseigne: 'Le comptoir à burgers', univers: 'gourmandise',
-    titre: 'Un menu acheté, une boisson offerte',
-    detail: 'Sur présentation de ce bon, la boisson t’est offerte pour tout menu commandé.',
-    valable_jusqu_au: '25 décembre', bon: 'Boisson offerte pour un menu acheté'
+    enseigne: 'Taïlu', univers: 'gourmandise',
+    titre: 'Le sixième samoussa offert',
+    detail: 'Cinq samoussas achetés, le sixième est offert, tous parfums.',
+    valable_jusqu_au: '31 décembre', bon: 'Le sixième samoussa offert'
   },
   {
-    enseigne: 'La bijouterie de la galerie', univers: 'bijoux',
-    titre: 'Le coffret cadeau offert',
-    detail: 'Écrin et emballage cadeau offerts pour tout achat, gravure comprise.',
-    valable_jusqu_au: '24 décembre', bon: 'Coffret cadeau offert'
+    enseigne: 'Madame Cookie', univers: 'gourmandise',
+    titre: 'Un cookie offert dès deux achetés',
+    detail: 'Le troisième cookie est offert, à choisir dans toute la vitrine.',
+    valable_jusqu_au: '31 décembre', bon: 'Un cookie offert dès deux achetés'
   },
   {
-    enseigne: 'L’institut beauté', univers: 'beaute',
-    titre: 'Un diagnostic de peau offert',
-    detail: 'Quinze minutes avec une conseillère et un échantillon adapté, sans engagement.',
-    valable_jusqu_au: '31 décembre', bon: 'Diagnostic de peau, 15 minutes'
+    enseigne: 'Nocibé', univers: 'beaute',
+    titre: 'Un maquillage flash offert',
+    detail: 'Dix minutes avec une conseillère, sans rendez-vous et sans obligation d’achat.',
+    valable_jusqu_au: '24 décembre', bon: 'Un maquillage flash offert'
   },
   {
-    enseigne: 'La boutique de sport', univers: 'sport',
-    titre: 'La deuxième paire à moitié prix',
-    detail: 'Sur toutes les chaussures de running et de sport, la moins chère des deux à moins 50 %.',
-    valable_jusqu_au: '5 janvier', bon: 'La deuxième paire à moitié prix'
+    enseigne: 'Avril', univers: 'beaute',
+    titre: 'Un bilan peau offert',
+    detail: 'Un diagnostic complet et un échantillon adapté à ta peau.',
+    valable_jusqu_au: '31 décembre', bon: 'Un bilan peau offert'
   },
   {
-    enseigne: 'Le magasin de jouets', univers: 'enfants',
-    titre: 'Emballage cadeau offert',
-    detail: 'Papier, ruban et étiquette personnalisée offerts pour tout achat, sans minimum.',
-    valable_jusqu_au: '24 décembre', bon: 'Emballage cadeau offert'
+    enseigne: "My Crep's", univers: 'gourmandise',
+    titre: 'La crêpe sucre offerte dès 10 € d’achat',
+    detail: 'Pour toute commande de 10 € ou plus, la crêpe au sucre est offerte.',
+    valable_jusqu_au: '31 décembre', bon: 'La crêpe sucre offerte dès 10 € d’achat'
   },
   {
-    enseigne: 'La boulangerie de la galerie', univers: 'gourmandise',
-    titre: 'La formule goûter à 4 €',
-    detail: 'Une viennoiserie et une boisson chaude, tous les jours de 15h à 17h.',
-    valable_jusqu_au: '31 décembre', bon: 'La formule goûter à 4 €'
-  },
-  {
-    enseigne: 'La boutique déco', univers: 'maison',
-    titre: 'Trois décorations achetées, la quatrième offerte',
-    detail: 'Sur tout le rayon décoration de Noël, la moins chère des quatre est offerte.',
-    valable_jusqu_au: '31 décembre', bon: 'La quatrième décoration offerte'
+    enseigne: 'LGM', univers: 'gourmandise',
+    titre: 'La deuxième boule offerte',
+    detail: 'Une boule achetée, la deuxième est offerte, en cornet ou en pot.',
+    valable_jusqu_au: '31 décembre', bon: 'La deuxième boule offerte'
   }
 ];
 

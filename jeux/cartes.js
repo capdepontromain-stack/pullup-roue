@@ -47,37 +47,41 @@
   // ruban : rouge, or, crème, vert. Le jeu consiste à reconnaître trois
   // cadeaux pareils, la couleur fait donc la moitié du travail, et le
   // reste se lit à la forme pour qui distingue mal les couleurs.
+  // QUATRE DESSINS DU CIRQUE (27/08/2026, Romain : « changer d'image,
+  // trouver trois images identiques, et comme ça t'amuser à mettre des
+  // dessins du cirque »). Les cadeaux d'avant se ressemblaient trop
+  // dans une case de 60 px. Quatre silhouettes du chapiteau, chacune
+  // avec SA couleur et SA forme : impossibles à confondre, même pour
+  // qui distingue mal les couleurs.
   const CADEAUX = {
-    // Le paquet carré, papier rouge, ruban doré
-    cube: `
-      <rect x="20" y="42" width="60" height="42" rx="3" fill="#B3282D"/>
-      <rect x="16" y="30" width="68" height="13" rx="3" fill="#D8383E"/>
-      <rect x="44" y="30" width="12" height="54" fill="#EFC368"/>
-      <path d="M50 30 c-14 0 -19 -17 -7 -17 c8 0 8 12 7 17 Z" fill="#EFC368"/>
-      <path d="M50 30 c14 0 19 -17 7 -17 c-8 0 -8 12 -7 17 Z" fill="#EFC368"/>`,
+    // Le chapiteau rouge
+    chapiteau: `
+      <path d="M50 12 L14 52 h72 Z" fill="#D8383E"/>
+      <path d="M50 12 L32 52 h36 Z" fill="#F3E7D3"/>
+      <path d="M18 52 h64 l-6 32 h-52 z" fill="#B3282D"/>
+      <path d="M42 84 v-20 c0 -6 16 -6 16 0 v20 z" fill="#2A1104"/>
+      <path d="M50 12 v-7" stroke="#EFC368" stroke-width="3"/>
+      <path d="M50 5 l12 3 l-12 4 z" fill="#EFC368"/>`,
 
-    // La boîte ronde, papier or, ruban rouge
-    ronde: `
-      <path d="M22 50 v26 c0 5 13 9 28 9 s28 -4 28 -9 v-26 z" fill="#C9962E"/>
-      <ellipse cx="50" cy="50" rx="28" ry="9" fill="#EFC368"/>
-      <rect x="44" y="50" width="12" height="34" fill="#B3282D"/>
-      <path d="M50 41 c-9 -1 -12 -10 -4 -10 c5 0 5 7 4 10 Z" fill="#B3282D"/>
-      <path d="M50 41 c9 -1 12 -10 4 -10 c-5 0 -5 7 -4 10 Z" fill="#B3282D"/>`,
+    // L'étoile d'or
+    etoile: `
+      <path d="M50 10 l11 24 l26 3 l-19 18 l5 26 l-23 -13 l-23 13 l5 -26 l-19 -18 l26 -3 z"
+            fill="#EFC368"/>
+      <path d="M50 10 l11 24 l26 3 l-19 18 l-18 -45 z" fill="#C9962E"/>`,
 
-    // Le paquet haut, papier crème, ruban vert
-    haut: `
-      <rect x="33" y="36" width="34" height="50" rx="3" fill="#F3E7D3"/>
-      <rect x="29" y="25" width="42" height="12" rx="3" fill="#FFF6E2"/>
-      <rect x="44" y="25" width="12" height="61" fill="#1F6E4B"/>
-      <path d="M50 25 c-11 0 -15 -13 -5 -13 c6 0 6 9 5 13 Z" fill="#1F6E4B"/>
-      <path d="M50 25 c11 0 15 -13 5 -13 c-6 0 -6 9 -5 13 Z" fill="#1F6E4B"/>`,
+    // La balle de jongleur, verte et crème
+    balle: `
+      <circle cx="50" cy="50" r="34" fill="#1F6E4B"/>
+      <path d="M50 16 a34 34 0 0 1 0 68 c12 -10 18 -21 18 -34 s-6 -24 -18 -34 z" fill="#F3E7D3"/>
+      <circle cx="50" cy="50" r="34" fill="none" stroke="#155238" stroke-width="2"/>
+      <ellipse cx="38" cy="34" rx="8" ry="5" fill="#FFFFFF" opacity=".35"/>`,
 
-    // Le sac cadeau, papier vert, anses et papier de soie dorés
-    sac: `
-      <path d="M25 40 h50 l-5 46 h-40 z" fill="#1F6E4B"/>
-      <path d="M25 40 h50 v7 h-50 z" fill="#2C8C61"/>
-      <path d="M38 40 c0 -12 4 -17 12 -17 s12 5 12 17" fill="none" stroke="#EFC368" stroke-width="4"/>
-      <path d="M38 40 l4 -9 l8 7 l8 -7 l4 9 z" fill="#EFC368"/>`
+    // Le chapeau haut de forme, noir à ruban rouge
+    chapeau: `
+      <rect x="30" y="24" width="40" height="42" rx="4" fill="#2A2118"/>
+      <rect x="30" y="52" width="40" height="12" fill="#B3282D"/>
+      <path d="M16 66 h68 c0 8 -68 8 -68 0 z" fill="#3A2F22"/>
+      <path d="M34 28 c0 16 0 26 2 34" stroke="#4A3E2E" stroke-width="3" fill="none"/>`
   };
 
   // Le dos des cartes : un losange et son cœur, rien de plus.
@@ -234,7 +238,7 @@
 
   window.PullUpJeux.cartes = {
     id: 'cartes',
-    nom: 'Trois Cadeaux Pareils',
+    nom: 'Trois Pareils',
     mot: 'la pioche',                              // « la pioche a hésité… »
     suite: 'Neuf cartes t’attendent, face cachée.', // fin du ticket à gratter
     styles: STYLES,
@@ -264,8 +268,8 @@
         </button>`;
 
       ctx.zone.innerHTML = `
-        <h2>${ctx.secondTour ? 'Deuxième donne' : 'Trois Cadeaux Pareils'}</h2>
-        <p class="question-soustitre">Trouve trois cadeaux identiques en quatre cartes.</p>
+        <h2>${ctx.secondTour ? 'Deuxième donne' : 'Trois Pareils'}</h2>
+        <p class="question-soustitre">Trouve trois dessins identiques en quatre cartes.</p>
 
         <div class="ct-plateau">
           <div class="ct-compte">
@@ -323,7 +327,7 @@
           bouton.classList.add('ct-ouverte');
           if (marquee) bouton.classList.add('ct-marquee');
           bouton.classList.remove('ct-pince');
-          bouton.setAttribute('aria-label', 'Carte retournée, cadeau ' + modele);
+          bouton.setAttribute('aria-label', 'Carte retournée, dessin ' + modele);
           if (fini) setTimeout(fini, ctx.sobre ? 10 : PINCE);
         };
         if (ctx.sobre) { poser(); return; }
@@ -368,11 +372,11 @@
             ? 'Plus qu’une carte.'
             : 'Il te reste ' + (RETOURNEMENTS - retournees) + ' cartes.';
           if (retournees === 1) {
-            ecrire('Un cadeau sur la table.', 'Il t’en faut trois pareils.');
+            ecrire('Un dessin sur la table.', 'Il t’en faut trois pareils.');
           } else if (pareilles.length >= 2) {
-            ecrire('Deux cadeaux pareils.', 'Le troisième se cache encore quelque part.');
+            ecrire('Deux pareils.', 'Le troisième se cache encore quelque part.');
           } else {
-            ecrire('Pas le même cadeau.', 'Rien n’est joué, la table est encore pleine.');
+            ecrire('Pas le même dessin.', 'Rien n’est joué, la table est encore pleine.');
           }
           occupe = false;
           return;
@@ -385,7 +389,7 @@
             o.bouton.classList.add('ct-marquee', 'ct-gagnante');
           });
           const nom = ctx.lot && ctx.lot.nom ? ctx.echap(String(ctx.lot.nom)) : '';
-          ecrire('Trois cadeaux pareils.', nom ? 'Ton cadeau : ' + nom : '');
+          ecrire('Trois pareils !', nom ? 'Ton cadeau : ' + nom : '');
           ctx.vibrer([70, 50, 130]);
           setTimeout(ctx.terminer, ctx.sobre ? 600 : 2600);
           return;
@@ -394,7 +398,7 @@
         // Perdu : la table retourne elle-même la carte qui manquait.
         // C'est elle qui la choisit, pas le joueur : le presque-gain
         // reste excitant sans se transformer en reproche.
-        ecrire('Deux cadeaux pareils sur trois.', 'La table en retourne une dernière…');
+        ecrire('Deux pareils sur trois.', 'La table en retourne une dernière…');
         ctx.vibrer(70);
 
         const fermees = cartes.filter(b => !b.classList.contains('ct-ouverte'));
