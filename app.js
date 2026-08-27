@@ -1573,7 +1573,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026n';
+const VERSION_JEUX = '27aout2026o';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -2120,6 +2120,8 @@ function afficherResultat() {
     if (boutonGalerie) boutonGalerie.textContent = 'Voir les promos du jour';
     const suitePerdue = document.getElementById('btn-resultat-continuer');
     if (suitePerdue) suitePerdue.textContent = 'Voir la galerie';
+    const plusTardPerdu = document.getElementById('btn-resultat-plus-tard');
+    if (plusTardPerdu) plusTardPerdu.hidden = true;
     // Écran nu : le perdant ne lit que son résultat et le bouton.
     mention.textContent = '';
     mention.hidden = true;
@@ -2159,9 +2161,14 @@ function afficherResultat() {
     // s'en tient à la durée de l'opération, comme le règlement.
     const validite = (OPERATION.validite_bons || '').trim();
     mention.hidden = false;
-    mention.textContent = validite
+    // La mention dit au gagnant qu'il ne perd RIEN en remettant à plus
+    // tard (27/08/2026, Romain) : le bon l'attend dans « Mes cadeaux ».
+    mention.textContent = (validite
       ? 'Ton bon est valable jusqu’au ' + validite + '.'
-      : 'Ton bon est valable pendant toute la durée de l’opération.';
+      : 'Ton bon est valable pendant toute la durée de l’opération.') +
+      ' Il ne se perd pas : tu le retrouveras à tout moment dans « Obtenir mon cadeau ».';
+    const plusTard = document.getElementById('btn-resultat-plus-tard');
+    if (plusTard) plusTard.hidden = false;
 
     // LE BON ENTRE DANS LE PORTEFEUILLE (26/08/2026)
     // Sans ça, le joueur qui quitte cet écran n'a plus aucun endroit où
@@ -2919,6 +2926,13 @@ document.getElementById('btn-resultat-continuer').addEventListener('click', () =
   const gagnant = lotGagne && !lotGagne.perdant;
   proposerLesOffres(gagnant ? afficherMesBons : afficherDecouverte);
 });
+// « Je dépenserai mon cadeau plus tard » : le gagnant part vers la
+// galerie, son bon reste dans la poche et la carte « Obtenir mon
+// cadeau » l'attendra sur l'écran suivant.
+const btnPlusTard = document.getElementById('btn-resultat-plus-tard');
+if (btnPlusTard) {
+  btnPlusTard.addEventListener('click', () => proposerLesOffres(afficherDecouverte));
+}
 document.getElementById('btn-promos-retour').addEventListener('click', () => afficherDecouverte());
 document.getElementById('btn-retour-accueil').addEventListener('click', () => afficherEcran('ecran-accueil', 'arriere'));
 
