@@ -245,6 +245,18 @@ function appliquerOperation() {
     }
   }
 
+  // L'accueil de la vitrine dit ce qu'elle est : pas de questions,
+  // pas de test, juste les jeux à essayer.
+  if (modeVitrine()) {
+    const sousTitre = document.querySelector('#ecran-accueil .sous-titre');
+    if (sousTitre) sousTitre.textContent =
+      'La vitrine des jeux : essaie-les tous, sans aucune question.';
+    const compte = document.getElementById('accueil-compte');
+    if (compte) compte.textContent = 'Démonstration';
+    const bouton = document.getElementById('btn-jouer');
+    if (bouton) bouton.textContent = 'Essayer les jeux';
+  }
+
   document.title = OPERATION.nom + ' : tente ta chance';
 }
 
@@ -1455,13 +1467,17 @@ let cibleRoue = null;
 // LE PARCOURS PAR DÉFAUT NE CHANGE QUE SUR DÉCISION DE ROMAIN
 // (26/08/2026, remis en état en fin de soirée)
 // Onze jeux existent maintenant dans jeux/, tous jouables par
-// LE PARCOURS, DICTÉ PAR ROMAIN LE 27/08/2026 : « le ticket à
-// gratter, la roue, le bandit manchot, le chamboule-tout, le trapèze
-// volant et l'homme obus ». C'est SA décision, après avoir joué tous
-// les jeux : ne pas y toucher sans lui. Le ticket perd toujours (voir
-// contenuDuBillet), la roue ouvre la partie en passant la main, et
-// c'est l'homme obus, en dernière manche, qui révèle le vrai lot.
-const MANCHES_DEFAUT = ['roue', 'bandit', 'chamboule', 'trapeze', 'canon'];
+// LE PARCOURS OFFICIEL, TRANCHÉ PAR ROMAIN LE 27/08/2026 AU SOIR :
+// « le ticket à gratter, ensuite le bandit manchot, puis la roue ».
+// C'est SA décision finale, elle remplace le parcours à cinq manches
+// de l'après-midi : ne pas y toucher sans lui. Le ticket perd
+// toujours (voir contenuDuBillet), et c'est la roue, en dernière
+// manche, qui révèle le vrai lot.
+// Les autres jeux (chamboule-tout, trapèze volant, homme obus) vivent
+// dans la VITRINE : « ?vitrine=1 », sans quiz ni coordonnées, pour
+// être montrés aux clients (voir modeVitrine plus bas).
+const MANCHES_DEFAUT = ['bandit', 'roue'];
+const MANCHES_VITRINE = ['chamboule', 'trapeze', 'canon'];
 let MANCHES = MANCHES_DEFAUT.slice();
 let mancheActuelle = 0;
 let mancheSecondTour = false;
@@ -1549,7 +1565,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026l';
+const VERSION_JEUX = '27aout2026m';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -2616,7 +2632,33 @@ async function chargerLots() {
 // --------------------------------------------
 // DÉMARRAGE
 // --------------------------------------------
+// LA VITRINE DES JEUX (27/08/2026, Romain) : « ?vitrine=1 » montre les
+// jeux qui ne sont pas dans le parcours officiel, SANS quiz, SANS
+// coordonnées, sans ticket : on appuie sur le bouton, et on joue.
+// C'est l'outil de démonstration pour les clients. Réservé à la
+// version d'essai : sur un vrai domaine, le paramètre est ignoré.
+// « ?vitrine=1&jeu=a,b » permet de choisir la sélection montrée.
+function modeVitrine() {
+  return PARTIES_ILLIMITEES &&
+    new URLSearchParams(location.search).get('vitrine') === '1';
+}
+
+function lancerLaVitrine() {
+  // Le lot est tiré localement, rien n'est enregistré nulle part.
+  lotGagne = tirerLot();
+  codeLot = genererCode();
+  reponses.prenom = reponses.prenom || '';
+  const force = new URLSearchParams(location.search).get('jeu');
+  const demande = force ? String(force).toLowerCase().split(',').map(x => x.trim()).filter(Boolean) : null;
+  MANCHES = (demande && demande.length ? demande : MANCHES_VITRINE.slice())
+    .filter(nom => nom === 'roue' || FICHIERS_JEUX[nom]);
+  if (!MANCHES.length) MANCHES = MANCHES_VITRINE.slice();
+  mancheActuelle = 0;
+  Promise.all(MANCHES.map(chargerUnFichierJeu)).then(lancerManche);
+}
+
 document.getElementById('btn-jouer').addEventListener('click', () => {
+  if (modeVitrine()) { lancerLaVitrine(); return; }
   questionActuelle = 0;
   afficherEcran('ecran-quiz');
   afficherQuestion();
