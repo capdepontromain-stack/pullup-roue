@@ -1173,17 +1173,19 @@ document.addEventListener('visibilitychange', () => {
 //
 // Les phrases sont écrites pour que personne ne se sente puni : le
 // perdant lit une invitation à revenir, jamais un reproche.
-const MOTS_GAGNANT = [
-  'Le chapiteau est de ton côté aujourd’hui.',
-  'Belle pioche. Il ne reste plus qu’à découvrir quoi.',
-  'La chance était sous le doigt.',
-  'Ça commence bien, cette visite.'
-];
-const MOTS_PERDANT = [
-  'Pas cette fois, mais la piste rouvre demain matin.',
-  'Le ticket dit non, la galerie dit à demain.',
-  'Ce n’était pas le bon jour. Le prochain t’attend.',
-  'Rien sous le doigt cette fois. Reviens tenter demain.'
+// LE TICKET PERD TOUJOURS (27/08/2026, Romain : « fais perdre
+// toujours le ticket à gratter »). C'est le faux départ voulu de la
+// soirée : le ticket dit non, et la partie rebondit aussitôt sur les
+// cinq manches qui suivent. Le vrai résultat, lui, est déjà tiré par
+// le serveur : c'est la DERNIÈRE manche qui le révèle.
+// Les phrases sont écrites pour relancer, jamais pour clore : un
+// ticket qui dirait « c'est fini » à un joueur qui va peut-être
+// gagner serait un mensonge dans l'autre sens.
+const MOTS_TICKET_PERDU = [
+  'Le ticket dit non… mais la partie ne fait que commencer.',
+  'Rien sous le doigt. Tout reste à jouer.',
+  'Perdu pour le ticket. La suite se joue sur la piste.',
+  'Ce ticket-là ne donne rien. Les jeux, eux, t’attendent.'
 ];
 
 function motAuHasard(liste) {
@@ -1191,17 +1193,10 @@ function motAuHasard(liste) {
 }
 
 function contenuDuBillet() {
-  // lotGagne est déjà tiré quand le joueur gratte : le ticket lit, il
-  // ne décide pas. Si par accident il ne l'était pas, on reste neutre
-  // plutôt que d'annoncer une chose fausse.
-  if (!lotGagne) {
-    return { gagnant: null, texte: 'Bonne visite !', detail: 'Le spectacle va commencer.' };
-  }
-  const gagnant = !lotGagne.perdant;
   return {
-    gagnant: gagnant,
-    texte: gagnant ? 'Gagné !' : 'Perdu',
-    detail: gagnant ? motAuHasard(MOTS_GAGNANT) : motAuHasard(MOTS_PERDANT)
+    gagnant: false,
+    texte: 'Perdu…',
+    detail: motAuHasard(MOTS_TICKET_PERDU)
   };
 }
 
@@ -1325,11 +1320,11 @@ function installerGrattage(voile, ctx) {
     // fichiers des jeux se chargent quand même en tâche de fond, comme
     // avant : ils sont prêts avant qu'on en ait besoin.
     const majSuite = () => {
-      const gagnant = bonusGrattage && bonusGrattage.gagnant;
+      // Le ticket perd toujours : la consigne relance vers les manches.
+      const combien = listeDesManches().length;
       document.getElementById('grattage-consigne').textContent =
-        gagnant === true  ? 'Ton cadeau t’attend au bout de la partie.'
-      : gagnant === false ? 'La partie continue quand même, viens voir la galerie.'
-      :                     'C’est parti.';
+        combien > 1 ? combien + ' manches pour te rattraper. Tout se joue à la dernière.'
+                    : 'À toi de jouer.';
     };
     majSuite();
     chargerFichiersJeu().then(majSuite);
@@ -1430,19 +1425,13 @@ let cibleRoue = null;
 // LE PARCOURS PAR DÉFAUT NE CHANGE QUE SUR DÉCISION DE ROMAIN
 // (26/08/2026, remis en état en fin de soirée)
 // Onze jeux existent maintenant dans jeux/, tous jouables par
-// « ?jeu=<nom> », et il en arrive de nouveaux à chaque atelier. La
-// tentation est grande d'installer le dernier écrit dans le parcours :
-// c'est exactement ce qu'il ne faut pas faire. Romain a dit qu'il
-// essaierait les jeux et dirait lesquels il garde (voir la page
-// « _choix-des-jeux.html »). Tant qu'il n'a pas tranché, le parcours
-// reste celui qu'il connaît et qu'il a montré à un client :
-//     la machine à sous, le chamboule-tout, puis la roue.
-// La roue finit exprès : c'est elle qui porte le nom du jeu, et c'est
-// le clou de la partie.
-// En cours de soirée, « chapeau » avait pris la place de la roue ici.
-// Ce n'était pas une décision de Romain : la ligne est remise. Pour
-// essayer un jeu sans toucher au parcours, il y a « ?jeu=chapeau ».
-const MANCHES_DEFAUT = ['bandit', 'chamboule', 'roue'];
+// LE PARCOURS, DICTÉ PAR ROMAIN LE 27/08/2026 : « le ticket à
+// gratter, la roue, le bandit manchot, le chamboule-tout, le trapèze
+// volant et l'homme obus ». C'est SA décision, après avoir joué tous
+// les jeux : ne pas y toucher sans lui. Le ticket perd toujours (voir
+// contenuDuBillet), la roue ouvre la partie en passant la main, et
+// c'est l'homme obus, en dernière manche, qui révèle le vrai lot.
+const MANCHES_DEFAUT = ['roue', 'bandit', 'chamboule', 'trapeze', 'canon'];
 let MANCHES = MANCHES_DEFAUT.slice();
 let mancheActuelle = 0;
 let mancheSecondTour = false;
@@ -1467,14 +1456,12 @@ let mancheSecondTour = false;
 // jeux/sapin.js reste sur le disque et jouable par « ?jeu=sapin »,
 // mais il n'est plus proposé nulle part.
 // LES JEUX ÉCARTÉS PAR ROMAIN (27/08/2026, après les avoir joués) :
-// le Sapin, la Hotte Géante (« les cadeaux dans la corbeille, tu peux
-// l'enlever ») et le Chapeau du Magicien. Ils ne sont plus déclarés
-// nulle part : ni dans le parcours, ni dans FICHIERS_JEUX. Leurs
-// fichiers restent dans jeux/ si un jour il change d'avis.
-const PARCOURS_COMPLET = [
-  'bandit', 'chamboule', 'trapeze',
-  'etoiles', 'canon', 'cartes', 'roue'
-];
+// le Sapin, la Hotte Géante, le Chapeau du Magicien, puis la Boutique
+// Étoilée et Trois Pareils au second tri. Plus déclarés nulle part.
+// Leurs fichiers restent dans jeux/ si un jour il change d'avis.
+// Le parcours d'essai est désormais LE parcours : « ?jeu=tous » joue
+// la même partie qu'un vrai visiteur.
+const PARCOURS_COMPLET = MANCHES_DEFAUT.slice();
 
 function listeDesManches() {
   // « ?jeu=bandit » force une manche unique, « ?jeu=bandit,sapin,roue »
@@ -1532,20 +1519,17 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026c';
+const VERSION_JEUX = '27aout2026d';
+// Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
+// vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
+// chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
+// d'entrée ici : plus aucun chemin ne mène à eux, même par « ?jeu= ».
+// Leurs fichiers restent dans jeux/ s'il change d'avis.
 const FICHIERS_JEUX = {
-  bandit:   'jeux/bandit.js?v=' + VERSION_JEUX,
-  pingouin: 'jeux/pingouin.js?v=' + VERSION_JEUX,
-  paquets:  'jeux/paquets.js?v=' + VERSION_JEUX,
-  cartes:   'jeux/cartes.js?v=' + VERSION_JEUX,
+  bandit:    'jeux/bandit.js?v=' + VERSION_JEUX,
   chamboule: 'jeux/chamboule.js?v=' + VERSION_JEUX,
-  // Les jeux retenus après le tri de Romain du 27/08/2026. Les écartés
-  // (sapin, hotte, chapeau) n'ont plus d'entrée ici : plus aucun
-  // chemin ne mène à eux, même par « ?jeu= ». Leurs fichiers restent
-  // dans jeux/ s'il change d'avis.
-  trapeze:  'jeux/trapeze.js?v=' + VERSION_JEUX,
-  etoiles:  'jeux/etoiles.js?v=' + VERSION_JEUX,
-  canon:    'jeux/canon.js?v=' + VERSION_JEUX
+  trapeze:   'jeux/trapeze.js?v=' + VERSION_JEUX,
+  canon:     'jeux/canon.js?v=' + VERSION_JEUX
 };
 const chargements = {};
 
