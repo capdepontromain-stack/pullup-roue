@@ -40,37 +40,44 @@
   // il faut les distinguer d'un coup d'œil, sinon le jeu n'a
   // aucun sens.
   // --------------------------------------------------------
+  // QUATRE CADEAUX EN COULEUR (27/08/2026, demande de Romain :
+  // « améliore les images, les cadeaux »). Avant : quatre silhouettes
+  // au trait doré, qui se ressemblaient toutes une fois posées dans
+  // une case de 60 px. Maintenant chacun a SA couleur de papier et SON
+  // ruban : rouge, or, crème, vert. Le jeu consiste à reconnaître trois
+  // cadeaux pareils, la couleur fait donc la moitié du travail, et le
+  // reste se lit à la forme pour qui distingue mal les couleurs.
   const CADEAUX = {
-    // Le paquet carré, ruban croisé
+    // Le paquet carré, papier rouge, ruban doré
     cube: `
-      <rect x="22" y="40" width="56" height="44" rx="2"/>
-      <path d="M18 30 h64 v10 h-64 z"/>
-      <path d="M50 30 v54"/>
-      <path d="M50 30 c-13 0 -18 -16 -7 -16 c7 0 7 11 7 16 Z"/>
-      <path d="M50 30 c13 0 18 -16 7 -16 c-7 0 -7 11 -7 16 Z"/>`,
+      <rect x="20" y="42" width="60" height="42" rx="3" fill="#B3282D"/>
+      <rect x="16" y="30" width="68" height="13" rx="3" fill="#D8383E"/>
+      <rect x="44" y="30" width="12" height="54" fill="#EFC368"/>
+      <path d="M50 30 c-14 0 -19 -17 -7 -17 c8 0 8 12 7 17 Z" fill="#EFC368"/>
+      <path d="M50 30 c14 0 19 -17 7 -17 c-8 0 -8 12 -7 17 Z" fill="#EFC368"/>`,
 
-    // La boîte ronde à couvercle
+    // La boîte ronde, papier or, ruban rouge
     ronde: `
-      <ellipse cx="50" cy="48" rx="28" ry="8"/>
-      <path d="M22 48 v28 c0 4 13 8 28 8 s28 -4 28 -8 v-28"/>
-      <path d="M50 40 v-8"/>
-      <path d="M50 32 c-8 -1 -11 -9 -4 -9 c4 0 4 6 4 9 Z"/>
-      <path d="M50 32 c8 -1 11 -9 4 -9 c-4 0 -4 6 -4 9 Z"/>`,
+      <path d="M22 50 v26 c0 5 13 9 28 9 s28 -4 28 -9 v-26 z" fill="#C9962E"/>
+      <ellipse cx="50" cy="50" rx="28" ry="9" fill="#EFC368"/>
+      <rect x="44" y="50" width="12" height="34" fill="#B3282D"/>
+      <path d="M50 41 c-9 -1 -12 -10 -4 -10 c5 0 5 7 4 10 Z" fill="#B3282D"/>
+      <path d="M50 41 c9 -1 12 -10 4 -10 c-5 0 -5 7 -4 10 Z" fill="#B3282D"/>`,
 
-    // Le paquet haut et étroit
+    // Le paquet haut, papier crème, ruban vert
     haut: `
-      <rect x="34" y="34" width="32" height="52" rx="2"/>
-      <path d="M30 26 h40 v8 h-40 z"/>
-      <path d="M50 26 v60"/>
-      <path d="M34 60 h32"/>
-      <path d="M50 26 c-10 0 -14 -12 -5 -12 c5 0 5 8 5 12 Z"/>
-      <path d="M50 26 c10 0 14 -12 5 -12 c-5 0 -5 8 -5 12 Z"/>`,
+      <rect x="33" y="36" width="34" height="50" rx="3" fill="#F3E7D3"/>
+      <rect x="29" y="25" width="42" height="12" rx="3" fill="#FFF6E2"/>
+      <rect x="44" y="25" width="12" height="61" fill="#1F6E4B"/>
+      <path d="M50 25 c-11 0 -15 -13 -5 -13 c6 0 6 9 5 13 Z" fill="#1F6E4B"/>
+      <path d="M50 25 c11 0 15 -13 5 -13 c-6 0 -6 9 -5 13 Z" fill="#1F6E4B"/>`,
 
-    // Le sac cadeau
+    // Le sac cadeau, papier vert, anses et papier de soie dorés
     sac: `
-      <path d="M26 38 h48 l-4 48 h-40 z"/>
-      <path d="M38 38 c0 -11 4 -15 12 -15 s12 4 12 15"/>
-      <path d="M27 56 h46"/>`
+      <path d="M25 40 h50 l-5 46 h-40 z" fill="#1F6E4B"/>
+      <path d="M25 40 h50 v7 h-50 z" fill="#2C8C61"/>
+      <path d="M38 40 c0 -12 4 -17 12 -17 s12 5 12 17" fill="none" stroke="#EFC368" stroke-width="4"/>
+      <path d="M38 40 l4 -9 l8 7 l8 -7 l4 9 z" fill="#EFC368"/>`
   };
 
   // Le dos des cartes : un losange et son cœur, rien de plus.
@@ -156,7 +163,14 @@
     background: linear-gradient(168deg, rgba(246, 241, 230, .08) 0%, rgba(20, 15, 9, .9) 100%);
     border-color: var(--filet-fort);
   }
-  .ct-carte.ct-ouverte .ct-plaque svg { width: 64%; max-height: 72%; stroke-width: 4; opacity: 1; }
+  .ct-carte.ct-ouverte .ct-plaque svg {
+    width: 72%; max-height: 78%; opacity: 1;
+    /* Les cadeaux sont peints, pas tracés : on retire le contour hérité
+       du dos de carte, et on leur pose une ombre pour les décoller du
+       fond sombre. */
+    stroke: none;
+    filter: drop-shadow(0 3px 7px rgba(0, 0, 0, .55));
+  }
 
   /* La carte qui appelle le doigt, tant qu'on n'a rien touché */
   .ct-table:not(.ct-jouee) .ct-carte:not(.ct-ouverte) .ct-plaque { animation: ct-respire 3.2s ease-in-out infinite; }

@@ -1738,6 +1738,22 @@ h1 {
 }
 
 
+/* LE RÉSULTAT DU TICKET (27/08/2026)
+   « Gagné ! » se lit en or, « Perdu » reste sobre et lisible : la
+   couleur annonce la nouvelle avant même la lecture, sans jamais
+   punir celui qui n'a pas gagné. */
+.ticket-resultat.ticket-gagne {
+  background: linear-gradient(168deg, var(--or-blanc) 0%, var(--or) 62%, #8A6A21 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+}
+.ticket-resultat.ticket-perdu {
+  color: var(--creme);
+  opacity: .88;
+}
+
 /* --- En-tête : le client d'abord ---
    Le logo de la galerie tient la ligne du bas, à la place et à la
    taille du nom écrit : c'est lui, le nom de la galerie. */
@@ -2457,7 +2473,13 @@ body.mode-test .app { padding-bottom: calc(var(--e7) + 46px); }
 
 .bandeau-promos::before     { background-image: url('img/photos/promos-large.jpg'); }
 .bandeau-nouveautes::before { background-image: url('img/photos/nouveautes-large.jpg'); }
-.bandeau-programme::before  { background-image: url('img/photos/mall-noel-1.jpg'); }
+/* LE PROGRAMME N'A PLUS DE PHOTOGRAPHIE EN BANDEAU (27/08/2026,
+   Romain : « dans le programme d'animation, il ne faut pas qu'il y ait
+   la photo »). L'agenda qui suit est déjà dense en informations : une
+   image derrière le titre ne faisait que brouiller la première ligne
+   d'horaires. Le bandeau garde son filet doré, rien d'autre. */
+.bandeau-programme::before  { display: none; }
+.bandeau-programme { background: rgba(11, 8, 4, .5); }
 
 
 /* ============================================

@@ -230,13 +230,13 @@ function appliquerOperation() {
   if (ticketMention) {
     // Sous le chapiteau, ce n'est plus un ticket mais un billet
     // d'entrée : le mot fait partie du décor.
-    const mot = OPERATION.theme === 'circus' ? 'Billet' : 'Ticket';
+    const mot = 'Ticket';
     ticketMention.textContent = OPERATION.lieu ? mot + ' · ' + OPERATION.lieu : mot + ' surprise';
     const titreGrattage = document.getElementById('grattage-titre');
     if (titreGrattage) {
-      titreGrattage.textContent = OPERATION.theme === 'circus'
-        ? 'Ton billet d’entrée'
-        : 'Ton ticket surprise';
+      // Le ticket ne donne plus une place sous le chapiteau : il dit
+      // si c'est gagné (27/08/2026). Son titre le dit aussi.
+      titreGrattage.textContent = 'Ton ticket à gratter';
     }
   }
 
@@ -447,20 +447,13 @@ const QUESTIONS = [
       { v: 'maison',  l: 'Au calme, à la maison',         ic: 'maison',  rayons: ['maison'] }
     ]
   },
-  {
-    // La question de Noël : elle dit aux commerçants POUR QUI le joueur
-    // achète, ce qui vaut mieux que de savoir ce qu'il aime. « Mes
-    // enfants » remplit aussi la colonne enfants.
-    id: 'pour_qui', type: 'multi',
-    titre: 'Cette année, tu offres un cadeau à qui ?',
-    soustitre: 'Dernière question, et ensuite on joue.',
-    options: [
-      { v: 'amoureux', l: 'Mon amoureux, mon amoureuse', ic: 'amoureux', rayons: ['bijoux', 'beaute'] },
-      { v: 'enfants',  l: 'Mes enfants',                 ic: 'enfants',  rayons: ['enfants'] },
-      { v: 'parents',  l: 'Mes parents, ma famille',     ic: 'famille',  rayons: ['maison'] },
-      { v: 'moi',      l: 'Mes amis, ou moi-même',       ic: 'moi',      rayons: ['gourmandise', 'mode'] }
-    ]
-  }
+  // LA QUESTION « TU OFFRES UN CADEAU À QUI ? » A ÉTÉ RETIRÉE
+  // (27/08/2026, Romain : « tu peux l'enlever maintenant »). Le quiz
+  // tient donc en sept écrans. Le ciblage ne perd presque rien : les
+  // rayons qu'elle apportait (bijoux, beauté, enfants, maison) sont
+  // déjà couverts par les deux questions des 100 €. Seule la colonne
+  // « enfants » repose maintenant sur le seul samedi idéal, ce qui
+  // suffit : c'est la même information, dite autrement.
 ];
 
 // LES COLONNES LIÉES D'UNE QUESTION À CHOIX MULTIPLE
@@ -490,8 +483,6 @@ function appliquerColonnesLiees(q) {
 //   3. les personnes pour qui il cherche un cadeau.
 // Résultat : un joueur qui n'a jamais répondu à une question
 // commerciale se voit quand même proposer les bonnes promotions.
-// La colonne « pour_qui » n'existe pas en base : ses réponses vivent
-// dans univers (rayons) et dans enfants. Rien à modifier dans Supabase.
 // La première case cochée d'une question, dans l'ordre où les
 // propositions sont affichées : une valeur stable, qui se recalcule à
 // l'identique quand le joueur revient en arrière.
@@ -532,13 +523,12 @@ function consoliderCiblage() {
   reponses.univers = liste.join(',');
 }
 
-// Le foyer se déduit de deux réponses : « mes enfants » à la question
-// des cadeaux, ou la sortie avec les enfants du samedi idéal.
+// Le foyer se déduit du samedi idéal : « en famille, avec les
+// enfants ». La question des cadeaux, qui l'alimentait aussi, a été
+// retirée le 27/08/2026.
 function deduireFoyer() {
   const gouts = (reponses.samedi || '').split(',');
-  const pourQui = (reponses.pour_qui || '').split(',');
-  const avecEnfants = gouts.indexOf('enfants') !== -1 || pourQui.indexOf('enfants') !== -1;
-  reponses.enfants = avecEnfants ? 'oui' : 'non';
+  reponses.enfants = gouts.indexOf('enfants') !== -1 ? 'oui' : 'non';
 }
 
 // --------------------------------------------
@@ -1162,34 +1152,51 @@ document.addEventListener('visibilitychange', () => {
 // avantage annoncé ici n'aura le moindre effet sur les chances réelles.
 // Ne pas retomber dans ce piège.
 
-// Les places du chapiteau : un rang, un numéro. C'est du décor, et
-// c'est écrit comme tel (aucun siège n'est réservé nulle part).
-const RANGS_BILLET = ['A', 'B', 'C', 'D', 'E', 'F'];
+// LE TICKET DIT LE RÉSULTAT (27/08/2026, Romain)
+// ----------------------------------------------
+// Avant : un numéro de place et la liste des jeux à venir. Romain :
+// « sur le ticket qu'on gratte, il faut juste savoir si c'est gagné ou
+// perdu, avec un petit mot sympa », et « que ça n'annonce pas les jeux
+// qu'il va y avoir ». Le ticket devient donc un petit jeu à lui tout
+// seul : on gratte, on sait.
+//
+// CE QUE ÇA CHANGE POUR LA SUITE, et c'est voulu : les manches qui
+// suivent ne décident plus de rien aux yeux du joueur, elles servent à
+// découvrir CE QU'IL a gagné. Le lot, lui, était déjà tiré par le
+// serveur avant le grattage : le ticket ne fait que lire un résultat
+// écrit, il n'en invente aucun.
+//
+// Les phrases sont écrites pour que personne ne se sente puni : le
+// perdant lit une invitation à revenir, jamais un reproche.
+const MOTS_GAGNANT = [
+  'Le chapiteau est de ton côté aujourd’hui.',
+  'Belle pioche. Il ne reste plus qu’à découvrir quoi.',
+  'La chance était sous le doigt.',
+  'Ça commence bien, cette visite.'
+];
+const MOTS_PERDANT = [
+  'Pas cette fois, mais la piste rouvre demain matin.',
+  'Le ticket dit non, la galerie dit à demain.',
+  'Ce n’était pas le bon jour. Le prochain t’attend.',
+  'Rien sous le doigt cette fois. Reviens tenter demain.'
+];
 
-function numeroDePlace() {
-  const rang = RANGS_BILLET[Math.floor(Math.random() * RANGS_BILLET.length)];
-  const place = 1 + Math.floor(Math.random() * 48);
-  return 'Rang ' + rang + ' · Place ' + place;
-}
-
-// La liste des numéros du jour, écrite comme on l'annonce au micro.
-function listeLisible(mots) {
-  if (mots.length <= 1) return mots[0] || '';
-  return mots.slice(0, -1).join(', ') + ' et ' + mots[mots.length - 1];
+function motAuHasard(liste) {
+  return liste[Math.floor(Math.random() * liste.length)];
 }
 
 function contenuDuBillet() {
-  let noms = [];
-  try {
-    noms = listeDesManches()
-      .map(nom => (jeuPourNom(nom) || {}).nom)
-      .filter(Boolean);
-  } catch (e) { noms = []; }
+  // lotGagne est déjà tiré quand le joueur gratte : le ticket lit, il
+  // ne décide pas. Si par accident il ne l'était pas, on reste neutre
+  // plutôt que d'annoncer une chose fausse.
+  if (!lotGagne) {
+    return { gagnant: null, texte: 'Bonne visite !', detail: 'Le spectacle va commencer.' };
+  }
+  const gagnant = !lotGagne.perdant;
   return {
-    texte: numeroDePlace(),
-    detail: noms.length
-      ? 'Au programme : ' + listeLisible(noms) + '.'
-      : 'Le spectacle va commencer.'
+    gagnant: gagnant,
+    texte: gagnant ? 'Gagné !' : 'Perdu',
+    detail: gagnant ? motAuHasard(MOTS_GAGNANT) : motAuHasard(MOTS_PERDANT)
   };
 }
 
@@ -1205,7 +1212,12 @@ function preparerBonus() {
 
 function preparerGrattage() {
   if (!bonusGrattage) preparerBonus();
-  document.getElementById('ticket-resultat').textContent = bonusGrattage.texte;
+  const zoneResultat = document.getElementById('ticket-resultat');
+  zoneResultat.textContent = bonusGrattage.texte;
+  // Le mot « Gagné » se lit en or, « Perdu » reste sobre : la couleur
+  // dit déjà la nouvelle avant qu'on ait fini de lire.
+  zoneResultat.classList.toggle('ticket-gagne', bonusGrattage.gagnant === true);
+  zoneResultat.classList.toggle('ticket-perdu', bonusGrattage.gagnant === false);
   document.getElementById('ticket-detail').textContent = bonusGrattage.detail;
   document.getElementById('btn-grattage-suite').hidden = true;
   document.getElementById('grattage-consigne').textContent =
@@ -1302,21 +1314,17 @@ function installerGrattage(voile, ctx) {
     // La phrase de fin annonce la première manche. Si son fichier n'est
     // pas encore arrivé (4G capricieuse), on écrit d'abord une phrase
     // neutre, puis on la corrige dès qu'il est là.
+    // LE TICKET N'ANNONCE PLUS LES JEUX (27/08/2026, Romain : « que ça
+    // ne dise pas les jeux qu'il va y avoir »). Il dit ce que le
+    // joueur vient d'apprendre, et la suite se découvre en jouant. Les
+    // fichiers des jeux se chargent quand même en tâche de fond, comme
+    // avant : ils sont prêts avant qu'on en ait besoin.
     const majSuite = () => {
-      const manches = listeDesManches();
-      const premier = jeuPourNom(manches[0]);
-      // « et un seul cadeau au bout » promettait un cadeau à tout le
-      // monde : il n'y en a un que dans un cas sur quatre. Et « Trois »
-      // était écrit en dur alors que le nombre de manches se compte
-      // juste au-dessus : le jour où une opération en aura deux, la
-      // phrase mentirait toute seule.
-      const combien = ['', 'Une manche t’attend', 'Deux manches t’attendent',
-                       'Trois manches t’attendent'][manches.length] ||
-                      manches.length + ' manches t’attendent';
+      const gagnant = bonusGrattage && bonusGrattage.gagnant;
       document.getElementById('grattage-consigne').textContent =
-        manches.length > 1
-          ? combien + '. Tout se joue à la dernière.'
-          : (premier.suite || 'C’est parti.');
+        gagnant === true  ? 'Ton cadeau t’attend au bout de la partie.'
+      : gagnant === false ? 'La partie continue quand même, viens voir la galerie.'
+      :                     'C’est parti.';
     };
     majSuite();
     chargerFichiersJeu().then(majSuite);
@@ -1449,8 +1457,12 @@ let mancheSecondTour = false;
 // elle qui porte le nom du jeu, et c'est la dernière manche qui
 // révèle le lot. Ce n'est PAS le parcours d'un visiteur : lui n'en
 // joue que trois (voir MANCHES_DEFAUT).
+// « Le Sapin de la Galerie » est sorti du parcours d'essai le
+// 27/08/2026 : Romain l'a écarté après l'avoir joué. Le fichier
+// jeux/sapin.js reste sur le disque et jouable par « ?jeu=sapin »,
+// mais il n'est plus proposé nulle part.
 const PARCOURS_COMPLET = [
-  'bandit', 'chamboule', 'sapin', 'trapeze', 'hotte',
+  'bandit', 'chamboule', 'trapeze', 'hotte',
   'etoiles', 'canon', 'chapeau', 'cartes', 'roue'
 ];
 
@@ -1510,7 +1522,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '26aout2026i';
+const VERSION_JEUX = '27aout2026a';
 const FICHIERS_JEUX = {
   bandit:   'jeux/bandit.js?v=' + VERSION_JEUX,
   pingouin: 'jeux/pingouin.js?v=' + VERSION_JEUX,
@@ -2044,25 +2056,31 @@ function afficherResultat() {
     // Le bouton doré ne dit plus « découvrir », mot d'accueil : il dit
     // ce que le joueur va vraiment y trouver, tout de suite.
     if (boutonGalerie) boutonGalerie.textContent = 'Voir les promos du jour';
-    // Écran nu : le perdant ne lit que son résultat et « Continuer ».
+    const suitePerdue = document.getElementById('btn-resultat-continuer');
+    if (suitePerdue) suitePerdue.textContent = 'Voir la galerie';
+    // Écran nu : le perdant ne lit que son résultat et le bouton.
     mention.textContent = '';
     mention.hidden = true;
     vibrer(120);
   } else {
     if (consolation) consolation.hidden = true;
     if (boutonGalerie) boutonGalerie.textContent = 'Découvrir la galerie';
+    const suite = document.getElementById('btn-resultat-continuer');
+    if (suite) suite.textContent = 'Obtenir mon cadeau';
     const msg = messageAleatoire(MESSAGES_GAGNE);
     emoji.innerHTML = medaillonIcone(iconePourLot(lotGagne.nom));
     titre.innerHTML = msg.titre;
     texte.innerHTML = msg.texte;
     let fete = true;
+    // LE CODE N'EST PLUS SUR CET ÉCRAN (27/08/2026, Romain : « ça ne
+    // sert à rien de mettre le numéro, ni de dire de noter le code,
+    // c'est le commerçant qui dit que le bon est utilisé »). L'écran
+    // de résultat annonce le gain, rien d'autre. Le code, lui, vit sur
+    // le ticket de « Mes cadeaux », là où le commerçant le lit et le
+    // valide. Le bloc reste dans la page (d'autres écrans s'en
+    // servent), il est simplement refermé ici.
     ecrireCode(document.getElementById('resultat-code'), codeLot);
-    // On ne promet que ce qui est certain : le code affiché suffit à
-    // retirer le lot. L'e-mail n'est annoncé qu'une fois qu'il est
-    // réellement parti (voir plus bas).
-    document.getElementById('resultat-code-info').textContent =
-      'Note ton code : il te suffit pour retirer ton lot.';
-    codeBloc.hidden = false;
+    codeBloc.hidden = true;
     // Rappel de l'article 5 du règlement au seul joueur concerné.
     const rappelMineur = document.getElementById('resultat-mineur');
     if (rappelMineur) rappelMineur.hidden = reponses.age_tranche !== '-18';
@@ -2789,8 +2807,13 @@ document.getElementById('btn-voir-promos').addEventListener('click', proposerLes
 // « Continuer » : le seul bouton de l'écran de résultat. C'est lui qui
 // ouvre la galerie, les promos et le programme, une fois que le joueur
 // a lu son résultat et rien d'autre.
+// APRÈS LE RÉSULTAT, ON VA CHERCHER SON CADEAU (27/08/2026, Romain :
+// « au lieu de continuer, il faut basculer sur la page » des cadeaux
+// gagnés). Le gagnant part donc droit sur ses bons ; celui qui n'a
+// rien gagné continue vers la galerie, comme avant.
 document.getElementById('btn-resultat-continuer').addEventListener('click', () => {
-  proposerLesOffres(afficherDecouverte);
+  const gagnant = lotGagne && !lotGagne.perdant;
+  proposerLesOffres(gagnant ? afficherMesBons : afficherDecouverte);
 });
 document.getElementById('btn-promos-retour').addEventListener('click', () => afficherDecouverte());
 document.getElementById('btn-retour-accueil').addEventListener('click', () => afficherEcran('ecran-accueil', 'arriere'));
@@ -3139,12 +3162,11 @@ function afficherDecouverte() {
 // à l'autre sans jamais revenir en arrière.
 // --------------------------------------------
 const VUES_GALERIE = [
-  // « Mes bons » ouvre la marche : c'est la seule vue qui porte quelque
-  // chose à faire tout de suite, dans la galerie, devant un commerçant.
-  // Son onglet ne s'affiche que si le joueur a réellement un bon (voir
-  // rafraichirOngletBons) : un onglet qui ouvre sur une page vide est
-  // une porte qui ne mène nulle part.
-  { cle: 'mesbons',    libelle: 'Bons',       ouvrir: function () { afficherMesBons(); } },
+  // PLUS D'ONGLET POUR LES BONS (27/08/2026, Romain : « il n'y aura pas
+  // les bons, il y aura juste promos, nouveautés et programme »). On y
+  // accède par la grande carte « Obtenir mes cadeaux » de l'écran de
+  // découverte, et par le bouton de fin de partie : deux portes larges
+  // valent mieux qu'un quatrième onglet qui serre les trois autres.
   { cle: 'promos',     libelle: 'Promos',     ouvrir: function () { afficherPromos(); } },
   { cle: 'nouveautes', libelle: 'Nouveautés', ouvrir: function () { afficherNouveautes(); } },
   { cle: 'programme',  libelle: 'Programme',  ouvrir: function () { afficherProgramme(); } }
@@ -3228,19 +3250,20 @@ function rafraichirOngletBons() {
   const combien = window.PullUpBons ? window.PullUpBons.combienValables() : 0;
   const total = window.PullUpBons ? window.PullUpBons.liste().length : 0;
 
+  // L'onglet des bons n'existe plus (27/08/2026) : s'il traîne encore
+  // dans une page mise en cache, on le referme au lieu de le laisser
+  // ouvrir une vue qui n'est plus dans la barre.
   document.querySelectorAll('.onglet[data-vue="mesbons"]').forEach(function (b) {
-    b.hidden = total === 0;
-    // Le libellé de l'onglet est court exprès : à quatre onglets sur un
-    // écran de 375 px, « Mes bons » se fait couper au milieu d'un mot.
-    // Le titre de l'écran, lui, dit bien « Mes bons ».
-    b.textContent = combien > 1 ? 'Bons · ' + combien : 'Bons';
+    b.hidden = true;
   });
 
+  // La carte, elle, est la porte principale : elle porte le mot
+  // « cadeaux », celui que le joueur a en tête en sortant du jeu.
   const carte = document.getElementById('carte-mesbons');
   if (carte) {
-    carte.hidden = combien === 0;
+    carte.hidden = total === 0;
     const titre = document.getElementById('carte-mesbons-titre');
-    if (titre) titre.textContent = combien > 1 ? 'Mes ' + combien + ' bons' : 'Mon bon';
+    if (titre) titre.textContent = combien > 1 ? 'Obtenir mes cadeaux' : 'Obtenir mon cadeau';
   }
 }
 

@@ -24,13 +24,6 @@ const PROGRAMME_DEMO = [
     detail: 'Installe-toi dans la hotte, sors ton téléphone et prends autant de photos que tu veux. C’est gratuit, sans achat et sans limite.',
     vedette: true
   },
-  {
-    titre: 'La Boutique Étoilée du jour',
-    lieu: 'Une boutique différente chaque jour',
-    horaires: 'Toute la journée',
-    detail: 'Une vitrine porte l’étoile du jour, et personne ne dit laquelle : à toi de la trouver en te promenant.'
-  },
-
   // ---- Samedi 12 décembre ----
   {
     jour: 'Samedi 12 décembre', heure: '10h30',
@@ -124,7 +117,7 @@ const OFFRES_DEMO = [
     enseigne: 'La boutique de mode homme', univers: 'mode',
     titre: 'Le deuxième article à moins 50 %',
     detail: 'Sur toute la collection de fin d\'année, le moins cher des deux à moitié prix.',
-    valable_jusqu_au: '31 décembre', bon: null
+    valable_jusqu_au: '31 décembre', bon: 'Le deuxième article à moitié prix'
   },
   {
     enseigne: 'Le comptoir à burgers', univers: 'gourmandise',
@@ -148,7 +141,7 @@ const OFFRES_DEMO = [
     enseigne: 'La boutique de sport', univers: 'sport',
     titre: 'La deuxième paire à moitié prix',
     detail: 'Sur toutes les chaussures de running et de sport, la moins chère des deux à moins 50 %.',
-    valable_jusqu_au: '5 janvier', bon: null
+    valable_jusqu_au: '5 janvier', bon: 'La deuxième paire à moitié prix'
   },
   {
     enseigne: 'Le magasin de jouets', univers: 'enfants',
@@ -160,13 +153,13 @@ const OFFRES_DEMO = [
     enseigne: 'La boulangerie de la galerie', univers: 'gourmandise',
     titre: 'La formule goûter à 4 €',
     detail: 'Une viennoiserie et une boisson chaude, tous les jours de 15h à 17h.',
-    valable_jusqu_au: '31 décembre', bon: null
+    valable_jusqu_au: '31 décembre', bon: 'La formule goûter à 4 €'
   },
   {
     enseigne: 'La boutique déco', univers: 'maison',
     titre: 'Trois décorations achetées, la quatrième offerte',
     detail: 'Sur tout le rayon décoration de Noël, la moins chère des quatre est offerte.',
-    valable_jusqu_au: '31 décembre', bon: null
+    valable_jusqu_au: '31 décembre', bon: 'La quatrième décoration offerte'
   }
 ];
 
