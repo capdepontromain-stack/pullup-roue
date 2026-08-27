@@ -1442,9 +1442,37 @@ let mancheSecondTour = false;
 //   configuration d'avant le 25/08/2026 : on l'ignore et on joue le
 //   parcours complet, sinon une galerie déjà enregistrée resterait
 //   bloquée sur un seul jeu sans que personne l'ait demandé.
+// LE PARCOURS D'ESSAI COMPLET (« ?jeu=tous »)
+// -------------------------------------------
+// Tous les jeux à la suite, dans une seule partie, pour les voir
+// s'enchaîner et pouvoir en juger. La roue ferme la marche : c'est
+// elle qui porte le nom du jeu, et c'est la dernière manche qui
+// révèle le lot. Ce n'est PAS le parcours d'un visiteur : lui n'en
+// joue que trois (voir MANCHES_DEFAUT).
+const PARCOURS_COMPLET = [
+  'bandit', 'chamboule', 'sapin', 'trapeze', 'hotte',
+  'etoiles', 'canon', 'chapeau', 'cartes', 'roue'
+];
+
 function listeDesManches() {
+  // « ?jeu=bandit » force une manche unique, « ?jeu=bandit,sapin,roue »
+  // les enchaîne dans l'ordre écrit, et « ?jeu=tous » les enchaîne
+  // toutes. C'est la partie d'essai : elle sert à tout voir d'affilée
+  // sans refaire le questionnaire dix fois. Un jeu inconnu est ignoré
+  // au lieu de faire tomber le parcours sur la roue sans prévenir.
   const force = new URLSearchParams(location.search).get('jeu');
-  if (force) return [String(force).trim()];
+  if (force) {
+    const demande = String(force).trim().toLowerCase();
+    if (demande === 'tous') return PARCOURS_COMPLET.slice();
+    // FICHIERS_JEUX est déclaré plus bas dans le fichier : on ne le
+    // consulte que s'il existe déjà, sinon on accepte la liste telle
+    // quelle (un fichier introuvable est de toute façon rattrapé au
+    // chargement, qui repart sur la roue).
+    const connu = nom => nom === 'roue' ||
+      (typeof FICHIERS_JEUX === 'undefined') || !!FICHIERS_JEUX[nom];
+    const liste = demande.split(',').map(s => s.trim()).filter(Boolean).filter(connu);
+    if (liste.length) return liste;
+  }
   const brut = String(OPERATION.jeu || '').trim();
   if (brut.indexOf(',') > 0) {
     const liste = brut.split(',').map(s => s.trim()).filter(Boolean);
