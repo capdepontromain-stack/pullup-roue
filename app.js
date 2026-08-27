@@ -1549,7 +1549,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026i';
+const VERSION_JEUX = '27aout2026j';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -3303,7 +3303,19 @@ function afficherMesBons() {
         codeFige: bon.code
       }, null);
     } else {
-      afficherResultat();
+      // LE BON DU JEU ROUVRE L'ÉCRAN DE VALIDATION (corrigé le
+      // 27/08/2026 : afficherResultat() masque le bloc du code depuis
+      // que l'écran de gain est nu, le commerçant ne pouvait plus
+      // valider). roueAfficherBonRetrouve montre le code, le bouton
+      // « Je suis chez le commerçant » et toute la chaîne de
+      // validation, y compris l'état déjà utilisé.
+      window.roueAfficherBonRetrouve({
+        lot: bon.lot,
+        commercant: bon.commercant,
+        code: bon.code,
+        prenom: reponses.prenom || '',
+        utilise_le: bon.utiliseLe || null
+      });
     }
   });
 }
