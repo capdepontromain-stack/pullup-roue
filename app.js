@@ -1519,7 +1519,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026d';
+const VERSION_JEUX = '27aout2026e';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -3066,6 +3066,7 @@ function proposerLesOffres(suite) {
   document.getElementById('offres-medaillon').innerHTML = medaillonIcone(ICONES.bon);
   document.getElementById('offres-medaillon').classList.remove('hero-photo');
   habillerLesOffres();
+  reposerLesOffres();          // la relance d'un passage précédent se replie
   afficherEcran('ecran-offres');
 }
 
@@ -3122,7 +3123,34 @@ async function repondreOffres(accepte) {
 }
 
 document.getElementById('btn-offres-oui').addEventListener('click', () => repondreOffres(true));
-document.getElementById('btn-offres-non').addEventListener('click', () => repondreOffres(false));
+
+// LA RELANCE DU PREMIER « NON » (27/08/2026, Romain) : on repose la
+// question UNE fois, autrement. Le premier bouton s'efface, la relance
+// prend sa place. Le deuxième « non » est définitif : repondreOffres
+// enregistre le refus et la partie continue, personne n'insiste.
+document.getElementById('btn-offres-non').addEventListener('click', () => {
+  const relance = document.getElementById('offres-relance');
+  const premierNon = document.getElementById('btn-offres-non');
+  if (relance) {
+    relance.hidden = false;
+    premierNon.hidden = true;
+    // La relance arrive sous les yeux, pas hors de l'écran.
+    relance.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } else {
+    repondreOffres(false);
+  }
+});
+document.getElementById('btn-offres-oui2').addEventListener('click', () => repondreOffres(true));
+document.getElementById('btn-offres-non2').addEventListener('click', () => repondreOffres(false));
+
+// L'écran des offres peut resservir (retour en arrière, nouvelle
+// partie d'essai) : la relance se replie à chaque affichage.
+function reposerLesOffres() {
+  const relance = document.getElementById('offres-relance');
+  const premierNon = document.getElementById('btn-offres-non');
+  if (relance) relance.hidden = true;
+  if (premierNon) premierNon.hidden = false;
+}
 
 // --------------------------------------------
 // L'ESPACE DÉCOUVERTE

@@ -29,22 +29,22 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=27aout2026d">
+  <link rel="stylesheet" href="style.css?v=27aout2026e">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=27aout2026d" defer></script>
-  <script src="icones-quiz.js?v=27aout2026d" defer></script>
+  <script src="icones.js?v=27aout2026e" defer></script>
+  <script src="icones-quiz.js?v=27aout2026e" defer></script>
   <script src="contenus-demo.js" defer></script>
   <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
        Il tient la liste des bons du joueur et sait la dessiner. Chargé
        avant app.js, qui l'appelle à deux endroits : quand un lot est
        gagné, et quand un bon de promotion est pris. Voir bons.js. -->
-  <script src="bons.js?v=27aout2026d" defer></script>
-  <script src="app.js?v=27aout2026d" defer></script>
+  <script src="bons.js?v=27aout2026e" defer></script>
+  <script src="app.js?v=27aout2026e" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -470,7 +470,21 @@
         <p class="sous-titre" id="offres-soustitre">Les bons de réduction, la remise chez ta boutique préférée, les nouvelles collections, le menu du midi.</p>
 
         <button class="btn btn-or btn-grand" id="btn-offres-oui">Oui, je veux recevoir des bons de réduction, cadeaux et bons plans</button>
-        <button class="btn btn-discret" id="btn-offres-non">Non merci, juste le jeu</button>
+        <!-- Le « non » est volontairement discret (27/08/2026, Romain) :
+             un lien, pas un bouton, pour favoriser le oui. Il reste
+             cliquable d'un doigt et toujours visible : le refus est un
+             droit, pas une chasse au trésor. -->
+        <button class="btn-offres-refus" id="btn-offres-non">Non merci, juste le jeu</button>
+
+        <!-- LA RELANCE, UNE SEULE FOIS (27/08/2026, Romain) : au premier
+             « non », on pose la question autrement. Le deuxième « non »
+             est définitif, personne n'insiste au-delà. -->
+        <div id="offres-relance" class="offres-relance" hidden>
+          <p class="offres-relance-titre">Es-tu sûr ?</p>
+          <p class="offres-relance-texte">C'est juste un mail par semaine, et il y a vraiment des bons plans !</p>
+          <button class="btn btn-or btn-grand" id="btn-offres-oui2">Allez, d'accord, je m'inscris</button>
+          <button class="btn-offres-refus" id="btn-offres-non2">Non, vraiment</button>
+        </div>
         <p id="offres-mineurs" class="mini-mention" hidden>Les offres par e-mail sont réservées aux joueurs majeurs.</p>
         <p class="mini-mention offres-liberte">Ton choix ne change <strong>rien</strong> à ta partie, ni à tes chances, ni à ton lot, et tu peux en changer quand tu veux. <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">Ce qu'on fait de tes données</a></p>
       </div>

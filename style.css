@@ -1754,6 +1754,52 @@ h1 {
   opacity: .88;
 }
 
+/* L'ÉCRAN DES BONS PLANS : LE OUI EN GRAND, LE NON EN PETIT
+   (27/08/2026, Romain). Le refus n'est plus un bouton mais une ligne
+   discrète et soulignée : toujours visible, toujours cliquable d'un
+   doigt (44 px de zone), jamais en concurrence avec le bouton doré. */
+.btn-offres-refus {
+  display: block;
+  margin: 2px auto 0;
+  padding: 12px 18px;          /* la zone du doigt reste large */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--gris);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: .85;
+}
+.btn-offres-refus:active { color: var(--creme); }
+
+/* LA RELANCE DU PREMIER « NON » : un encart qui pose la question une
+   seule fois, sur le ton de la boutade, jamais du reproche. */
+.offres-relance {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 18px 18px 14px;
+  border: 1px solid rgba(239, 195, 104, .5);
+  border-radius: 8px;
+  background: rgba(58, 42, 18, .5);
+  animation: pose .38s var(--entree) backwards;
+}
+.offres-relance-titre {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--or-blanc);
+  margin: 0;
+}
+.offres-relance-texte {
+  font-size: var(--t-corps);
+  color: var(--creme);
+  line-height: 1.5;
+  margin: 0 0 4px;
+}
+
 /* --- En-tête : le client d'abord ---
    Le logo de la galerie tient la ligne du bas, à la place et à la
    taille du nom écrit : c'est lui, le nom de la galerie. */
