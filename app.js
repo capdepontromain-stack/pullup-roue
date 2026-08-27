@@ -429,7 +429,7 @@ const QUESTIONS = [
   },
   {
     id: 'envie2', type: 'multi',
-    titre: 'Il t’en reste 100 €.',
+    titre: 'Il t’en reste 50 €.',
     soustitre: 'Tu craques sur quoi ?',
     options: [
       { v: 'hightech', l: 'Du high-tech qui fait envie',   ic: 'hightech', rayons: ['hightech'] },
@@ -1519,7 +1519,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026e';
+const VERSION_JEUX = '27aout2026f';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
