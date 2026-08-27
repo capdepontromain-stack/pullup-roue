@@ -1466,13 +1466,14 @@ let mancheSecondTour = false;
 // 27/08/2026 : Romain l'a écarté après l'avoir joué. Le fichier
 // jeux/sapin.js reste sur le disque et jouable par « ?jeu=sapin »,
 // mais il n'est plus proposé nulle part.
-// « La Hotte Géante » (les cadeaux qui tombent dans la corbeille) est
-// sortie du parcours le 27/08/2026 : Romain l'a écartée après l'avoir
-// jouée (« les cadeaux dans la corbeille, tu peux l'enlever »). Le
-// fichier reste jouable par « ?jeu=hotte », rien d'autre.
+// LES JEUX ÉCARTÉS PAR ROMAIN (27/08/2026, après les avoir joués) :
+// le Sapin, la Hotte Géante (« les cadeaux dans la corbeille, tu peux
+// l'enlever ») et le Chapeau du Magicien. Ils ne sont plus déclarés
+// nulle part : ni dans le parcours, ni dans FICHIERS_JEUX. Leurs
+// fichiers restent dans jeux/ si un jour il change d'avis.
 const PARCOURS_COMPLET = [
   'bandit', 'chamboule', 'trapeze',
-  'etoiles', 'canon', 'chapeau', 'cartes', 'roue'
+  'etoiles', 'canon', 'cartes', 'roue'
 ];
 
 function listeDesManches() {
@@ -1531,24 +1532,20 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026b';
+const VERSION_JEUX = '27aout2026c';
 const FICHIERS_JEUX = {
   bandit:   'jeux/bandit.js?v=' + VERSION_JEUX,
   pingouin: 'jeux/pingouin.js?v=' + VERSION_JEUX,
   paquets:  'jeux/paquets.js?v=' + VERSION_JEUX,
   cartes:   'jeux/cartes.js?v=' + VERSION_JEUX,
   chamboule: 'jeux/chamboule.js?v=' + VERSION_JEUX,
-  chapeau:  'jeux/chapeau.js?v=' + VERSION_JEUX,
-  // QUATRE JEUX DE PLUS, EN ATTENTE DU CHOIX DE ROMAIN (26/08/2026).
-  // Déclarés ici pour être jouables et montrables par « ?jeu=<id> »,
-  // mais AUCUN n'est dans MANCHES_DEFAUT : le parcours du joueur ne
-  // change pas tant que Romain n'a pas dit lesquels il garde. Ajouter
-  // une manche rallonge la partie, ce n'est pas une décision technique.
+  // Les jeux retenus après le tri de Romain du 27/08/2026. Les écartés
+  // (sapin, hotte, chapeau) n'ont plus d'entrée ici : plus aucun
+  // chemin ne mène à eux, même par « ?jeu= ». Leurs fichiers restent
+  // dans jeux/ s'il change d'avis.
   trapeze:  'jeux/trapeze.js?v=' + VERSION_JEUX,
-  hotte:    'jeux/hotte.js?v=' + VERSION_JEUX,
   etoiles:  'jeux/etoiles.js?v=' + VERSION_JEUX,
-  canon:    'jeux/canon.js?v=' + VERSION_JEUX,
-  sapin:    'jeux/sapin.js?v=' + VERSION_JEUX
+  canon:    'jeux/canon.js?v=' + VERSION_JEUX
 };
 const chargements = {};
 
