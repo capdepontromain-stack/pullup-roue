@@ -102,10 +102,9 @@
 
   .bandit-case { height: var(--case); display: flex; align-items: center; justify-content: center; }
   .bandit-case svg {
-    width: 68%; height: auto; max-height: 80%;
-    /* La lueur donne à l'or son épaisseur : sans elle, un trait fin sur
-       fond noir paraît toujours éteint. */
-    filter: drop-shadow(0 0 6px rgba(239,195,104,.35));
+    width: 66%; height: auto; max-height: 78%;
+    /* Des symboles pleins et colorés : l'ombre les décolle du rouleau. */
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,.5));
   }
 
   /* La ligne de gain : deux repères dorés et un liseré au milieu */
@@ -219,6 +218,45 @@
     return t;
   }
 
+  // Les symboles colorés de la machine, dans la grille 100 x 100.
+  // Huit dessins pleins, huit couleurs franches : cloche or, cerises
+  // rouges, trèfle vert, diamant bleu, sept violet, fer à cheval
+  // cuivre, étoile crème, couronne orange.
+  const SYMBOLES_MACHINE = [
+    // La cloche, or
+    `<path d="M50 16 c-16 0 -24 14 -24 30 c0 14 -6 20 -10 24 h68 c-4 -4 -10 -10 -10 -24 c0 -16 -8 -30 -24 -30 Z" fill="#EFC368" stroke="#8A6A21" stroke-width="3"/>
+     <circle cx="50" cy="14" r="5" fill="#C9962E"/>
+     <circle cx="50" cy="78" r="7" fill="#C9962E" stroke="#8A6A21" stroke-width="2"/>`,
+    // Les cerises, rouges
+    `<path d="M52 14 C40 26 34 38 32 52 M52 14 C58 28 62 40 64 50" fill="none" stroke="#1F6E4B" stroke-width="4" stroke-linecap="round"/>
+     <path d="M52 14 c8 -4 16 -4 22 2 c-8 2 -14 2 -22 -2 Z" fill="#2C8C61"/>
+     <circle cx="30" cy="62" r="14" fill="#D8383E" stroke="#8E1418" stroke-width="2.5"/>
+     <circle cx="66" cy="60" r="14" fill="#B3282D" stroke="#8E1418" stroke-width="2.5"/>
+     <ellipse cx="26" cy="57" rx="4" ry="3" fill="#FF9A8E" opacity=".8"/>`,
+    // Le trèfle, vert
+    `<circle cx="38" cy="40" r="14" fill="#2C8C61"/><circle cx="62" cy="40" r="14" fill="#2C8C61"/>
+     <circle cx="50" cy="58" r="14" fill="#1F6E4B"/>
+     <path d="M50 62 c-2 12 -6 18 -10 22 h20 c-4 -4 -8 -10 -10 -22 Z" fill="#155238"/>`,
+    // Le diamant, bleu
+    `<path d="M30 30 h40 l14 18 l-34 36 l-34 -36 z" fill="#4FA3D8" stroke="#22618E" stroke-width="3"/>
+     <path d="M30 30 L50 84 L16 48 Z" fill="#7FC3EA"/>
+     <path d="M70 30 L84 48 L50 84 Z" fill="#2F7BB0"/>`,
+    // Le sept, violet sur cocarde
+    `<circle cx="50" cy="50" r="34" fill="#F3E7D3" stroke="#6B4FA3" stroke-width="4"/>
+     <path d="M34 32 h32 l-18 40 h-12 l17 -32 h-19 z" fill="#6B4FA3"/>`,
+    // Le fer à cheval, cuivre
+    `<path d="M28 80 v-28 c0 -14 9 -26 22 -26 s22 12 22 26 v28 h-12 v-26 c0 -8 -4 -14 -10 -14 s-10 6 -10 14 v26 z" fill="#C9962E" stroke="#8A6A21" stroke-width="3"/>
+     <circle cx="33" cy="74" r="2.5" fill="#5A4415"/><circle cx="67" cy="74" r="2.5" fill="#5A4415"/>
+     <circle cx="33" cy="58" r="2.5" fill="#5A4415"/><circle cx="67" cy="58" r="2.5" fill="#5A4415"/>`,
+    // L'étoile, crème sur fond nuit
+    `<circle cx="50" cy="50" r="34" fill="#2A2118"/>
+     <path d="M50 22 l8 18 l20 2 l-15 14 l4 20 l-17 -10 l-17 10 l4 -20 l-15 -14 l20 -2 z" fill="#F3E7D3"/>`,
+    // La couronne, orange
+    `<path d="M20 66 L26 34 L40 50 L50 28 L60 50 L74 34 L80 66 z" fill="#E07B28" stroke="#9C4F12" stroke-width="3"/>
+     <path d="M20 66 h60 v10 h-60 z" fill="#C9601C"/>
+     <circle cx="50" cy="56" r="4" fill="#FFF3D4"/>`
+  ];
+
   window.PullUpJeux = window.PullUpJeux || {};
 
   window.PullUpJeux.bandit = {
@@ -251,13 +289,11 @@
         // propre). Le troisième rouleau doit montrer un dessin
         // RÉELLEMENT différent de la paire, sinon l'écran aligne trois
         // images identiques en annonçant « perdu » : inacceptable.
+        // Un lot = un symbole de machine (par position) : deux indices
+        // différents montrent toujours deux dessins différents.
         const melange = melanger(symboles.map((l, i) => i));
         const paire = melange[0];
-        const dessinPaire = ctx.icone(symboles[paire].nom);
-        const differents = melange.slice(1).filter(i =>
-          ctx.icone(symboles[i].nom) !== dessinPaire);
-        const seul = differents.length ? differents[0]
-          : (melange[1] !== undefined ? melange[1] : (paire + 1) % n);
+        const seul = melange[1] !== undefined ? melange[1] : (paire + 1) % n;
         cibles = [paire, paire, seul];
       }
 
@@ -271,9 +307,9 @@
         let html = '';
         for (let b = 0; b < BOUCLES; b++) {
           ordres[i].forEach(lot => {
-            html += `<div class="bandit-case"><svg viewBox="0 0 100 100" fill="none" stroke="#EFC368"
-                     stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"
-                     aria-hidden="true">${ctx.icone(lot.nom)}</svg></div>`;
+            const place = symboles.indexOf(lot);
+            html += `<div class="bandit-case"><svg viewBox="0 0 100 100"
+                     aria-hidden="true">${SYMBOLES_MACHINE[place % SYMBOLES_MACHINE.length]}</svg></div>`;
           });
         }
         return html;

@@ -1549,7 +1549,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026k';
+const VERSION_JEUX = '27aout2026l';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -1880,8 +1880,13 @@ function lancerRoue() {
     : Math.max(0, SEGMENTS.indexOf(cibleRoue || lotGagne));
   // Angle pour amener le milieu du segment gagnant sous le pointeur (en haut)
   const cible = 360 - (index * angle + angle / 2);
-  // On ne s'arrête jamais pile au milieu : ce serait trop régulier
-  const decalage = (Math.random() - 0.5) * angle * 0.55;
+  // L'AIGUILLE S'ARRÊTE FRANCHEMENT DANS LA CASE (27/08/2026, Romain :
+  // « la roue s'est arrêtée presque entre deux cases »). L'ancien
+  // décalage allait jusqu'à 55 % de la demi-case : proche du liseré,
+  // l'arrêt semblait ambigu. Il est ramené à 20 % : l'arrêt varie
+  // toujours un peu d'une partie à l'autre, mais l'aiguille pointe
+  // sans discussion au cœur de la case gagnante.
+  const decalage = (Math.random() - 0.5) * angle * 0.2;
   const tours = 5 + Math.floor(Math.random() * 2);
   const arrivee = tours * 360 + cible + decalage;
 
