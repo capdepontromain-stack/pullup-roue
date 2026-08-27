@@ -1519,7 +1519,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026f';
+const VERSION_JEUX = '27aout2026g';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -2033,7 +2033,7 @@ function afficherResultat() {
   // Avec un taux de gagnants à 25 %, c'est l'écran que voient trois
   // joueurs sur quatre : il porte à lui seul l'image de l'opération
   // en galerie, il n'a pas le droit d'être une porte fermée.
-  const consolation = document.getElementById('resultat-consolation');
+  const consolation = null;   // le bloc consolation a été retiré (27/08/2026)
   const boutonGalerie = document.getElementById('btn-voir-promos');
 
   if (lotGagne.perdant) {

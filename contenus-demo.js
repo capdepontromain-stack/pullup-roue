@@ -122,6 +122,12 @@ const OFFRES_DEMO = [
     valable_jusqu_au: '31 décembre', bon: 'Une boisson offerte pour l’achat d’une glace'
   },
   {
+    enseigne: 'Jina', univers: 'mode',
+    titre: '10 % sur toute la boutique',
+    detail: 'Sur présentation de ce bon, 10 % de remise sur tout, même les nouveautés.',
+    valable_jusqu_au: '31 décembre', bon: '10 % sur toute la boutique'
+  },
+  {
     enseigne: 'Taïlu', univers: 'gourmandise',
     titre: 'Le sixième samoussa offert',
     detail: 'Cinq samoussas achetés, le sixième est offert, tous parfums.',
