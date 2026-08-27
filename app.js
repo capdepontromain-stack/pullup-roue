@@ -813,10 +813,28 @@ function tirerDansListe(liste) {
   return liste[liste.length - 1];
 }
 
+// LE RÉSULTAT FORCÉ DES DÉMONSTRATIONS (27/08/2026, pour Mercialys) :
+// « ?resultat=gagne » ou « ?resultat=perdu » dans le lien force le
+// tirage de la page. UNIQUEMENT sur la version d'essai (github.io) :
+// sur un vrai domaine, VERSION_ESSAI est faux, le paramètre est ignoré
+// et c'est le serveur qui tire, comme toujours. Aucune triche possible
+// en galerie.
+function resultatForce() {
+  if (!PARTIES_ILLIMITEES) return null;
+  const v = new URLSearchParams(location.search).get('resultat');
+  if (v === 'gagne') return true;
+  if (v === 'perdu') return false;
+  return null;
+}
+
 function tirerLot() {
   const actifs = LOTS.filter(l => l.poids > 0);
   const gagnants = actifs.filter(l => !l.perdant);
   const perdants = actifs.filter(l => l.perdant);
+
+  const force = resultatForce();
+  if (force === true && gagnants.length) return tirerDansListe(gagnants);
+  if (force === false && perdants.length) return tirerDansListe(perdants);
 
   // Filets : une opération mal remplie ne doit jamais planter.
   if (!gagnants.length) return perdants[0] || actifs[0] || LOTS[0];
@@ -920,6 +938,11 @@ async function tirageServeur() {
 }
 
 async function enregistrerParticipation() {
+  // Résultat forcé (démonstration) : on ne passe PAS par le serveur.
+  // Son tirage écraserait le résultat demandé, et une partie de
+  // démonstration n'a rien à écrire dans la base.
+  if (resultatForce() !== null) return null;
+
   // D'abord la porte unique du serveur. Elle fait tout : tirage, code,
   // verrou du jour, enregistrement.
   const cote_serveur = await tirageServeur();
@@ -1519,7 +1542,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026g';
+const VERSION_JEUX = '27aout2026h';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
