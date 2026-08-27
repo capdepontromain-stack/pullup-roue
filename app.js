@@ -1477,7 +1477,14 @@ let cibleRoue = null;
 // dans la VITRINE : « ?vitrine=1 », sans quiz ni coordonnées, pour
 // être montrés aux clients (voir modeVitrine plus bas).
 const MANCHES_DEFAUT = ['bandit', 'roue'];
-const MANCHES_VITRINE = ['chamboule', 'trapeze', 'canon'];
+// La vitrine montre TOUS les jeux créés, y compris ceux écartés du
+// parcours : c'est le catalogue de démonstration pour les clients.
+// Le ticket à gratter l'ouvre, la roue la ferme.
+const MANCHES_VITRINE = [
+  'bandit', 'chamboule', 'trapeze', 'etoiles', 'canon', 'cartes',
+  'sapin', 'hotte', 'chapeau', 'pingouin', 'paquets', 'memory',
+  'justeprix', 'suiscadeau', 'roue'
+];
 let MANCHES = MANCHES_DEFAUT.slice();
 let mancheActuelle = 0;
 let mancheSecondTour = false;
@@ -1528,6 +1535,7 @@ function listeDesManches() {
     const liste = demande.split(',').map(s => s.trim()).filter(Boolean).filter(connu);
     if (liste.length) return liste;
   }
+  if (modeVitrine()) return MANCHES_VITRINE.slice();
   const brut = String(OPERATION.jeu || '').trim();
   if (brut.indexOf(',') > 0) {
     const liste = brut.split(',').map(s => s.trim()).filter(Boolean);
@@ -1565,17 +1573,30 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026m';
+const VERSION_JEUX = '27aout2026n';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
 // d'entrée ici : plus aucun chemin ne mène à eux, même par « ?jeu= ».
 // Leurs fichiers restent dans jeux/ s'il change d'avis.
+// Tous les jeux jamais créés restent chargeables : le parcours
+// officiel n'en joue que deux (bandit, roue), mais la vitrine de
+// démonstration les montre tous (27/08/2026, demande de Romain).
 const FICHIERS_JEUX = {
-  bandit:    'jeux/bandit.js?v=' + VERSION_JEUX,
-  chamboule: 'jeux/chamboule.js?v=' + VERSION_JEUX,
-  trapeze:   'jeux/trapeze.js?v=' + VERSION_JEUX,
-  canon:     'jeux/canon.js?v=' + VERSION_JEUX
+  bandit:     'jeux/bandit.js?v=' + VERSION_JEUX,
+  chamboule:  'jeux/chamboule.js?v=' + VERSION_JEUX,
+  trapeze:    'jeux/trapeze.js?v=' + VERSION_JEUX,
+  canon:      'jeux/canon.js?v=' + VERSION_JEUX,
+  etoiles:    'jeux/etoiles.js?v=' + VERSION_JEUX,
+  cartes:     'jeux/cartes.js?v=' + VERSION_JEUX,
+  sapin:      'jeux/sapin.js?v=' + VERSION_JEUX,
+  hotte:      'jeux/hotte.js?v=' + VERSION_JEUX,
+  chapeau:    'jeux/chapeau.js?v=' + VERSION_JEUX,
+  pingouin:   'jeux/pingouin.js?v=' + VERSION_JEUX,
+  paquets:    'jeux/paquets.js?v=' + VERSION_JEUX,
+  memory:     'jeux/memory.js?v=' + VERSION_JEUX,
+  justeprix:  'jeux/justeprix.js?v=' + VERSION_JEUX,
+  suiscadeau: 'jeux/suis-le-cadeau.js?v=' + VERSION_JEUX
 };
 const chargements = {};
 
@@ -2644,17 +2665,17 @@ function modeVitrine() {
 }
 
 function lancerLaVitrine() {
-  // Le lot est tiré localement, rien n'est enregistré nulle part.
+  // Le lot est tiré localement, rien n'est enregistré nulle part. La
+  // vitrine s'ouvre sur le ticket à gratter, comme la vraie partie ;
+  // ensuite, le flux standard enchaîne toutes les manches de
+  // listeDesManches(), qui sait qu'on est en vitrine.
   lotGagne = tirerLot();
   codeLot = genererCode();
   reponses.prenom = reponses.prenom || '';
-  const force = new URLSearchParams(location.search).get('jeu');
-  const demande = force ? String(force).toLowerCase().split(',').map(x => x.trim()).filter(Boolean) : null;
-  MANCHES = (demande && demande.length ? demande : MANCHES_VITRINE.slice())
-    .filter(nom => nom === 'roue' || FICHIERS_JEUX[nom]);
-  if (!MANCHES.length) MANCHES = MANCHES_VITRINE.slice();
-  mancheActuelle = 0;
-  Promise.all(MANCHES.map(chargerUnFichierJeu)).then(lancerManche);
+  preparerBonus();
+  preparerGrattage();
+  afficherEcran('ecran-grattage');
+  chargerFichiersJeu();          // les jeux se téléchargent pendant le grattage
 }
 
 document.getElementById('btn-jouer').addEventListener('click', () => {
