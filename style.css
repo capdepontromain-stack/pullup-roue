@@ -2754,15 +2754,25 @@ body.theme-circus .pastille {
 }
 body.theme-circus .entete { border-bottom-color: rgba(201, 150, 46, .3); }
 
-/* LE MÉDAILLON D'ACCUEIL : LE PÈRE NOËL, EN DESSIN (26/08/2026)
-   Romain a écarté la photographie : « je préfère un Père Noël en
-   dessin, il faut que ce soit plus qualitatif ». C'est maintenant une
-   illustration vectorielle (img/pere-noel.svg) : elle reste nette sur
-   tous les écrans, elle pèse 4 Ko, et elle porte les ors de la charte.
+/* LE MÉDAILLON D'ACCUEIL : LE CHAPITEAU (27/08/2026)
+   Le Père Noël dessiné a été écarté à son tour : Romain, en le
+   revoyant, « il est vraiment pas beau, soit tu l'enlèves et tu mets
+   un chapiteau ». Il avait raison : le personnage était plus enfantin
+   que tout le reste de l'application, et il jurait avec le soin des
+   autres écrans.
+   C'est maintenant le chapiteau (img/chapiteau.svg), qui a trois
+   avantages sur un personnage : il dit l'univers de décembre à Cap
+   Sacré-Cœur sans avoir à le nommer, il ne vieillit pas (un chapiteau
+   ne se démode pas, un visage si), et il ne pose aucune question de
+   représentation.
+   La variante « hotte » (img/hotte-medaillon.svg) est dessinée et
+   prête : pour l'essayer, il suffit de changer le nom du fichier
+   ci-dessous, rien d'autre. Les deux se comparent dans
+   _comparer-medaillon.html.
    Le dessin est déjà rond et cadré : il se pose entier dans le
    médaillon (contain), sans recadrage ni filtre. */
 .medaillon-pere-noel {
-  background-image: url('img/pere-noel.svg') !important;
+  background-image: url('img/chapiteau.svg') !important;
   background-blend-mode: normal !important;
   background-size: contain !important;
   background-position: 50% 50% !important;

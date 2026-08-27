@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Un chapiteau de cirque">
+  <defs>
+    <linearGradient id="ch-ciel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#3A1410"/>
+      <stop offset="58%"  stop-color="#26100C"/>
+      <stop offset="100%" stop-color="#180A07"/>
+    </linearGradient>
+    <linearGradient id="ch-toile-claire" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#FFF6E2"/>
+      <stop offset="100%" stop-color="#DCC79E"/>
+    </linearGradient>
+    <linearGradient id="ch-toile-rouge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#C4292E"/>
+      <stop offset="100%" stop-color="#7E1417"/>
+    </linearGradient>
+    <linearGradient id="ch-or" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#FFF3D4"/>
+      <stop offset="46%"  stop-color="#EFC368"/>
+      <stop offset="100%" stop-color="#B5822C"/>
+    </linearGradient>
+    <radialGradient id="ch-lueur" cx="50%" cy="72%" r="42%">
+      <stop offset="0%"   stop-color="rgba(255,233,184,.85)"/>
+      <stop offset="60%"  stop-color="rgba(239,195,104,.22)"/>
+      <stop offset="100%" stop-color="rgba(239,195,104,0)"/>
+    </radialGradient>
+    <clipPath id="ch-rond"><circle cx="100" cy="100" r="97"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#ch-rond)">
+    <circle cx="100" cy="100" r="97" fill="url(#ch-ciel)"/>
+
+    <!-- La lueur qui monte de la piste -->
+    <circle cx="100" cy="150" r="86" fill="url(#ch-lueur)"/>
+
+    <!-- LE TOIT : six pans, alternés rouge et crème.
+         Chaque pan part du sommet du mât et descend jusqu'à la
+         corniche : c'est cette convergence qui fait le chapiteau. -->
+    <g>
+      <path d="M100 36 L46 116 L64 116 Z"   fill="url(#ch-toile-rouge)"/>
+      <path d="M100 36 L64 116 L82 116 Z"   fill="url(#ch-toile-claire)"/>
+      <path d="M100 36 L82 116 L100 116 Z"  fill="url(#ch-toile-rouge)"/>
+      <path d="M100 36 L100 116 L118 116 Z" fill="url(#ch-toile-claire)"/>
+      <path d="M100 36 L118 116 L136 116 Z" fill="url(#ch-toile-rouge)"/>
+      <path d="M100 36 L136 116 L154 116 Z" fill="url(#ch-toile-claire)"/>
+    </g>
+
+    <!-- La corniche festonnée, la dentelle du chapiteau -->
+    <path d="M44 116
+             q9 13 18 0 q9 13 18 0 q9 13 18 0 q9 13 18 0 q9 13 18 0 q9 13 18 0
+             L156 112 L44 112 Z"
+          fill="url(#ch-or)"/>
+    <path d="M44 113 L156 113" stroke="rgba(255,243,212,.7)" stroke-width="1.6"/>
+
+    <!-- Le corps du chapiteau, sous la corniche -->
+    <path d="M46 126 L154 126 L150 172 L50 172 Z" fill="url(#ch-toile-claire)"/>
+    <g fill="url(#ch-toile-rouge)">
+      <path d="M46 126 L64 126 L63 172 L50 172 Z"/>
+      <path d="M82 126 L100 126 L100 172 L82 172 Z"/>
+      <path d="M118 126 L136 126 L138 172 L119 172 Z"/>
+    </g>
+
+    <!-- L'entrée : les deux pans relevés et le noir du dedans -->
+    <path d="M76 172 L76 138 q24 -16 48 0 L124 172 Z" fill="#160907"/>
+    <path d="M76 138 q24 -16 48 0 L118 146 q-18 -10 -36 0 Z" fill="url(#ch-or)" opacity=".9"/>
+    <path d="M70 172 L76 138 L86 142 L84 172 Z" fill="url(#ch-toile-rouge)"/>
+    <path d="M130 172 L124 138 L114 142 L116 172 Z" fill="url(#ch-toile-rouge)"/>
+    <!-- La lumière qui sort de l'entrée -->
+    <ellipse cx="100" cy="172" rx="26" ry="8" fill="rgba(255,233,184,.35)"/>
+
+    <!-- Le mât et le fanion -->
+    <path d="M100 36 L100 24" stroke="url(#ch-or)" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M100 24 L128 31 L100 39 Z" fill="url(#ch-toile-rouge)"
+          stroke="#5E0F11" stroke-width="1.2" stroke-linejoin="round"/>
+    <circle cx="100" cy="22" r="3.4" fill="url(#ch-or)"/>
+
+    <!-- Les ampoules de la corniche -->
+    <g fill="#FFE9B8">
+      <circle cx="52" cy="121" r="2.6"/><circle cx="70" cy="121" r="2.6"/>
+      <circle cx="88" cy="121" r="2.6"/><circle cx="106" cy="121" r="2.6"/>
+      <circle cx="124" cy="121" r="2.6"/><circle cx="142" cy="121" r="2.6"/>
+    </g>
+
+    <!-- Le sol de la piste -->
+    <path d="M0 172 L200 172 L200 200 L0 200 Z" fill="rgba(255,233,184,.07)"/>
+    <path d="M0 172 L200 172" stroke="rgba(201,150,46,.4)" stroke-width="1.4"/>
+  </g>
+
+  <!-- Le cercle du médaillon -->
+  <circle cx="100" cy="100" r="96" fill="none" stroke="url(#ch-or)" stroke-width="3.5"/>
+  <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,233,184,.28)" stroke-width="1"/>
+</svg>

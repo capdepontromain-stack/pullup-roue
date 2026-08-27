@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Une hotte pleine de cadeaux">
+  <defs>
+    <linearGradient id="ht-fond" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#3A1410"/>
+      <stop offset="58%"  stop-color="#26100C"/>
+      <stop offset="100%" stop-color="#180A07"/>
+    </linearGradient>
+    <linearGradient id="ht-osier" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%"   stop-color="#D8A448"/>
+      <stop offset="42%"  stop-color="#A87C28"/>
+      <stop offset="100%" stop-color="#5B3D10"/>
+    </linearGradient>
+    <linearGradient id="ht-bord" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#FFF3D4"/>
+      <stop offset="100%" stop-color="#B5822C"/>
+    </linearGradient>
+    <linearGradient id="ht-or" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#FFF3D4"/>
+      <stop offset="46%"  stop-color="#EFC368"/>
+      <stop offset="100%" stop-color="#B5822C"/>
+    </linearGradient>
+    <radialGradient id="ht-lueur" cx="50%" cy="46%" r="46%">
+      <stop offset="0%"   stop-color="rgba(255,233,184,.5)"/>
+      <stop offset="100%" stop-color="rgba(239,195,104,0)"/>
+    </radialGradient>
+    <clipPath id="ht-rond"><circle cx="100" cy="100" r="97"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#ht-rond)">
+    <circle cx="100" cy="100" r="97" fill="url(#ht-fond)"/>
+    <circle cx="100" cy="96" r="80" fill="url(#ht-lueur)"/>
+
+    <!-- LES CADEAUX QUI DÉPASSENT, dessinés avant la hotte pour
+         qu'ils passent derrière son bord. -->
+    <!-- paquet rouge, à gauche -->
+    <g transform="rotate(-13 72 74)">
+      <rect x="52" y="56" width="38" height="30" rx="3" fill="#A81B1F" stroke="#5E0F11" stroke-width="2"/>
+      <rect x="50" y="50" width="42" height="9" rx="2.5" fill="#A81B1F" stroke="#5E0F11" stroke-width="2"/>
+      <rect x="66" y="50" width="7" height="36" fill="#FFE9B8"/>
+      <path d="M70 51 C62 51, 60 42, 66 42 C70 42, 70 48, 70 51
+               C70 48, 70 42, 74 42 C80 42, 78 51, 70 51 Z"
+            fill="#FFE9B8" stroke="#8A6A21" stroke-width="1.2"/>
+    </g>
+    <!-- paquet doré, à droite -->
+    <g transform="rotate(11 128 78)">
+      <rect x="110" y="60" width="34" height="28" rx="3" fill="url(#ht-or)" stroke="#8A6A21" stroke-width="2"/>
+      <rect x="108" y="54" width="38" height="9" rx="2.5" fill="url(#ht-or)" stroke="#8A6A21" stroke-width="2"/>
+      <rect x="122" y="54" width="6" height="34" fill="#A81B1F"/>
+      <path d="M125 55 C118 55, 116 47, 122 47 C126 47, 125 52, 125 55
+               C125 52, 125 47, 129 47 C135 47, 132 55, 125 55 Z"
+            fill="#A81B1F" stroke="#5E0F11" stroke-width="1.2"/>
+    </g>
+    <!-- une canne sucre d'orge qui dépasse -->
+    <path d="M100 92 L100 58 q0 -13 13 -13 q13 0 13 13"
+          fill="none" stroke="#F6F1E6" stroke-width="8" stroke-linecap="round"/>
+    <path d="M100 92 L100 58 q0 -13 13 -13 q13 0 13 13"
+          fill="none" stroke="#A81B1F" stroke-width="8" stroke-linecap="round"
+          stroke-dasharray="7 9"/>
+
+    <!-- LA HOTTE, en osier tressé -->
+    <path d="M44 92 L156 92 L140 174 Q100 184 60 174 Z"
+          fill="url(#ht-osier)" stroke="#3A2408" stroke-width="3" stroke-linejoin="round"/>
+    <!-- Le tressage : trois cercles d'osier et quatre montants -->
+    <g stroke="#3A2408" stroke-width="2" opacity=".5" fill="none">
+      <path d="M48 112 Q100 121 152 112"/>
+      <path d="M52 134 Q100 143 148 134"/>
+      <path d="M56 156 Q100 165 144 156"/>
+      <path d="M72 93 L78 178"/>
+      <path d="M100 93 L100 181"/>
+      <path d="M128 93 L122 178"/>
+    </g>
+    <!-- Le bord roulé, celui qu'on voit en premier -->
+    <path d="M38 92 Q100 76 162 92 Q100 108 38 92 Z"
+          fill="url(#ht-bord)" stroke="#3A2408" stroke-width="2.6" stroke-linejoin="round"/>
+
+    <!-- Le sol -->
+    <ellipse cx="100" cy="182" rx="58" ry="9" fill="rgba(0,0,0,.45)"/>
+  </g>
+
+  <circle cx="100" cy="100" r="96" fill="none" stroke="url(#ht-or)" stroke-width="3.5"/>
+  <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,233,184,.28)" stroke-width="1"/>
+</svg>

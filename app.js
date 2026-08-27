@@ -150,13 +150,19 @@ function appliquerOperation() {
   document.body.classList.toggle('theme-circus', OPERATION.theme === 'circus');
 
   // LE MÉDAILLON D'ACCUEIL : le Père Noël, EN DESSIN.
-  // 26/08/2026, Romain : « je préfère un Père Noël en dessin, il faut
-  // que ce soit plus qualitatif ». C'est donc une illustration
-  // vectorielle (img/pere-noel.svg), posée dans le médaillon rond, et
-  // affichée sur TOUS les univers, cirque compris. Une version
-  // intermédiaire montrait à la place une photographie détourée en
-  // pied sous un projecteur : elle allait contre cette consigne, elle
-  // a été retirée.
+  // 27/08/2026 : le médaillon montre LE CHAPITEAU, plus de Père Noël.
+  // L'histoire, pour qu'on n'y revienne pas une quatrième fois : une
+  // photographie détourée d'abord (« vous avez mis un Père Noël
+  // noir… il n'est pas beau »), puis un Père Noël dessiné, écarté à
+  // son tour (« il est vraiment pas beau, soit tu l'enlèves et tu
+  // mets un chapiteau »). Le chapiteau règle le sujet : il dit
+  // l'univers de décembre sans nommer personne, et il ne pose aucune
+  // question de représentation.
+  // Le nom de la classe (medaillon-pere-noel) n'a pas été changé
+  // exprès : il est utilisé dans style.css et le renommer partout pour
+  // une question de vocabulaire, à cette heure-ci, ne ferait que créer
+  // une occasion de casser l'écran d'accueil. Il désigne « le
+  // médaillon rond de l'accueil », quel que soit ce qu'il montre.
   const medaillon = document.getElementById('accueil-medaillon');
   if (medaillon) {
     medaillon.hidden = false;
@@ -362,18 +368,24 @@ const QUESTIONS = [
     ]
   },
   {
-    // QUATRE TRANCHES, PAS SIX (26/08/2026, soirée).
-    // Romain : « trop de choix à chaque fois ». Quatre tranches
-    // suffisent à trier les campagnes (jeune public, jeune actif,
-    // famille, senior) et l'écran se lit d'un coup d'œil.
+    // SIX TRANCHES, ET C'EST VOULU (27/08/2026, retour de Romain).
+    // Elles avaient été ramenées à quatre la veille au soir pour
+    // alléger l'écran. Romain a tranché en les revoyant : « je
+    // préférais les tranches d'âge comme avant, même s'il y a plus
+    // de choix, on s'y retrouvait mieux ». Il a raison sur le fond :
+    // « 31 à 50 ans » mettait dans le même sac un jeune couple sans
+    // enfant et un parent d'ados, alors que ce sont deux campagnes
+    // différentes. Ne pas les réduire à nouveau.
     id: 'age_tranche', type: 'choix',
     titre: 'Ton âge ?',
     soustitre: 'Promis, on ne le dira à personne.',
     options: [
       { v: '-18',   l: 'Moins de 18 ans' },
-      { v: '18-30', l: '18 à 30 ans' },
-      { v: '31-50', l: '31 à 50 ans' },
-      { v: '50+',   l: 'Plus de 50 ans' }
+      { v: '18-25', l: '18 à 25 ans' },
+      { v: '26-35', l: '26 à 35 ans' },
+      { v: '36-50', l: '36 à 50 ans' },
+      { v: '51-65', l: '51 à 65 ans' },
+      { v: '65+',   l: 'Plus de 65 ans' }
     ]
   },
   {
