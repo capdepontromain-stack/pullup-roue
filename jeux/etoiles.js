@@ -122,6 +122,7 @@
     max-width: 348px;
   }
 
+  .etl-boutique:focus-visible { outline: 3px solid var(--or-clair); outline-offset: 3px; }
   .etl-boutique {
     position: relative;
     display: flex;

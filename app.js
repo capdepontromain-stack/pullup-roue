@@ -9,6 +9,24 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: false, autoRefreshToken: false }
 });
 
+// LE GARDE-TEMPS DES REQUÊTES (tour n°7, 29/08/2026). Sur la 4G d'une
+// galerie couverte, une requête peut « ramer sans casser » pendant des
+// minutes : sans délai maximum, l'écran attend pour toujours. Ce signal
+// coupe la requête au bout de `ms` millisecondes ; la coupure tombe
+// dans le catch de l'appelant, qui a déjà son plan de secours (tirage
+// local, file d'attente, confiance au joueur). AbortSignal.timeout
+// n'existe pas sur les vieux téléphones : repli manuel.
+function signalDelai(ms) {
+  try { return AbortSignal.timeout(ms); }
+  catch (e) {
+    try {
+      const c = new AbortController();
+      setTimeout(() => c.abort(), ms);
+      return c.signal;
+    } catch (e2) { return undefined; }   // très vieux navigateur : pas de garde-temps
+  }
+}
+
 // Nom de l'opération : le QR code peut pointer vers ?e=galerie-sud, ?e=nordev…
 const EVENEMENT = new URLSearchParams(location.search).get('e') || 'test';
 
@@ -119,7 +137,7 @@ const OPERATIONS_LOCALES = {
     nom: 'La Hotte des Commerçants',
     lieu: 'Cap Sacré-Cœur',
     emoji: '🎁',
-    accroche: 'Quelques questions, trois numéros sur la piste, et peut-être un cadeau offert par tes commerçants.',
+    accroche: 'Quelques questions, quatre numéros sur la piste, et peut-être un cadeau offert par tes commerçants.',
     // L'UNIVERS DE DÉCEMBRE 2026 EST LE CIRQUE (Romain, 26/08/2026) :
     // Cap Sacré-Cœur décore sa galerie sur ce thème, le jeu suit. Le
     // Père Noël reste de la partie, en Monsieur Loyal.
@@ -700,10 +718,17 @@ function afficherQuestion() {
         if (dessin) btn.classList.add('option-avec-icone');
         btn.innerHTML = `${dessin}<span>${opt.l}</span>`;
         if (reponses[q.second] === opt.v) btn.classList.add('choisie');
+        // aria-pressed comme les options du quiz : sans lui, un lecteur
+        // d'écran ne sait pas quelle puce du genre est sélectionnée.
+        btn.setAttribute('aria-pressed', reponses[q.second] === opt.v ? 'true' : 'false');
         btn.addEventListener('click', () => {
           reponses[q.second] = opt.v;
-          zoneOptions.querySelectorAll('.option').forEach(b => b.classList.remove('choisie'));
+          zoneOptions.querySelectorAll('.option').forEach(b => {
+            b.classList.remove('choisie');
+            b.setAttribute('aria-pressed', 'false');
+          });
           btn.classList.add('choisie');
+          btn.setAttribute('aria-pressed', 'true');
         });
         zoneOptions.appendChild(btn);
       });
@@ -788,6 +813,17 @@ function afficherQuestion() {
 
     zoneMulti.hidden = !multiple;
     if (multiple) majBoutonMulti(choisies.size);
+
+    // LE FOCUS SUIT LA QUESTION (tour n°7). Le quiz change de contenu
+    // sans changer d'écran : l'ancien bouton qui portait le focus est
+    // détruit, et le focus tombait sur le corps de la page. Un lecteur
+    // d'écran n'annonçait rien, un clavier repartait du haut du
+    // document. Même recette que les changements d'écran : le focus se
+    // pose sur le titre de la nouvelle question. (Les questions à
+    // champ, elles, focalisent déjà leur champ.)
+    const titreQ = document.getElementById('question-titre');
+    titreQ.setAttribute('tabindex', '-1');
+    titreQ.focus({ preventScroll: true });
   }
 }
 
@@ -1061,6 +1097,7 @@ function appliquerLotServeur(reponse) {
 async function tirageServeur() {
   try {
     const { data, error } = await sb.rpc('roue_jouer', {
+      // (le garde-temps est posé après l'objet, voir .abortSignal)
       p_evenement: EVENEMENT,
       p_reponses: {
         prenom: reponses.prenom || '',
@@ -1073,7 +1110,7 @@ async function tirageServeur() {
         email: reponses.email || '',
         telephone: reponses.telephone || ''
       }
-    });
+    }).abortSignal(signalDelai(8000));
     if (error) {
       console.warn('Tirage serveur indisponible :', error.message || error);
       return null;
@@ -1083,8 +1120,11 @@ async function tirageServeur() {
     // 'ferme', 'email', 'sans-lot' : on laisse l'ancien chemin décider
     return null;
   } catch (e) {
+    // 'reseau' et pas null : le serveur a PEUT-ÊTRE écrit la ligne sans
+    // que la réponse arrive (4G coupée au retour). L'appelant s'en sert
+    // pour ne pas accuser le joueur de « déjà joué » (tour n°7).
     console.warn('Tirage serveur injoignable :', e && e.message);
-    return null;
+    return 'reseau';
   }
 }
 
@@ -1097,7 +1137,7 @@ async function enregistrerParticipation() {
   // D'abord la porte unique du serveur. Elle fait tout : tirage, code,
   // verrou du jour, enregistrement.
   const cote_serveur = await tirageServeur();
-  if (cote_serveur) return cote_serveur;
+  if (cote_serveur && cote_serveur !== 'reseau') return cote_serveur;
 
   // Repli : le serveur n'a pas répondu, la page enregistre elle-même
   // le lot qu'elle avait tiré (c'est aussi ce qui permet au filet
@@ -1130,13 +1170,21 @@ async function enregistrerParticipation() {
 
   let error;
   try {
-    ({ error } = await sb.from('roue_participations').insert([participation]));
+    ({ error } = await sb.from('roue_participations').insert([participation])
+      .abortSignal(signalDelai(8000)));
   } catch (e) {
     error = { message: String(e && e.message || e), reseau: true };
   }
 
   if (!error) return 'ok';
-  if (error.code === '23505') return 'deja-joue';
+  if (error.code === '23505') {
+    // Le serveur avait déjà la ligne du jour. Si le RPC vient d'échouer
+    // pour cause de RÉSEAU, c'est très probablement NOTRE tirage dont la
+    // réponse s'est perdue en route : on laisse jouer avec le tirage de
+    // la page plutôt que d'accuser le joueur de tricher (tour n°7).
+    // Sinon, c'est un vrai « déjà joué ».
+    return cote_serveur === 'reseau' ? 'ok' : 'deja-joue';
+  }
 
   // Coupure réseau (4G capricieuse en galerie) : on garde la participation
   // sur le téléphone, elle sera renvoyée automatiquement plus tard.
@@ -1256,12 +1304,14 @@ async function renvoyerAttente() {
   try {
     for (const p of attente) {
       try {
-        let reponse = await sb.from('roue_participations').insert([p]);
+        let reponse = await sb.from('roue_participations').insert([p])
+          .abortSignal(signalDelai(8000));
         if (reponse.error && colonneInconnue(reponse.error)) {
           const sansDate = Object.assign({}, p);
           delete sansDate.jour;
           delete sansDate.created_at;
-          reponse = await sb.from('roue_participations').insert([sansDate]);
+          reponse = await sb.from('roue_participations').insert([sansDate])
+            .abortSignal(signalDelai(8000));
         }
         // Succès ou doublon (déjà comptée) : on la retire. Sinon on garde.
         if (reponse.error && reponse.error.code !== '23505') restantes.push(p);
@@ -1404,7 +1454,9 @@ function preparerGrattage() {
   zoneResultat.classList.toggle('ticket-gagne', bonusGrattage.gagnant === true);
   zoneResultat.classList.toggle('ticket-perdu', bonusGrattage.gagnant === false);
   document.getElementById('ticket-detail').textContent = bonusGrattage.detail;
-  document.getElementById('btn-grattage-suite').hidden = true;
+  const suiteTicket = document.getElementById('btn-grattage-suite');
+  suiteTicket.hidden = true;
+  suiteTicket.disabled = false;   // réarmé après le verrou anti double-tap
   document.getElementById('grattage-consigne').textContent =
     'Gratte pour voir ce qu’il y a dessous.';
 
@@ -1508,9 +1560,10 @@ function installerGrattage(voile, ctx) {
     devoile = true;
     ticket.classList.add('entame', 'devoile');
     voile.classList.add('efface');
-    // La phrase de fin annonce la première manche. Si son fichier n'est
-    // pas encore arrivé (4G capricieuse), on écrit d'abord une phrase
-    // neutre, puis on la corrige dès qu'il est là.
+    // La phrase de fin annonce le NOMBRE de manches (calculé : elle ne
+    // peut pas mentir). Si les fichiers de jeux ne sont pas encore
+    // arrivés (4G capricieuse), elle s'écrit quand même, puis se
+    // recorrige dès qu'ils sont là.
     // LE TICKET N'ANNONCE PLUS LES JEUX (27/08/2026, Romain : « que ça
     // ne dise pas les jeux qu'il va y avoir »). Il dit ce que le
     // joueur vient d'apprendre, et la suite se découvre en jouant. Les
@@ -1535,6 +1588,19 @@ function installerGrattage(voile, ctx) {
   // sur cinq) ne doit pas laisser un ticket gratté à 42 % sans verdict.
   voile.onpointerup = () => { gratte = false; if (!devoile && partGrattee(ctx, voile) > 0.42) revelerTicket(); };
   voile.onpointerleave = () => { gratte = false; };
+  // LE TICKET AU CLAVIER (tour n°7) : le grattage est un geste de
+  // doigt ; au clavier ou au lecteur d'écran, Entrée ou Espace révèle
+  // le ticket. Avant, ces joueurs attendaient le filet de 12 secondes
+  // devant une consigne impossible à suivre.
+  voile.setAttribute('tabindex', '0');
+  voile.setAttribute('role', 'button');
+  voile.setAttribute('aria-label', 'Ticket à gratter. Appuie sur Entrée pour le découvrir.');
+  voile.onkeydown = e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (!devoile) revelerTicket();
+    }
+  };
   // Filet de sécurité : au bout de 12 secondes, on révèle tout seul
   setTimeout(() => { if (!devoile) revelerTicket(); }, 12000);
   voile.revelerTicket = revelerTicket;
@@ -1552,7 +1618,11 @@ function partGrattee(ctx, voile) {
   return total ? vides / total : 0;
 }
 
-document.getElementById('btn-grattage-suite').addEventListener('click', () => {
+document.getElementById('btn-grattage-suite').addEventListener('click', (evt) => {
+  // Un double-tap lançait deux fois la première manche (double
+  // préparation, double animation d'entrée) : un seul passage.
+  // Le bouton est réarmé par preparerGrattage à la partie suivante.
+  evt.currentTarget.disabled = true;
   // La chance doublée est déjà prise en compte : elle a été tirée
   // AVANT le lot (voir preparerBonus), c'était la seule façon qu'elle
   // change réellement quelque chose.
@@ -1603,8 +1673,8 @@ let cibleRoue = null;
 // ============================================
 // LE PARCOURS DU JOUEUR (parcours réel : MANCHES_DEFAUT)
 // --------------------------------------------
-// Le joueur enchaîne les manches de MANCHES_DEFAUT (aujourd'hui :
-// le bandit manchot puis la roue). Il n'y a toujours qu'UN SEUL lot par
+// Le joueur enchaîne les manches de MANCHES_DEFAUT (le bandit manchot,
+// Trois Pareils, puis la roue). Il n'y a toujours qu'UN SEUL lot par
 // joueur et par jour : les manches ne multiplient pas les cadeaux,
 // elles montent la tension autour d'un résultat tiré une seule fois,
 // avant la première manche, selon le taux de gagnants de l'opération.
@@ -1612,18 +1682,11 @@ let cibleRoue = null;
 // La règle de mise en scène, la même pour tout le monde : il suffit
 // de réussir UNE manche pour gagner, et c'est la DERNIÈRE qui tranche.
 // Les manches d'avant se jouent donc toujours en « tout près ». Le
-// gagnant rate les deux premières et emporte la troisième ; le
-// perdant rate les trois, la dernière à un cheveu. Personne ne peut
-// mieux jouer, et l'écran de chaque manche dit combien il en reste.
-// LE PARCOURS PAR DÉFAUT (26/08/2026, soir)
-// Le chamboule-tout entre dans le parcours : la machine à sous pour
-// commencer, la planche de la fête foraine ensuite, la roue pour finir
-// (c'est elle qui porte le nom du jeu, elle reste le clou). « Trois
-// Cadeaux Pareils » n'est pas supprimé pour autant : il reste jouable,
-// il suffit de l'écrire dans la colonne jeu de roue_operations.
-// LE PARCOURS PAR DÉFAUT NE CHANGE QUE SUR DÉCISION DE ROMAIN
-// (26/08/2026, remis en état en fin de soirée)
-// Onze jeux existent maintenant dans jeux/, tous jouables par
+// gagnant rate les premières et emporte la dernière ; le perdant les
+// rate toutes, la dernière à un cheveu. Personne ne peut mieux jouer,
+// et l'écran de chaque manche dit combien il en reste.
+// (Les strates d'historique des parcours des 26-27/08 sont dans
+// JOURNAL-AMELIORATIONS.md ; seul le bloc ci-dessous fait foi.)
 // LE PARCOURS OFFICIEL, TRANCHÉ PAR ROMAIN (mis à jour le 29/08/2026) :
 // « le ticket à gratter, le bandit manchot, Trois Pareils, puis la
 // roue ». Le 29/08, Romain a ajouté « Trois Pareils » entre le bandit
@@ -1656,23 +1719,12 @@ let mancheSecondTour = false;
 //   configuration d'avant le 25/08/2026 : on l'ignore et on joue le
 //   parcours complet, sinon une galerie déjà enregistrée resterait
 //   bloquée sur un seul jeu sans que personne l'ait demandé.
-// LE PARCOURS D'ESSAI COMPLET (« ?jeu=tous »)
-// -------------------------------------------
-// Tous les jeux à la suite, dans une seule partie, pour les voir
-// s'enchaîner et pouvoir en juger. La roue ferme la marche : c'est
-// elle qui porte le nom du jeu, et c'est la dernière manche qui
-// révèle le lot. Ce n'est PAS le parcours d'un visiteur : lui n'en
-// joue que trois (voir MANCHES_DEFAUT).
-// « Le Sapin de la Galerie » est sorti du parcours d'essai le
-// 27/08/2026 : Romain l'a écarté après l'avoir joué. Le fichier
-// jeux/sapin.js reste sur le disque et jouable par « ?jeu=sapin »,
-// mais il n'est plus proposé nulle part.
-// LES JEUX ÉCARTÉS PAR ROMAIN (27/08/2026, après les avoir joués) :
-// le Sapin, la Hotte Géante, le Chapeau du Magicien, puis la Boutique
-// Étoilée et Trois Pareils au second tri. Plus déclarés nulle part.
-// Leurs fichiers restent dans jeux/ si un jour il change d'avis.
-// Le parcours d'essai est désormais LE parcours : « ?jeu=tous » joue
-// la même partie qu'un vrai visiteur.
+// « ?jeu=tous » rejoue le parcours réel (les trois manches de
+// MANCHES_DEFAUT) : la même partie qu'un vrai visiteur. Les jeux
+// écartés du parcours par Romain restent tous déclarés dans
+// FICHIERS_JEUX (jouables par ?jeu=<nom> et par la vitrine) : depuis
+// le 29/08/2026, Trois Pareils est REVENU dans le parcours réel, en
+// manche 2, avec le logo de la galerie comme trio à trouver.
 const PARCOURS_COMPLET = MANCHES_DEFAUT.slice();
 
 function listeDesManches() {
@@ -1717,14 +1769,11 @@ function jeuPourNom(nom) {
 // questions : il est prêt bien avant qu'on en ait besoin. La roue, elle,
 // vit dans app.js et n'a rien à charger.
 //
-// DEUX JEUX DÉBRANCHÉS LE 25/08/2026, à la demande de Romain :
-//   - « Le Juste Prix des Commerçants » (jeux/justeprix.js) : abandonné.
-//   - « Suis le Cadeau », les paquets qui se mélangent
-//     (jeux/suis-le-cadeau.js, noms « suiscadeau » et « bonneteau ») :
-//     remplacé par « Trois Cadeaux Pareils » (jeux/cartes.js), parce
-//     que Romain n'aime pas les cadeaux qui se déplacent.
-// Les deux fichiers restent dans jeux/ : on ne supprime rien ici. Ils
-// ne sont simplement plus dans cette table, donc plus téléchargeables.
+// Historique : « Le Juste Prix » et « Suis le Cadeau » avaient été
+// débranchés le 25/08/2026 (Romain n'aime pas les cadeaux qui se
+// déplacent ; « Trois Pareils », jeux/cartes.js, a pris la relève).
+// Depuis le 27/08/2026, TOUS les jeux sont revenus dans cette table
+// pour la vitrine de démonstration.
 // Un nom de jeu absent de la table repart sur la roue tout seul, c'est
 // le filet de sécurité d'origine : `&jeu=justeprix` ne casse rien, il
 // fait tourner la roue.
@@ -1732,14 +1781,10 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '29aout2026k';
-// Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
-// vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
-// chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
-// d'entrée ici : plus aucun chemin ne mène à eux, même par « ?jeu= ».
-// Leurs fichiers restent dans jeux/ s'il change d'avis.
-// Tous les jeux jamais créés restent chargeables : le parcours
-// officiel n'en joue que deux (bandit, roue), mais la vitrine de
+const VERSION_JEUX = '29aout2026l';
+// Tous les jeux jamais créés restent chargeables (la roue, elle, vit
+// dans app.js et n'a rien à charger) : le parcours officiel en joue
+// trois (bandit, cartes, roue depuis le 29/08/2026), et la vitrine de
 // démonstration les montre tous (27/08/2026, demande de Romain).
 const FICHIERS_JEUX = {
   bandit:     'jeux/bandit.js?v=' + VERSION_JEUX,
@@ -1782,7 +1827,16 @@ function chargerUnFichierJeu(nom) {
 // joueur répond aux questions : ils sont là bien avant qu'on en ait
 // besoin, et l'ouverture de la page ne télécharge toujours rien.
 function chargerFichiersJeu() {
-  return Promise.all(listeDesManches().map(chargerUnFichierJeu));
+  // Un fichier de jeu qui « rame sans casser » (4G saturée) ne déclenche
+  // ni onload ni onerror : sans ce garde-temps, le clic après le ticket
+  // ne faisait rien et le joueur restait bloqué à re-taper (tour n°7).
+  // Au bout de 8 secondes, on lance la partie avec ce qui est arrivé :
+  // un jeu manquant est remplacé par la roue (jeuPourNom), le repli
+  // prévu depuis toujours, et son fichier reste en route pour la
+  // manche suivante.
+  const tout = Promise.all(listeDesManches().map(chargerUnFichierJeu));
+  const delai = new Promise(resolve => setTimeout(resolve, 8000));
+  return Promise.race([tout, delai]);
 }
 
 // Les styles d'un jeu voyagent avec son fichier : ils sont posés
@@ -2072,10 +2126,18 @@ function lancerRoue() {
   // occuper plusieurs cases (les « retente ») : on en choisit une au
   // hasard, sinon la roue s'arrêterait toujours au même endroit.
   const cases = [];
-  SEGMENTS.forEach((lot, i) => { if (lot === (cibleRoue || lotGagne)) cases.push(i); });
+  // La cible est comparée par identité ET par nom : si les lots ont été
+  // rechargés depuis la base APRÈS le tirage (réponse tardive), l'objet
+  // visé n'existe plus dans SEGMENTS et la comparaison par identité ne
+  // trouvait rien : la roue s'arrêtait alors sur le segment 0, un lot
+  // GAGNANT, avant d'annoncer « perdu » (tour n°7).
+  const cibleVoulue = cibleRoue || lotGagne;
+  SEGMENTS.forEach((lot, i) => {
+    if (lot === cibleVoulue || (lot && cibleVoulue && lot.nom === cibleVoulue.nom)) cases.push(i);
+  });
   const index = cases.length
     ? cases[Math.floor(Math.random() * cases.length)]
-    : Math.max(0, SEGMENTS.indexOf(cibleRoue || lotGagne));
+    : Math.max(0, SEGMENTS.indexOf(cibleVoulue));
   // Angle pour amener le milieu du segment gagnant sous le pointeur (en haut)
   const cible = 360 - (index * angle + angle / 2);
   // L'AIGUILLE S'ARRÊTE FRANCHEMENT DANS LA CASE (27/08/2026, Romain :
@@ -2693,8 +2755,12 @@ async function lancerLaPartie() {
   // seule colonne. Un mineur n'a jamais pu dire oui (protection en
   // amont, plus un garde-fou dans la base).
   if (statut === 'ok' && codeLot && reponses.consentement_marketing === true) {
+    // Sans await : cette porte ne conditionne rien de visible, et un
+    // réseau qui rame ne doit pas retarder le ticket (tour n°7).
     try {
-      await sb.rpc('roue_enregistrer_consentement', { p_code: codeLot, p_accepte: true });
+      sb.rpc('roue_enregistrer_consentement', { p_code: codeLot, p_accepte: true })
+        .abortSignal(signalDelai(8000))
+        .then(() => {}, e => console.warn('Consentement non remonté :', e));
     } catch (e) {
       console.warn('Consentement non remonté :', e);
     }
@@ -3101,8 +3167,14 @@ document.getElementById('btn-confirme-oui').addEventListener('click', async (evt
   //     démonstration ne sont jamais en base.
   let dejaUtiliseLe = null;
   let codeInconnu = false;
+  // Le commerçant regarde : l'attente doit être visible et COURTE.
+  // Au-delà de 6 secondes, le réseau est considéré coupé et la
+  // philosophie « confiance au joueur » s'applique (tour n°7).
+  bouton.classList.add('travaille');
+  bouton.setAttribute('aria-busy', 'true');
   try {
-    const { data, error } = await sb.rpc('roue_bon_etat', { p_code: code });
+    const { data, error } = await sb.rpc('roue_bon_etat', { p_code: code })
+      .abortSignal(signalDelai(6000));
     if (!error && data && data.trouve && data.deja_utilise) {
       dejaUtiliseLe = data.utilise_le || new Date().toISOString();
     }
@@ -3112,10 +3184,12 @@ document.getElementById('btn-confirme-oui').addEventListener('click', async (evt
       if (enAttente.length === 0) codeInconnu = true;
     }
   } catch (e) {
-    console.warn('Utilisation non remontée :', e);
+    console.warn('Vérification du bon injoignable :', e);
   }
 
   bouton.disabled = false;
+  bouton.classList.remove('travaille');
+  bouton.removeAttribute('aria-busy');
   if (codeInconnu) {
     // Le bon n'est PAS brûlé localement : si c'était un vrai bon mal
     // synchronisé, le joueur pourra réessayer une fois le réseau revenu.
@@ -3125,8 +3199,19 @@ document.getElementById('btn-confirme-oui').addEventListener('click', async (evt
   marquerBonUtilise(code, lot);
   afficherBonUtilise(lot, dejaUtiliseLe);
 
-  // Et on brûle le bon côté serveur : il ne pourra plus resservir
-  // depuis le lien reçu par e-mail, même sur un autre téléphone.
+  // ET ON BRÛLE LE BON CÔTÉ SERVEUR (tour n°7 : ce n'était fait que par
+  // le module e-mails, qui est débranché : la fonction serveur
+  // roue_utiliser_bon, créée pour ça, n'était appelée nulle part, et
+  // roue_bon_etat répondait donc toujours « jamais utilisé »). Sans
+  // attendre la réponse : l'échec est journalisé, le mode confiance
+  // hors-ligne reste ce qu'il est.
+  try {
+    sb.rpc('roue_utiliser_bon', { p_code: code })
+      .abortSignal(signalDelai(8000))
+      .then(() => {}, e => console.warn('Utilisation non remontée :', e));
+  } catch (e) {
+    console.warn('Utilisation non remontée :', e);
+  }
   if (window.PullUpMails) {
     window.PullUpMails.marquerUtilise(window.PullUpMails.jetonCourant);
   }
@@ -3282,7 +3367,18 @@ function squelettes(nombre) {
   return '<div class="squelettes" role="status" aria-label="Chargement en cours">' + html + '</div>';
 }
 
+// LES JETONS DE FRAÎCHEUR (tour n°7). Chaque vue de contenu garde le
+// numéro de sa dernière demande : une réponse arrivée APRÈS une demande
+// plus récente est jetée, au lieu de réécrire la liste sous les doigts
+// du joueur (et de rejouer les animations d'entrée). Avec le
+// garde-temps signalDelai, une base qui rame retombe en 8 secondes sur
+// les contenus de secours : plus jamais de squelette éternel.
+let jetonPromos = 0;
+let jetonProgramme = 0;
+let jetonNouveautes = 0;
+
 async function afficherPromos() {
+  const jeton = ++jetonPromos;
   const liste = document.getElementById('promos-liste');
   const soustitre = document.getElementById('promos-soustitre');
   liste.innerHTML = squelettes(3);
@@ -3296,11 +3392,13 @@ async function afficherPromos() {
       .select('*')
       .eq('operation', EVENEMENT)
       .eq('actif', true)
-      .order('ordre');
+      .order('ordre')
+      .abortSignal(signalDelai(8000));
     if (!error && data && data.length) offres = data;
   } catch (e) {
     console.warn('Offres indisponibles :', e);
   }
+  if (jeton !== jetonPromos) return;   // une demande plus récente est passée
 
   // Rien en base : on montre les exemples de démonstration
   if (!offres.length && typeof OFFRES_DEMO !== 'undefined') offres = OFFRES_DEMO;
@@ -3529,6 +3627,11 @@ let reponseOffresEnCours = false;
 
 function proposerLesOffres(suite) {
   reponseOffresEnCours = false;
+  // Un passage précédent a pu laisser un bouton en état « travaille ».
+  document.querySelectorAll('#ecran-offres .travaille').forEach(b => {
+    b.classList.remove('travaille');
+    b.removeAttribute('aria-busy');
+  });
   suiteApresOffres = (typeof suite === 'function') ? suite : afficherDecouverte;
   // Déjà répondu, ou joueur mineur : on ne repose pas la question
   if (reponses.consentement_marketing !== undefined || reponses.age_tranche === '-18') {
@@ -3586,14 +3689,26 @@ async function repondreOffres(accepte) {
   // l'écran découverte par-dessus. Un seul passage à la fois.
   if (reponseOffresEnCours) return;
   reponseOffresEnCours = true;
+  // La suite (le tirage serveur) peut prendre quelques secondes sur une
+  // 4G chargée : le bouton tapé montre que l'appli travaille, au lieu
+  // d'un écran muet (tour n°7).
+  const boutonTape = document.activeElement;
+  if (boutonTape && boutonTape.tagName === 'BUTTON') {
+    boutonTape.classList.add('travaille');
+    boutonTape.setAttribute('aria-busy', 'true');
+  }
   reponses.consentement_marketing = accepte;
   // Si la participation est déjà en base (le joueur revient sur la
   // question depuis l'espace découverte), on tente la mise à jour par
   // la fonction serveur. Dans le parcours normal, la réponse est
   // simplement embarquée dans l'enregistrement qui suit.
   if (codeLot) {
+    // Sans await : la suite du parcours (le ticket) ne doit pas
+    // attendre une requête qui peut ramer ; l'échec est journalisé.
     try {
-      await sb.rpc('roue_enregistrer_consentement', { p_code: codeLot, p_accepte: accepte });
+      sb.rpc('roue_enregistrer_consentement', { p_code: codeLot, p_accepte: accepte })
+        .abortSignal(signalDelai(8000))
+        .then(() => {}, e => console.warn('Consentement non remonté :', e));
     } catch (e) {
       console.warn('Consentement non remonté :', e);
     }
@@ -3792,6 +3907,7 @@ function rafraichirOngletBons() {
 // à consommer, juste ce qui vient d'arriver.
 // --------------------------------------------
 async function afficherNouveautes() {
+  const jeton = ++jetonNouveautes;
   const liste = document.getElementById('nouveautes-liste');
   const soustitre = document.getElementById('nouveautes-soustitre');
   liste.innerHTML = squelettes(3);
@@ -3805,11 +3921,13 @@ async function afficherNouveautes() {
       .select('enseigne, titre, detail, univers, prix, arrivage, tendance')
       .eq('operation', EVENEMENT)
       .eq('actif', true)
-      .order('ordre');
+      .order('ordre')
+      .abortSignal(signalDelai(8000));
     if (!error && data && data.length) articles = data;
   } catch (e) {
     console.warn('Nouveautés indisponibles :', e);
   }
+  if (jeton !== jetonNouveautes) return;
 
   // Rien en base : on montre les exemples de démonstration
   if (!articles.length && typeof NOUVEAUTES_DEMO !== 'undefined') articles = NOUVEAUTES_DEMO;
@@ -3923,6 +4041,7 @@ function estDuJour(jour) {
 }
 
 async function afficherProgramme(mode) {
+  const jeton = ++jetonProgramme;
   const toutLeMois = mode === 'mois';
   const liste = document.getElementById('programme-liste');
   liste.innerHTML = squelettes(3);
@@ -3936,11 +4055,13 @@ async function afficherProgramme(mode) {
       .select('*')
       .eq('operation', EVENEMENT)
       .eq('actif', true)
-      .order('ordre');
+      .order('ordre')
+      .abortSignal(signalDelai(8000));
     if (!error && data && data.length) evenements = data;
   } catch (e) {
     console.warn('Programme indisponible :', e);
   }
+  if (jeton !== jetonProgramme) return;   // ex. : jour demandé après le mois
   if (!evenements.length && typeof PROGRAMME_DEMO !== 'undefined') evenements = PROGRAMME_DEMO;
 
   // V2 (28/08/2026) : une visite = une journée. On ne montre que les

@@ -1,7 +1,11 @@
 // ============================================================
-// JEU « TROIS CADEAUX PAREILS »
+// JEU « TROIS PAREILS »
 // Neuf cartes face cachée sur la table, quatre retournements.
-// La règle tient en une phrase : trouver trois cadeaux pareils.
+// La règle tient en une phrase : trouver trois fois LE LOGO DE LA
+// GALERIE (décision de Romain du 29/08/2026 ; les dessins du cirque
+// servent de cartes « à côté »). Depuis le 29/08/2026, ce jeu est la
+// MANCHE 2 du parcours réel (bandit, cartes, roue) : en manche non
+// décisive il perd toujours de peu et passe la main à la roue.
 //
 // Il remplace « Suis le Cadeau » (les paquets qui se mélangent),
 // que Romain a écarté le 25/08/2026 : il n'aime pas les cadeaux
@@ -93,6 +97,23 @@
   // « à côté » : le joueur cherche le logo au milieu du cirque.
   const LOGO_GALERIE = `<image href="img/client/picto-csc.png" x="8" y="10"
       width="84" height="80" preserveAspectRatio="xMidYMid meet"/>`;
+
+  // LE REPLI SI LE PICTO MANQUE (tour n°7, 29/08/2026) : pour une
+  // galerie sans fichier picto, les cartes du trio seraient VIDES
+  // pendant que les verdicts parlent d'un logo invisible. On teste le
+  // fichier dès le chargement de ce script (pendant le quiz, bien
+  // avant la première carte) ; s'il manque, le trio devient l'ÉTOILE
+  // D'OR et tous les textes disent « étoile » au lieu de « logo ».
+  // L'étoile est réservée à ce rôle : les cartes « à côté » ne la
+  // tirent jamais (voir preparer), donc aucune confusion possible.
+  let LOGO_CHARGE = true;
+  (function () {
+    try {
+      const t = new Image();
+      t.onerror = () => { LOGO_CHARGE = false; };
+      t.src = 'img/client/picto-csc.png';
+    } catch (e) { /* environnement sans Image : on garde le logo */ }
+  })();
 
   // Le nom parlé de chaque carte, pour les lecteurs d'écran et les
   // verdicts : « logo » n'est pas un mot qu'on montre tel quel.
@@ -278,9 +299,24 @@
       const gagne = ctx.decisif !== false && !ctx.lot.perdant;
       // Le trio à trouver est TOUJOURS le logo de la galerie (décision
       // de Romain, 29/08/2026) ; les cartes « à côté » sont deux
-      // dessins du cirque tirés au hasard.
-      const modeles = melanger(Object.keys(CADEAUX));
+      // dessins du cirque tirés au hasard. L'étoile d'or n'est jamais
+      // tirée « à côté » : elle est réservée au rôle de secours du
+      // logo (voir LOGO_CHARGE), sinon un repli pourrait afficher
+      // cinq étoiles sur la table.
+      const modeles = melanger(['chapiteau', 'balle', 'chapeau']);
       const A = 'logo', B = modeles[0], C = modeles[1];
+      // Le mot des consignes et des verdicts suit le dessin réel.
+      const trio = LOGO_CHARGE
+        ? { consigne: 'logos ' + ctx.echap(nomGalerie()),
+            un: 'Le logo est sur la table.', deux: 'Deux logos.',
+            trois: 'Trois logos !', pas: 'Pas le logo.',
+            deuxSurTrois: 'Deux logos sur trois.',
+            pasSorti: 'Le troisième logo n’est pas sorti.' }
+        : { consigne: 'étoiles d’or',
+            un: 'L’étoile est sur la table.', deux: 'Deux étoiles.',
+            trois: 'Trois étoiles !', pas: 'Pas l’étoile.',
+            deuxSurTrois: 'Deux étoiles sur trois.',
+            pasSorti: 'La troisième étoile n’est pas sortie.' };
 
       // Le scénario des quatre retournements, écrit avant que le
       // joueur touche la moindre carte. Le troisième cadeau pareil
@@ -300,7 +336,7 @@
 
       ctx.zone.innerHTML = `
         <h2>${ctx.secondTour ? 'Deuxième donne' : 'Trois Pareils'}</h2>
-        <p class="question-soustitre">Trouve trois logos ${ctx.echap(nomGalerie())} en quatre cartes.</p>
+        <p class="question-soustitre">Trouve trois ${trio.consigne} en quatre cartes.</p>
 
         <div class="ct-plateau">
           <div class="ct-compte">
@@ -330,7 +366,9 @@
       const ouvertes = [];   // { bouton, modele }
 
       function svgCadeau(nom) {
-        const dessin = nom === 'logo' ? LOGO_GALERIE : CADEAUX[nom];
+        const dessin = nom === 'logo'
+          ? (LOGO_CHARGE ? LOGO_GALERIE : CADEAUX.etoile)
+          : CADEAUX[nom];
         return `<svg viewBox="0 0 100 100" aria-hidden="true">${dessin}</svg>`;
       }
 
@@ -404,11 +442,11 @@
             ? 'Plus qu’une carte.'
             : 'Il te reste ' + (RETOURNEMENTS - retournees) + ' cartes.';
           if (retournees === 1) {
-            ecrire('Le logo est sur la table.', 'Il t’en faut trois pour gagner.');
+            ecrire(trio.un, 'Il t’en faut trois.');
           } else if (pareilles.length >= 2) {
-            ecrire('Deux logos.', 'Le troisième se cache encore quelque part.');
+            ecrire(trio.deux, 'Le troisième se cache encore quelque part.');
           } else {
-            ecrire('Pas le logo.', 'Rien n’est joué, la table est encore pleine.');
+            ecrire(trio.pas, 'Rien n’est joué, la table est encore pleine.');
           }
           occupe = false;
           return;
@@ -421,7 +459,7 @@
             o.bouton.classList.add('ct-marquee', 'ct-gagnante');
           });
           const nom = ctx.lot && ctx.lot.nom ? ctx.echap(String(ctx.lot.nom)) : '';
-          ecrire('Trois logos !', nom ? 'Ton cadeau : ' + nom : '');
+          ecrire(trio.trois, nom ? 'Ton cadeau : ' + nom : '');
           ctx.vibrer([70, 50, 130]);
           setTimeout(ctx.terminer, ctx.sobre ? 600 : 2600);
           return;
@@ -430,7 +468,7 @@
         // Perdu : la table retourne elle-même la carte qui manquait.
         // C'est elle qui la choisit, pas le joueur : le presque-gain
         // reste excitant sans se transformer en reproche.
-        ecrire('Deux logos sur trois.', 'La table en retourne une dernière…');
+        ecrire(trio.deuxSurTrois, 'La table en retourne une dernière…');
         ctx.vibrer(70);
 
         const fermees = cartes.filter(b => !b.classList.contains('ct-ouverte'));
@@ -446,7 +484,7 @@
             // Manche non décisive : on ne parle jamais du lot, seulement
             // de ce qu'il reste à jouer.
             const restantes = (ctx.manches || 1) - (ctx.manche || 1);
-            ecrire('Le troisième logo n’est pas sorti.',
+            ecrire(trio.pasSorti,
                    restantes > 0
                      ? 'Il se cachait dans les cartes restantes. Il reste ' +
                        (restantes === 1 ? 'une manche.' : restantes + ' manches.')

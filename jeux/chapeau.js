@@ -74,6 +74,7 @@
     align-items: end;
   }
 
+  .ch-place:focus-visible { outline: 3px solid var(--or-clair); outline-offset: 3px; }
   .ch-place {
     position: relative;
     background: none;

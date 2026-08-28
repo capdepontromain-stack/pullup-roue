@@ -50,22 +50,22 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=29aout2026k">
+  <link rel="stylesheet" href="style.css?v=29aout2026l">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=29aout2026k" defer></script>
-  <script src="icones-quiz.js?v=29aout2026k" defer></script>
-  <script src="contenus-demo.js?v=29aout2026k" defer></script>
+  <script src="icones.js?v=29aout2026l" defer></script>
+  <script src="icones-quiz.js?v=29aout2026l" defer></script>
+  <script src="contenus-demo.js?v=29aout2026l" defer></script>
   <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
        Il tient la liste des bons du joueur et sait la dessiner. Chargé
        avant app.js, qui l'appelle à deux endroits : quand un lot est
        gagné, et quand un bon de promotion est pris. Voir bons.js. -->
-  <script src="bons.js?v=29aout2026k" defer></script>
-  <script src="app.js?v=29aout2026k" defer></script>
+  <script src="bons.js?v=29aout2026l" defer></script>
+  <script src="app.js?v=29aout2026l" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -80,7 +80,7 @@
   <!-- Le pré-thème : synchrone et minuscule, il habille la page du bon
        thème avant la première image (voir pretheme.js). Il doit rester
        le premier élément de body. -->
-  <script src="pretheme.js?v=29aout2026k"></script>
+  <script src="pretheme.js?v=29aout2026l"></script>
 
   <div class="app">
 
@@ -183,7 +183,7 @@
           <span>Ton adresse e-mail *</span>
           <input type="email" id="input-email" placeholder="ton.mail@exemple.com" autocomplete="email" inputmode="email">
         </label>
-        <div id="suggestion-email" class="suggestion" hidden>
+        <div id="suggestion-email" class="suggestion" role="status" hidden>
           <p class="suggestion-texte">Petite vérification&nbsp;: tu voulais peut-être écrire <strong id="suggestion-valeur"></strong>&nbsp;?</p>
           <div class="suggestion-actions">
             <button type="button" class="btn-mini btn-mini-or" id="btn-suggestion-oui">Oui, corriger</button>
@@ -199,7 +199,10 @@
           <span>J’ai lu et j’accepte le <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">règlement du jeu</a> et l’enregistrement de mes réponses par l’organisateur. *</span>
         </label>
 
-        <p id="erreur-coordonnees" class="erreur" hidden></p>
+        <!-- role="alert" : le lecteur d'écran lit l'erreur dès qu'elle
+             s'écrit ; sans lui, un joueur non voyant tapait « Je tente
+             ma chance » sans jamais savoir pourquoi rien ne se passait. -->
+        <p id="erreur-coordonnees" class="erreur" role="alert" hidden></p>
         <!-- Ce bouton ouvre le ticket à gratter, et le jeu du jour n'est
              pas toujours la roue : « Je tente ma chance » reste vrai. -->
         <button class="btn btn-or btn-grand" id="btn-valider">Je tente ma chance</button>
@@ -211,7 +214,7 @@
     <section id="ecran-grattage" class="ecran">
       <div class="roue-zone">
         <h2 id="grattage-titre">Ton ticket à gratter</h2>
-        <p class="question-soustitre" id="grattage-consigne">Gratte avec ton doigt pour découvrir ce qu’il cache.</p>
+        <p class="question-soustitre" id="grattage-consigne" role="status">Gratte avec ton doigt pour découvrir ce qu’il cache.</p>
         <div class="ticket" id="ticket">
           <div class="ticket-fond" id="ticket-fond">
             <!-- Le nom de la galerie est écrit par appliquerOperation() :

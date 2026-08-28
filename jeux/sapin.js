@@ -156,6 +156,7 @@
   @keyframes sap-scintille { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
 
   /* LES CROCHETS : les endroits où le joueur peut accrocher. */
+  .sap-crochet:focus-visible { outline: 3px solid var(--or-clair); outline-offset: 3px; }
   .sap-crochet {
     position: absolute;
     /* 44 px : la taille minimale d'une cible tactile. Le dessin du

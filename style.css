@@ -1760,6 +1760,7 @@ h1 {
 .btn-offres-refus {
   display: block;
   margin: 2px auto 0;
+  min-height: 44px;            /* zone de touche : la reco des 44 px */
   padding: 12px 18px;          /* la zone du doigt reste large */
   background: none;
   border: none;
@@ -2381,7 +2382,7 @@ body.mode-test .app { padding-bottom: calc(var(--e7) + 46px); }
   border: none;
   color: var(--gris);
   font-size: var(--t-mention);
-  min-height: 40px;
+  min-height: 44px;   /* zone de touche : la reco des 44 px, rendu inchangé */
   margin-top: calc(-1 * var(--e3));
 }
 .lien-sobre-fin:hover { background: transparent; color: var(--or-clair); }
@@ -2406,7 +2407,7 @@ body.mode-test .app { padding-bottom: calc(var(--e7) + 46px); }
 .onglet {
   flex: 1 1 0;
   min-width: 0;
-  min-height: 40px;
+  min-height: 44px;   /* zone de touche : la reco des 44 px, rendu inchangé */
   padding: 9px 4px;
   border: none;
   border-radius: 2px;
@@ -3196,7 +3197,7 @@ body.theme-csc .btn-discret {
   color: #C42730;
   background: #FFFFFF;
 }
-body.theme-csc .btn-offres-refus { color: var(--gris); }
+body.theme-csc .btn-offres-refus { color: var(--gris); opacity: 1; }  /* .85 délavait le refus RGPD sous le seuil AA */
 
 /* Les cartes et les listes posent des ombres douces à la manière du
    site : coins ronds, blanc franc, séparations gris clair. */
@@ -3208,7 +3209,9 @@ body.theme-csc .texte-zone input, body.theme-csc .champ input {
   border-color: #DDE2E8; border-radius: 14px;
   box-shadow: 0 6px 18px rgba(23, 34, 44, .06);
 }
-body.theme-csc .texte-zone input::placeholder, body.theme-csc .champ input::placeholder { color: #9AA5B0; }
+/* #5E6A76 : 5,46:1 sur blanc (avant : #9AA5B0, 2,51:1, illisible pour
+   un malvoyant alors que le placeholder montre le format attendu). */
+body.theme-csc .texte-zone input::placeholder, body.theme-csc .champ input::placeholder { color: #5E6A76; }
 
 /* Le ticket à gratter garde son velours rouge : il est déjà au bon
    rouge. Les pastilles d'horaires de l'agenda passent au rouge. */
@@ -3236,7 +3239,9 @@ body.theme-csc .onglets-zone .onglet.actif {
 }
 
 /* Le pied de page et les mentions sur clair. */
-body.theme-csc .pied, body.theme-csc .mini-mention { color: #77828D; }
+/* var(--gris) = #5E6A76 en thème clair : 5,20:1, le seuil AA est tenu
+   (avant : #77828D, 3,69:1 : les mentions RGPD étaient sous le seuil). */
+body.theme-csc .pied, body.theme-csc .mini-mention { color: var(--gris); }
 body.theme-csc .lien-or { color: #C42730; }
 body.theme-csc .pastille { background: #E4373F; box-shadow: 0 0 10px rgba(228, 55, 63, .5); }
 body.theme-csc .entete { border-bottom-color: #E8EBEF; }
@@ -3333,7 +3338,9 @@ body.theme-csc .carte-texte { position: static; padding: 0; }
 body.theme-csc .carte-etiquette { color: #C42730; }
 body.theme-csc .carte-titre { color: #17222C; text-shadow: none; }
 body.theme-csc .carte-detail { color: #5E6B77; }
-body.theme-csc .carte-action, body.theme-csc .carte-action-mot { color: #E4373F; }
+/* #C42730 (5,71:1) : le rouge des petits textes du thème ; #E4373F
+   faisait 4,27:1, juste sous le seuil AA pour du texte de 11 px. */
+body.theme-csc .carte-action, body.theme-csc .carte-action-mot { color: #C42730; }
 /* La carte du cadeau, elle, garde un fond doré très pâle : c'est la
    seule qui porte une récompense, elle doit se distinguer. */
 body.theme-csc .carte-mesbons {
