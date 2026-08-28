@@ -1579,7 +1579,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '28aout2026p';
+const VERSION_JEUX = '28aout2026q';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -1984,9 +1984,9 @@ function lancerRoue() {
         void pointeur.offsetWidth;
         pointeur.classList.add('claque');
       }
-      // On ne fait vibrer le téléphone que quand les segments s'espacent,
-      // sinon la vibration deviendrait un bourdonnement continu.
-      if (maintenant - dernierTemps > 110) vibrer(9);
+      // Plus aucune vibration pendant la rotation (28/08/2026) : la
+      // suite de secousses passait pour un bug de l'écran. Le départ
+      // et l'arrivée vibrent toujours, eux.
       dernierTemps = maintenant;
     }
 
@@ -3024,14 +3024,16 @@ async function afficherPromos() {
   }
 
   offres.forEach((o, index) => {
-    const pourToi = gouts.indexOf(o.univers) !== -1;
+    // Le badge « Pour toi » a été retiré le 28/08/2026 (Romain : « il
+    // n'y en a pas l'utilité »). Le classement selon les goûts du
+    // joueur, lui, reste : les offres qui le concernent remontent en
+    // tête, sans qu'on ait besoin de l'écrire.
     const carte = document.createElement('article');
     carte.className = 'promo';
     carte.style.animationDelay = (0.06 + Math.min(index, 8) * 0.06) + 's';
     carte.innerHTML =
       `<div class="promo-haut">
          <div class="promo-enseigne">${echap(o.enseigne || '')}</div>
-         ${pourToi ? '<span class="promo-pour-toi">Pour toi</span>' : ''}
        </div>
        <div class="promo-titre">${echap(o.titre || '')}</div>
        <div class="promo-detail">${echap(o.detail || '')}</div>
@@ -3499,7 +3501,7 @@ async function afficherNouveautes() {
       (n.prix || pourToi
         ? '<div class="nouveaute-pied">' +
             (n.prix ? '<span class="nouveaute-prix">' + echap(n.prix) + '</span>' : '<span></span>') +
-            (pourToi ? '<span class="promo-pour-toi">Pour toi</span>' : '') +
+            '' +
           '</div>'
         : '');
     liste.appendChild(carte);
