@@ -204,8 +204,8 @@
     position: absolute; top: 50%; margin-top: -7px;
     border: 7px solid transparent;
   }
-  .pg-ligne::before { left: -12px; border-left-color: var(--or); }
-  .pg-ligne::after  { right: -12px; border-right-color: var(--or); }
+  .pg-ligne::before { left: -12px; border-left-color: #EFC368; }
+  .pg-ligne::after  { right: -12px; border-right-color: #EFC368; }
 
   .pg-machine.pg-gagne .pg-ligne {
     background: rgba(239, 195, 104, .12);

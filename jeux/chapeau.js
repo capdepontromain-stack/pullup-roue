@@ -138,6 +138,7 @@
     animation: none;
   }
   .ch-place.ch-vide .ch-chapeau .trait { stroke: rgba(246, 241, 230, .34); }
+  body.theme-csc .ch-place.ch-vide .ch-chapeau .trait { stroke: rgba(23, 34, 44, .32); }
 
   /* Ce qui sort du chapeau, posé dessous, révélé au soulèvement */
   .ch-dessous {

@@ -58,7 +58,9 @@
   .paquet-num {
     font-family: var(--serif);
     font-size: 17px;
-    color: rgba(246,241,230,.55);
+    /* var(--gris) et pas un crème en dur : sur le thème clair, le
+       crème disparaissait complètement du fond de page. */
+    color: var(--gris);
     line-height: 1;
     transition: color .4s ease, opacity .4s ease;
   }
@@ -183,7 +185,11 @@
     styles: STYLES,
 
     preparer(ctx) {
-      const trace = ctx.icone(ctx.lot.nom);
+      // RÈGLE D'OR : en manche non décisive, le jeu ne révèle ni ne
+      // nomme JAMAIS le lot (voir LISEZ-MOI). L'icône devient neutre
+      // (une étoile) et le verdict renvoie vers la suite.
+      const decisif = ctx.decisif !== false;
+      const trace = decisif ? ctx.icone(ctx.lot.nom) : (ctx.icones && ctx.icones.etoile) || ctx.icone('');
 
       ctx.zone.innerHTML = `
         <h2>Choisis ton paquet</h2>
@@ -214,9 +220,13 @@
         paquet.classList.add('choisi');
         ctx.vibrer([25, 45, 25]);
 
-        // Le nom du lot arrive juste après que le contenu soit sorti du paquet
+        // Le nom du lot arrive juste après que le contenu soit sorti du
+        // paquet, et SEULEMENT en manche décisive : avant la dernière
+        // manche, le paquet passe la main sans rien promettre.
         setTimeout(() => {
-          nomLot.textContent = ctx.lot.nom;
+          nomLot.textContent = decisif
+            ? ctx.lot.nom
+            : 'Le paquet passe la main. La suite se joue à la manche d’après.';
           nomLot.classList.add('montre');
           ctx.vibrer(ctx.lot.perdant ? 90 : [70, 50, 130]);
         }, ctx.sobre ? 120 : 950);

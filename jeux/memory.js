@@ -25,7 +25,7 @@
     font-size: 12.5px;
     letter-spacing: 1.6px;
     text-transform: uppercase;
-    color: rgba(246,241,230,.6);
+    color: var(--gris);
     font-weight: 600;
   }
   .memory-compteur strong { color: var(--or-clair); font-weight: 700; }
@@ -274,9 +274,13 @@
           toutes.forEach(c => {
             if (c.dataset.paire === '0') c.classList.add('gagnante');   // la paire 0 est celle du joueur
           });
-          verdict.textContent = ctx.lot.perdant
-            ? 'La hotte a gardé : ' + ctx.lot.nom
-            : 'La hotte a choisi pour toi : ' + ctx.lot.nom;
+          // RÈGLE D'OR : hors manche décisive, jamais le nom du lot.
+          const decisif = ctx.decisif !== false;
+          verdict.textContent = !decisif
+            ? 'La hotte passe la main. La suite se joue à la manche d’après.'
+            : (ctx.lot.perdant
+                ? 'La hotte a gardé : ' + ctx.lot.nom
+                : 'La hotte a choisi pour toi : ' + ctx.lot.nom);
           verdict.classList.add('montre');
           ctx.vibrer(ctx.lot.perdant ? 90 : [70, 50, 130]);
         }, ctx.sobre ? 100 : 650);

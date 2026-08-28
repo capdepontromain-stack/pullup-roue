@@ -99,18 +99,18 @@
     left: 50%; top: 56%;
     transform: translate(-50%, -50%);
     font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
-    font-weight: 700; color: rgba(246,241,230,.5);
+    font-weight: 700; color: var(--gris);
     opacity: 0; transition: opacity .4s ease .35s;
     pointer-events: none;
   }
   .bn-paquet.ouvert.vide .bn-vide { opacity: 1; }
-  .bn-paquet.ouvert.vide .bn-svg .trait { stroke: rgba(246,241,230,.4); }
+  .bn-paquet.ouvert.vide .bn-svg .trait { stroke: var(--gris); opacity: .55; }
 
   .bn-scene.fini .bn-paquet:not(.ouvert) { opacity: .18; filter: grayscale(.5); }
 
   .bn-consigne {
     font-size: 12.5px; letter-spacing: 1.7px; text-transform: uppercase;
-    font-weight: 600; color: rgba(246,241,230,.6);
+    font-weight: 600; color: var(--gris);
     min-height: 1.2em; text-align: center;
   }
   .bn-verdict {
@@ -178,7 +178,10 @@
     styles: STYLES,
 
     preparer(ctx) {
-      const trace = ctx.icone(ctx.lot.nom);
+      // RÈGLE D'OR : en manche non décisive, ni le nom ni l'icône du
+      // lot n'apparaissent. Icône neutre, verdict qui passe la main.
+      const decisif = ctx.decisif !== false;
+      const trace = decisif ? ctx.icone(ctx.lot.nom) : (ctx.icones && ctx.icones.etoile) || ctx.icone('');
 
       ctx.zone.innerHTML = `
         <h2>Suis bien ton paquet</h2>
@@ -274,7 +277,8 @@
 
         if (juste) {
           plusTard(() => {
-            verdict.textContent = ctx.lot.nom;
+            verdict.textContent = decisif ? ctx.lot.nom
+              : 'Bien joué. La suite se joue à la manche d’après.';
             verdict.classList.add('montre');
             ctx.vibrer(ctx.lot.perdant ? 90 : [70, 50, 130]);
           }, ctx.sobre ? 120 : 950);
@@ -288,7 +292,8 @@
             ctx.vibrer(20);
           }, ctx.sobre ? 150 : 1100);
           plusTard(() => {
-            verdict.textContent = ctx.lot.nom;
+            verdict.textContent = decisif ? ctx.lot.nom
+              : 'Perdu de vue… mais rien n’est joué : la suite arrive.';
             verdict.classList.add('montre');
             ctx.vibrer(ctx.lot.perdant ? 90 : [70, 50, 130]);
           }, ctx.sobre ? 300 : 2050);

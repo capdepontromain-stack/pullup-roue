@@ -163,6 +163,12 @@ function appliquerOperation() {
   // (« le design doit se baser sur notre site »).
   document.body.classList.toggle('theme-csc', OPERATION.theme === 'csc');
 
+  // LE THÈME EST MÉMORISÉ pour le pré-thème (voir le petit script en
+  // tête de body dans index.html) : à la prochaine ouverture, la page
+  // s'habille dans le bon thème AVANT le premier rendu, sans flash de
+  // fond sombre et sans télécharger le bokeh doré pour rien.
+  try { localStorage.setItem('roue_theme_' + EVENEMENT, OPERATION.theme || 'or'); } catch (e) { /* navigation privée */ }
+
   // LE MÉDAILLON D'ACCUEIL : le Père Noël, EN DESSIN.
   // 27/08/2026 : le médaillon montre LE CHAPITEAU, plus de Père Noël.
   // L'histoire, pour qu'on n'y revienne pas une quatrième fois : une

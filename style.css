@@ -6,10 +6,10 @@
    ============================================ */
 
 @font-face { font-family: 'Jost'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/jost-400.woff2') format('woff2'); }
-@font-face { font-family: 'Jost'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/jost-600.woff2') format('woff2'); }
-@font-face { font-family: 'Jost'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/jost-700.woff2') format('woff2'); }
+@font-face { font-family: 'Jost'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/jost-400.woff2') format('woff2'); }
+@font-face { font-family: 'Jost'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/jost-400.woff2') format('woff2'); }
 @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/playfairdisplay-600.woff2') format('woff2'); }
-@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 800; font-display: swap; src: url('fonts/playfairdisplay-800.woff2') format('woff2'); }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 800; font-display: swap; src: url('fonts/playfairdisplay-600.woff2') format('woff2'); }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -151,8 +151,10 @@ body.theme-noel::after {
      page devenait scrollable en largeur et flottait sous le doigt,
      même avec overflow-x caché sur la racine (iPhone l'ignore pour le
      geste). Clip ici : rien ne déborde, donc rien ne peut glisser.
-     Le rideau, les flocons et les confettis vivent hors de .app et ne
-     sont pas concernés. */
+     Les flocons et les confettis vivent hors de .app ; le rideau, la
+     bande rayée et les badges sont position:fixed et échappent au
+     clip TANT QUE .app n'a ni transform ni filter (ne jamais lui en
+     poser un). */
   overflow: clip;
 }
 
@@ -3832,7 +3834,7 @@ body.theme-csc .promo-bon.obtenu {
 /* La carte verte « Bon utilisé » (la preuve du commerçant) : deux de
    ses textes lisaient les variables du thème, devenues foncées sur
    fond clair, donc sombre sur sombre. Des clairs figés. */
-.bon-valide .valide-mention { color: #B9C9BC; }
+.bon-valide:not(.bon-perime) .valide-mention { color: #B9C9BC; }
 .remerciement-texte { color: #E9F2EA; }
 
 /* Le levier du bandit manchot vit HORS de la machine, sur le fond

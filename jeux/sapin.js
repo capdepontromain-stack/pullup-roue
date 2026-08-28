@@ -158,8 +158,10 @@
   /* LES CROCHETS : les endroits où le joueur peut accrocher. */
   .sap-crochet {
     position: absolute;
-    width: 34px; height: 34px;
-    margin: -17px 0 0 -17px;
+    /* 44 px : la taille minimale d'une cible tactile. Le dessin du
+       crochet, lui, garde sa taille (voir ::after). */
+    width: 44px; height: 44px;
+    margin: -22px 0 0 -22px;
     padding: 0; border: 0;
     border-radius: 50%;
     background: none;
@@ -169,7 +171,7 @@
   .sap-crochet::after {
     content: '';
     position: absolute;
-    inset: 10px;
+    inset: 15px;
     border-radius: 50%;
     border: 1.5px dashed rgba(255,233,184,.55);
     background: rgba(255,233,184,.07);

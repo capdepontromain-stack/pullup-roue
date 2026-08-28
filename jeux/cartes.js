@@ -116,7 +116,7 @@
     border: 1px solid var(--filet-fort);
     transition: background .3s var(--signature), border-color .3s var(--signature);
   }
-  .ct-points span.ct-use { background: var(--or); border-color: var(--or); }
+  .ct-points span.ct-use { background: var(--or); border-color: #EFC368; }
   .ct-points span.ct-encours {
     background: var(--or-blanc); border-color: var(--or-blanc);
     box-shadow: 0 0 9px rgba(239, 195, 104, .75);
@@ -187,7 +187,7 @@
 
   /* Le trio gagnant, ou le trio manqué que la table dévoile */
   .ct-carte.ct-marquee .ct-plaque {
-    border-color: var(--or);
+    border-color: #EFC368;
     box-shadow: 0 0 24px rgba(239, 195, 104, .45), inset 0 0 20px rgba(239, 195, 104, .14);
     background: linear-gradient(168deg, rgba(239, 195, 104, .18) 0%, rgba(20, 15, 9, .9) 100%);
   }

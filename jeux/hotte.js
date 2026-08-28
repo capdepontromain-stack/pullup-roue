@@ -165,7 +165,7 @@
     border-radius: 999px;
     background: rgba(20,15,9,.82);
     border: 1px solid rgba(201,150,46,.45);
-    color: var(--or-blanc);
+    color: #FFE9B8; /* en dur : la pastille est sombre, la variable devenait encre sur noir en thème clair */
     font-family: var(--sans);
     font-size: 13.5px;
     letter-spacing: .3px;
@@ -229,6 +229,7 @@
   .htt-verdict {
     min-height: 46px; text-align: center;
     font-family: var(--serif); font-size: 19px; line-height: 1.3;
+    /* Le verdict vit sur le fond de page : la variable suit le thème. */
     color: var(--or-blanc);
   }
   .htt-verdict small {

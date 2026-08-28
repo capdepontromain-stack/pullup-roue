@@ -293,7 +293,7 @@
   .cnn-etiquettes {
     display: flex; justify-content: space-between;
     width: 100%; max-width: 348px;
-    font-size: 10.5px; letter-spacing: 1.6px; text-transform: uppercase;
+    font-size: 12px; letter-spacing: 1.6px; text-transform: uppercase;
     color: var(--gris);
   }
 

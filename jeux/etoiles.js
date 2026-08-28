@@ -168,6 +168,7 @@
      s'éteignent une par une, c'est ça le suspense. */
   .etl-boutique.eteinte { filter: brightness(.42) saturate(.5); }
   .etl-boutique.eteinte .etl-nom { color: rgba(188,178,161,.42); }
+  body.theme-csc .eteinte .etl-nom { color: rgba(23,34,44,.38); }
 
   /* La boutique du jour, une fois révélée. */
   .etl-boutique.etoilee .etl-cadre {
