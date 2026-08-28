@@ -16,99 +16,48 @@
 // Le programme tutoie, comme tout le reste du jeu.
 // Les horaires ci-dessous sont un EXEMPLE, à remplacer par ceux de la
 // galerie (table roue_programme dans Supabase, colonnes jour et heure).
+// LE PROGRAMME DU JOUR (V2, 28/08/2026, demande de Romain : « à la
+// fin, c'est les animations du jour, pas tout le programme »). Une
+// visite = une journée : le joueur qui flashe voit ce qui se passe
+// AUJOURD'HUI, et le contenu change chaque jour.
+// Le mot-clé « aujourdhui » dans la colonne jour marque une entrée
+// du jour courant, quelle que soit la date ; une vraie date en
+// toutes lettres (« samedi 12 décembre ») marche aussi.
+// La « photo dans la Hotte Géante » N'EXISTE PAS : ne jamais la
+// remettre, ni ici, ni dans les lots, ni dans un texte du jeu.
 const PROGRAMME_DEMO = [
-  // La « photo dans la Hotte Géante » a été retirée le 27/08/2026 :
-  // cette animation N'EXISTE PAS (Romain : « il faut que tu oublies
-  // cette idée de photo dans la hotte géante »). Ne jamais la remettre,
-  // ni ici, ni dans les lots, ni dans un texte du jeu.
-
-  // ---- Samedi 12 décembre ----
   {
-    jour: 'Samedi 12 décembre', heure: '10h30',
+    jour: 'aujourdhui', heure: '10h30',
     titre: 'L’atelier ballons du lutin',
     lieu: 'Place centrale', horaires: '10h30 à 12h30',
     detail: 'Épée, fleur, petit chien : le lutin sculpte le ballon que l’enfant lui demande. Gratuit.'
   },
   {
-    jour: 'Samedi 12 décembre', heure: '14h00',
+    jour: 'aujourdhui', heure: '14h00',
     titre: 'La photo avec le Père Noël',
     lieu: 'Le trône, place centrale', horaires: '14h à 17h',
     detail: 'Le Père Noël reçoit les enfants sur son trône. Photo avec ton téléphone, gratuite et sans achat.',
     vedette: true
   },
   {
-    jour: 'Samedi 12 décembre', heure: '15h30',
+    jour: 'aujourdhui', heure: '15h30',
     titre: 'La chorale de Noël',
     lieu: 'Allée principale', horaires: '30 minutes de chants'
   },
   {
-    jour: 'Samedi 12 décembre', heure: '16h30',
+    jour: 'aujourdhui', heure: '16h30',
     titre: 'Le spectacle du chapiteau',
     lieu: 'Place centrale', horaires: '45 minutes',
     detail: 'Jonglage, acrobaties et magie : le chapiteau ouvre sa piste au milieu de la galerie.'
   },
   {
-    jour: 'Samedi 12 décembre', heure: '18h00',
+    jour: 'aujourdhui', heure: '18h00',
     titre: 'Le cracheur de feu',
     lieu: 'Parvis de la galerie', horaires: 'À la tombée de la nuit',
-    detail: 'Le grand final du samedi, dehors, à voir en famille.'
-  },
-
-  // ---- Mercredi 16 décembre ----
-  {
-    jour: 'Mercredi 16 décembre', heure: '10h00',
-    titre: 'L’atelier des enfants',
-    lieu: 'Espace animation', horaires: '10h à 12h',
-    detail: 'Boules à décorer, cartes de vœux et couronnes de Noël. Gratuit, dès 3 ans.'
-  },
-  {
-    jour: 'Mercredi 16 décembre', heure: '14h00',
-    titre: 'La photo avec le Père Noël',
-    lieu: 'Le trône, place centrale', horaires: '14h à 17h',
-    detail: 'Le Père Noël reçoit les enfants sur son trône. Photo gratuite, sans achat.'
-  },
-  {
-    jour: 'Mercredi 16 décembre', heure: '15h00',
-    titre: 'L’atelier ballons du lutin',
-    lieu: 'Place centrale', horaires: '15h à 17h'
-  },
-  {
-    jour: 'Mercredi 16 décembre', heure: '16h30',
-    titre: 'Le spectacle du chapiteau',
-    lieu: 'Place centrale', horaires: '45 minutes'
-  },
-
-  // ---- Samedi 19 décembre ----
-  {
-    jour: 'Samedi 19 décembre', heure: '10h30',
-    titre: 'L’atelier ballons du lutin',
-    lieu: 'Place centrale', horaires: '10h30 à 12h30'
-  },
-  {
-    jour: 'Samedi 19 décembre', heure: '14h00',
-    titre: 'La photo avec le Père Noël',
-    lieu: 'Le trône, place centrale', horaires: '14h à 18h',
-    detail: 'Dernier samedi avant Noël : le Père Noël reste une heure de plus.',
-    vedette: true
-  },
-  {
-    jour: 'Samedi 19 décembre', heure: '15h00',
-    titre: 'La brigade du Père Noël',
-    lieu: 'En déambulation dans les allées', horaires: '15h à 18h',
-    detail: 'Le Père Noël, la Mère Noël et leurs lutins remontent la galerie, en musique et en gourmandises.'
-  },
-  {
-    jour: 'Samedi 19 décembre', heure: '16h30',
-    titre: 'La chorale de Noël',
-    lieu: 'Allée principale', horaires: '30 minutes de chants'
-  },
-  {
-    jour: 'Samedi 19 décembre', heure: '18h00',
-    titre: 'Le cracheur de feu',
-    lieu: 'Parvis de la galerie', horaires: 'À la tombée de la nuit',
-    detail: 'Le grand final de l’opération.'
+    detail: 'Le grand final de la journée, dehors, à voir en famille.'
   }
 ];
+
 
 // LES OFFRES D'EXEMPLE, DICTÉES PAR ROMAIN (27/08/2026). Ce sont de
 // vraies enseignes de la galerie, données par lui pour la version

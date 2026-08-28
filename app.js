@@ -1563,7 +1563,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '28aout2026a';
+const VERSION_JEUX = '28aout2026b';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -2952,7 +2952,7 @@ async function afficherPromos() {
   try {
     const { data, error } = await sb
       .from('roue_offres')
-      .select('enseigne, titre, detail, univers, valable_jusqu_au, bon')
+      .select('*')
       .eq('operation', EVENEMENT)
       .eq('actif', true)
       .order('ordre');
@@ -2963,6 +2963,12 @@ async function afficherPromos() {
 
   // Rien en base : on montre les exemples de démonstration
   if (!offres.length && typeof OFFRES_DEMO !== 'undefined') offres = OFFRES_DEMO;
+
+  // V2 (28/08/2026) : les offres sont CELLES DU JOUR. Une colonne
+  // « jour » dans la base (facultative) permet de programmer la
+  // rotation à l'avance ; sans elle, la colonne actif fait le tri au
+  // quotidien. Les offres sans jour passent toujours.
+  offres = offres.filter(o => estDuJour(o.jour));
   offres = neutraliserEnseignes(offres);
 
   if (!offres.length) {
@@ -3303,11 +3309,11 @@ const VUES_GALERIE = [
   // accède par la grande carte « Obtenir mes cadeaux » de l'écran de
   // découverte, et par le bouton de fin de partie : deux portes larges
   // valent mieux qu'un quatrième onglet qui serre les trois autres.
-  { cle: 'promos',     libelle: 'Réductions', ouvrir: function () { afficherPromos(); } },
+  { cle: 'promos',     libelle: 'Offres du jour', ouvrir: function () { afficherPromos(); } },
   // V2 : l'onglet Nouveautés a été retiré (28/08/2026, « trop
   // d'informations à la fin »). L'écran existe toujours dans la page,
   // plus rien n'y mène.
-  { cle: 'programme',  libelle: 'Programme',  ouvrir: function () { afficherProgramme(); } }
+  { cle: 'programme',  libelle: 'Animations', ouvrir: function () { afficherProgramme(); } }
 ];
 let vueCourante = null;
 
@@ -3520,6 +3526,25 @@ rafraichirOngletBons();
 // sous « Tous les jours ». Le select ne nomme plus les colonnes une à
 // une, pour que l'écran continue de fonctionner que la base ait reçu ou
 // non les deux nouvelles colonnes.
+// LE JOUR COURANT, EN TOUTES LETTRES ET SANS ACCENT : c'est la clé du
+// filtre journalier (V2, 28/08/2026). « samedi 12 decembre » ==
+// colonne jour « Samedi 12 décembre ». Le mot-clé « aujourdhui »
+// passe toujours : il sert aux contenus valables le jour même.
+function jourCourantLisible() {
+  return new Date().toLocaleDateString('fr-FR',
+    { weekday: 'long', day: 'numeric', month: 'long' });
+}
+function sansAccents(t) {
+  return String(t || '').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/['’]/g, '').trim();
+}
+function estDuJour(jour) {
+  const j = sansAccents(jour);
+  if (!j) return true;                       // pas de jour : permanent
+  if (j === 'aujourdhui') return true;       // le mot-clé du jour même
+  return j === sansAccents(jourCourantLisible());
+}
+
 async function afficherProgramme() {
   const liste = document.getElementById('programme-liste');
   liste.innerHTML = squelettes(3);
@@ -3540,8 +3565,13 @@ async function afficherProgramme() {
   }
   if (!evenements.length && typeof PROGRAMME_DEMO !== 'undefined') evenements = PROGRAMME_DEMO;
 
+  // V2 (28/08/2026) : une visite = une journée. On ne montre que les
+  // rendez-vous d'AUJOURD'HUI (et les permanents) : le programme
+  // change donc chaque jour tout seul, et l'écran reste léger.
+  evenements = evenements.filter(ev => estDuJour(ev.jour));
+
   if (!evenements.length) {
-    liste.innerHTML = '<p class="promo-vide">Le programme arrive très bientôt.</p>';
+    liste.innerHTML = '<p class="promo-vide">Pas d’animation prévue aujourd’hui.<br>Reviens demain, le programme change chaque jour.</p>';
     return;
   }
 
@@ -3557,25 +3587,18 @@ async function afficherProgramme() {
     });
   }
 
-  // 2. LES JOURNÉES, DANS L'ORDRE OÙ ELLES ARRIVENT DANS LA LISTE
-  const journees = [];
-  evenements.forEach(ev => {
-    const jour = String(ev.jour || '').trim();
-    if (!jour) return;
-    let bloc = journees.filter(j => j.jour === jour)[0];
-    if (!bloc) { bloc = { jour: jour, evenements: [] }; journees.push(bloc); }
-    bloc.evenements.push(ev);
-  });
-
-  journees.forEach(bloc => {
-    liste.appendChild(titreDeJournee(bloc.jour, ''));
+  // 2. LES RENDEZ-VOUS DU JOUR, sur leur fil doré. Un seul intitulé :
+  // « Aujourd'hui », avec la date écrite en toutes lettres.
+  const dates = evenements.filter(ev => String(ev.jour || '').trim());
+  if (dates.length) {
+    liste.appendChild(titreDeJournee('Aujourd’hui', jourCourantLisible()));
     const fil = document.createElement('div');
     fil.className = 'agenda-fil';
-    bloc.evenements.forEach(ev => {
+    dates.forEach(ev => {
       fil.appendChild(ligneAgenda(ev, retard++, false));
     });
     liste.appendChild(fil);
-  });
+  }
 }
 
 // L'intitulé d'une journée : un filet doré, la date, et au besoin une

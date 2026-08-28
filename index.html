@@ -29,22 +29,22 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=28aout2026a">
+  <link rel="stylesheet" href="style.css?v=28aout2026b">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=28aout2026a" defer></script>
-  <script src="icones-quiz.js?v=28aout2026a" defer></script>
-  <script src="contenus-demo.js" defer></script>
+  <script src="icones.js?v=28aout2026b" defer></script>
+  <script src="icones-quiz.js?v=28aout2026b" defer></script>
+  <script src="contenus-demo.js?v=28aout2026b" defer></script>
   <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
        Il tient la liste des bons du joueur et sait la dessiner. Chargé
        avant app.js, qui l'appelle à deux endroits : quand un lot est
        gagné, et quand un bon de promotion est pris. Voir bons.js. -->
-  <script src="bons.js?v=28aout2026a" defer></script>
-  <script src="app.js?v=28aout2026a" defer></script>
+  <script src="bons.js?v=28aout2026b" defer></script>
+  <script src="app.js?v=28aout2026b" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -356,11 +356,11 @@
             <span class="carte-photo" aria-hidden="true"></span>
             <span class="carte-voile" aria-hidden="true"></span>
             <span class="carte-texte">
-              <span class="carte-etiquette">En ce moment</span>
+              <span class="carte-etiquette">Rien qu'aujourd'hui</span>
               <span class="carte-titre">Tu as remporté des réductions sympas</span>
-              <span class="carte-detail">Des bons à utiliser chez tes commerçants : une boisson offerte, un cookie, un maquillage flash…</span>
+              <span class="carte-detail">Des bons à utiliser aujourd'hui chez tes commerçants. Demain, il y en aura d'autres.</span>
               <span class="carte-action">
-                <span class="carte-action-mot">Voir mes réductions</span>
+                <span class="carte-action-mot">Voir les offres du jour</span>
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
                      stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M5 12 h13"/><path d="M12 5 l7 7 l-7 7"/>
@@ -383,11 +383,11 @@
             <span class="carte-photo" aria-hidden="true"></span>
             <span class="carte-voile" aria-hidden="true"></span>
             <span class="carte-texte">
-              <span class="carte-etiquette">Tous les jours</span>
-              <span class="carte-titre">Le programme des animations</span>
-              <span class="carte-detail">Le Père Noël, les ateliers, les spectacles : les heures et les lieux.</span>
+              <span class="carte-etiquette">Aujourd'hui</span>
+              <span class="carte-titre">Les animations du jour</span>
+              <span class="carte-detail">Le Père Noël, les ateliers, les spectacles : ce qui t'attend aujourd'hui, heure par heure.</span>
               <span class="carte-action">
-                <span class="carte-action-mot">Voir le programme</span>
+                <span class="carte-action-mot">Voir les animations</span>
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
                      stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M5 12 h13"/><path d="M12 5 l7 7 l-7 7"/>
@@ -423,8 +423,8 @@
       <div class="quiz-zone vue-galerie">
         <div class="onglets-zone" data-vue="promos"></div>
         <div class="bandeau-vue bandeau-promos">
-          <h2>Tes réductions</h2>
-          <p class="question-soustitre" id="promos-soustitre">Des bons à utiliser chez tes commerçants, sur présentation de ton téléphone.</p>
+          <h2>Les offres du jour</h2>
+          <p class="question-soustitre" id="promos-soustitre">Des bons à utiliser aujourd'hui chez tes commerçants. Ils changent chaque jour.</p>
         </div>
         <div id="promos-liste" class="promos-liste"></div>
         <button class="btn btn-discret" id="btn-promos-retour">Retour</button>
@@ -478,8 +478,8 @@
       <div class="quiz-zone vue-galerie">
         <div class="onglets-zone" data-vue="programme"></div>
         <div class="bandeau-vue bandeau-programme">
-          <h2>Le programme</h2>
-          <p class="question-soustitre">Tout ce qui se passe dans la galerie pendant l'opération.</p>
+          <h2>Les animations du jour</h2>
+          <p class="question-soustitre">Ce qui se passe aujourd'hui dans la galerie. Demain, tout change.</p>
         </div>
         <div id="programme-liste" class="programme-liste"></div>
         <button class="btn btn-discret" id="btn-programme-retour">Retour</button>
