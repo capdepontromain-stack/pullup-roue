@@ -3594,3 +3594,49 @@ body.theme-csc .ticket-fond {
 body.theme-csc .ticket-mention { color: #FFD9A8; opacity: .95; }
 body.theme-csc .ticket-detail { color: #FFF1E4; }
 body.theme-csc .ticket-resultat.ticket-perdu { color: #FFFFFF; opacity: 1; }
+
+/* LA PHOTO DE LA GALERIE, EN BANDEAU (28/08/2026, Romain : « j'aime
+   bien voir la photo du devant de la galerie, mais elle est trop en
+   fond, fais-la ressortir »).
+   En plein écran, une photo paysage sur un téléphone portrait est
+   zoomée à l'extrême : on ne voyait qu'un pan de mur. Elle devient
+   donc un BANDEAU en haut de page, dans un cadre proche de son
+   format : la façade et son enseigne tiennent entières, franches,
+   sans voile. Le reste de la page est le fond clair uni. */
+body.theme-csc::before {
+  inset: 0 0 auto 0;
+  height: 300px;
+  background: url('img/client/facade-csc.jpg') center 58% / cover no-repeat;
+  filter: saturate(1.06) contrast(1.03);
+  transform: none;
+}
+/* Le fondu vers le fond clair, sur le bas du bandeau seulement. */
+body.theme-csc::after {
+  inset: 0 0 auto 0;
+  height: 300px;
+  background: linear-gradient(180deg,
+    rgba(247, 248, 250, 0) 0%,
+    rgba(247, 248, 250, 0) 55%,
+    rgba(247, 248, 250, .75) 82%,
+    #F7F8FA 100%);
+}
+/* L'en-tête se pose sur la photo : le nom et le logo reçoivent un
+   halo blanc pour rester lisibles sur le ciel. */
+body.theme-csc .entete { border-bottom-color: transparent; }
+body.theme-csc .entete-jeu {
+  color: #C42730;
+  text-shadow: 0 1px 10px rgba(255, 255, 255, .95);
+}
+body.theme-csc .logo-client { filter: drop-shadow(0 2px 10px rgba(255, 255, 255, .95)); }
+/* Le contenu de l'accueil commence sous le bandeau. */
+body.theme-csc #ecran-accueil .hero { padding-top: 218px; }
+body.theme-csc #ecran-accueil .hero h1 { margin-top: 0; }
+/* LA PHOTO NE VIT QUE SUR L'ACCUEIL. Sur les écrans suivants, elle
+   passait derrière l'en-tête et rendait le nom de l'opération
+   illisible : le fond redevient uni, l'écran appartient au jeu. */
+body.theme-csc:not(.sur-accueil)::before { display: none; }
+body.theme-csc:not(.sur-accueil)::after { display: none; }
+body.theme-csc:not(.sur-accueil) { background: #F7F8FA; }
+body.theme-csc:not(.sur-accueil) .entete { border-bottom-color: #E8EBEF; }
+body.theme-csc:not(.sur-accueil) .entete-jeu { text-shadow: none; }
+body.theme-csc:not(.sur-accueil) .logo-client { filter: none; }

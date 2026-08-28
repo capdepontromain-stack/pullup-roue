@@ -177,10 +177,17 @@ function appliquerOperation() {
   // une question de vocabulaire, à cette heure-ci, ne ferait que créer
   // une occasion de casser l'écran d'accueil. Il désigne « le
   // médaillon rond de l'accueil », quel que soit ce qu'il montre.
+  // LE MÉDAILLON D'ACCUEIL EST RETIRÉ EN THÈME CLAIR (28/08/2026,
+  // Romain : « enlève le dessin du chapiteau, ça ne fait pas très
+  // pro »). C'est la photographie de la galerie qui tient désormais
+  // le haut de l'écran, et elle suffit. Les autres univers gardent
+  // leur médaillon.
   const medaillon = document.getElementById('accueil-medaillon');
   if (medaillon) {
-    medaillon.hidden = false;
-    medaillon.classList.add('hero-photo', 'medaillon-pere-noel');
+    const avecMedaillon = OPERATION.theme !== 'csc';
+    medaillon.hidden = !avecMedaillon;
+    medaillon.classList.toggle('hero-photo', avecMedaillon);
+    medaillon.classList.toggle('medaillon-pere-noel', avecMedaillon);
     medaillon.innerHTML = '';
   }
 
@@ -1572,7 +1579,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '28aout2026i';
+const VERSION_JEUX = '28aout2026n';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
