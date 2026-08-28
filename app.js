@@ -484,7 +484,7 @@ const QUESTIONS = [
       { v: 'mode',        l: 'M’habiller de la tête aux pieds',  ic: 'mode',        photo: 'img/photos/quiz/q100-mode.jpg',   rayons: ['mode'] },
       { v: 'beaute',      l: 'Coiffeur, institut, parfum',       ic: 'beaute',      photo: 'img/photos/quiz/q100-beaute.jpg', rayons: ['beaute'] },
       { v: 'bijoux',      l: 'Un bijou, ou du high-tech',        ic: 'bijoux',      photo: 'img/photos/quiz/q100-bijou.jpg',  rayons: ['bijoux', 'hightech'] },
-      { v: 'gourmandise', l: 'Un festin, resto et gourmandises', ic: 'gourmandise', photo: 'img/photos/quiz/q100-festin.jpg', rayons: ['gourmandise'] }
+      { v: 'gourmandise', l: 'Un festin, resto et gourmandises', ic: 'gourmandise', photo: 'img/photos/quiz/q100-festin.jpg?v=2', rayons: ['gourmandise'] }
     ]
   },
   {
