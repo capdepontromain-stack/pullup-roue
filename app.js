@@ -370,14 +370,14 @@ const COULEURS_SEGMENTS = ['#C9962E', '#F1ECE2', '#5A554B', '#E3B85A', '#8A8378'
 //        atterrit dans univers et enfants, rien à modifier dans Supabase.
 const QUESTIONS = [
   {
-    id: 'prenom', type: 'texte',
+    // V2 (28/08/2026, retour Cap Sacré-Cœur : « condenser les
+    // questions du début ») : le prénom et le genre partagent le
+    // premier écran. Type 'mixte' : un champ texte ET trois puces.
+    id: 'prenom', type: 'mixte',
     titre: 'On t’appelle comment ?',
     soustitre: 'Ton prénom, ou ton nom de scène si tu préfères.',
-    placeholder: 'Prénom ou pseudo'
-  },
-  {
-    id: 'genre', type: 'choix',
-    titre: 'Tu es…',
+    placeholder: 'Prénom ou pseudo',
+    second: 'genre',
     options: [
       { v: 'homme', l: 'Un homme', ic: 'homme' },
       { v: 'femme', l: 'Une femme', ic: 'femme' },
@@ -385,14 +385,8 @@ const QUESTIONS = [
     ]
   },
   {
-    // SIX TRANCHES, ET C'EST VOULU (27/08/2026, retour de Romain).
-    // Elles avaient été ramenées à quatre la veille au soir pour
-    // alléger l'écran. Romain a tranché en les revoyant : « je
-    // préférais les tranches d'âge comme avant, même s'il y a plus
-    // de choix, on s'y retrouvait mieux ». Il a raison sur le fond :
-    // « 31 à 50 ans » mettait dans le même sac un jeune couple sans
-    // enfant et un parent d'ados, alors que ce sont deux campagnes
-    // différentes. Ne pas les réduire à nouveau.
+    // LES SIX TRANCHES SONT UNE DÉCISION DE ROMAIN (27/08/2026) :
+    // « on s'y retrouvait mieux ». Ne pas les réduire.
     id: 'age_tranche', type: 'choix',
     titre: 'Ton âge ?',
     soustitre: 'Promis, on ne le dira à personne.',
@@ -406,72 +400,35 @@ const QUESTIONS = [
     ]
   },
   {
-    // LE TEST DE PERSONNALITÉ, version chapiteau. Le joueur choisit son
-    // rôle sur la piste ; en coulisses, chaque rôle porte un rayon de
-    // boutique (champ « rayons »). Quatre rôles seulement : les deux
-    // autres (le magicien, le régisseur) faisaient doublon avec les
-    // rayons demandés juste après.
-    id: 'style', type: 'multi',
-    titre: 'Si tu montais sur la piste, tu serais…',
-    soustitre: 'Plusieurs réponses possibles.',
-    options: [
-      { v: 'acrobate',   l: 'L’acrobate, toujours en mouvement',       ic: 'acrobate',    rayons: ['sport'],            aussi: { frequence: 'liste' } },
-      { v: 'loyal',      l: 'Monsieur Loyal, tiré à quatre épingles',   ic: 'hautdeforme', rayons: ['mode'],             aussi: { frequence: 'flaner' } },
-      { v: 'costumiere', l: 'La costumière, l’œil pour les paillettes', ic: 'paillettes',  rayons: ['beaute', 'bijoux'], aussi: { frequence: 'flaner' } },
-      { v: 'clown',      l: 'Le clown, celui qui met l’ambiance',       ic: 'clown',       rayons: ['gourmandise'],      aussi: { frequence: 'famille' } }
-    ]
-  },
-  {
-    // LES 100 €, EN DEUX ÉCRANS DE QUATRE (26/08/2026, soirée).
-    // Avant : une seule question et ses huit propositions, que personne
-    // ne lisait jusqu'au bout. Maintenant deux questions courtes qui se
-    // suivent comme une histoire (« et s'il t'en restait cent ? »).
-    // Les huit rayons sont toujours couverts, et la PREMIÈRE case
-    // cochée ici reste la priorité du joueur : c'est elle qui décide de
-    // la première offre qu'on lui enverra (voir consoliderCiblage).
+    // LA question qui vaut de l'or pour les commerçants. V2 : un seul
+    // écran de 100 € (le second, « il t'en reste 50 € », a été retiré
+    // pour raccourcir le début). La première case cochée reste la
+    // priorité du joueur (voir premierRayonCoche).
     id: 'envie1', type: 'multi',
     titre: 'On t’offre 100 € à dépenser dans la galerie.',
     soustitre: 'Tu files où en premier ? Plusieurs réponses possibles.',
     options: [
       { v: 'mode',        l: 'M’habiller de la tête aux pieds',  ic: 'mode',        rayons: ['mode'] },
       { v: 'beaute',      l: 'Coiffeur, institut, parfum',       ic: 'beaute',      rayons: ['beaute'] },
-      { v: 'bijoux',      l: 'Un bijou, un vrai',                ic: 'bijoux',      rayons: ['bijoux'] },
+      { v: 'bijoux',      l: 'Un bijou, ou du high-tech',        ic: 'bijoux',      rayons: ['bijoux', 'hightech'] },
       { v: 'gourmandise', l: 'Un festin, resto et gourmandises', ic: 'gourmandise', rayons: ['gourmandise'] }
     ]
   },
   {
-    id: 'envie2', type: 'multi',
-    titre: 'Il t’en reste 50 €.',
-    soustitre: 'Tu craques sur quoi ?',
-    options: [
-      { v: 'hightech', l: 'Du high-tech qui fait envie',   ic: 'hightech', rayons: ['hightech'] },
-      { v: 'sport',    l: 'De quoi bouger, du sport',      ic: 'sport',    rayons: ['sport'] },
-      { v: 'enfants',  l: 'Des jouets pour les enfants',   ic: 'enfants',  rayons: ['enfants'] },
-      { v: 'maison',   l: 'De quoi embellir la maison',    ic: 'maison',   rayons: ['maison'] }
-    ]
-  },
-  {
-    // Le samedi idéal ne redemande plus les huit rayons (les 100 €
-    // viennent de le faire) : il dit avec QUI et OÙ se passe la journée.
-    // C'est ce qui distingue une famille d'un couple qui flâne.
+    // Le samedi idéal dit avec QUI se passe la journée : c'est ce qui
+    // distingue une famille d'un couple qui flâne.
     id: 'samedi', type: 'multi',
     titre: 'Ton samedi idéal, c’est plutôt…',
-    soustitre: 'Coche tout ce qui te tente.',
+    soustitre: 'Dernière question, et ensuite on joue.',
     options: [
       { v: 'enfants', l: 'En famille, avec les enfants', ic: 'famille', rayons: ['enfants'],     aussi: { frequence: 'famille' } },
       { v: 'mode',    l: 'Flâner entre amis',            ic: 'amis',    rayons: ['mode'] },
       { v: 'sport',   l: 'Dehors, à bouger',              ic: 'dehors',  rayons: ['sport'] },
       { v: 'maison',  l: 'Au calme, à la maison',         ic: 'maison',  rayons: ['maison'] }
     ]
-  },
-  // LA QUESTION « TU OFFRES UN CADEAU À QUI ? » A ÉTÉ RETIRÉE
-  // (27/08/2026, Romain : « tu peux l'enlever maintenant »). Le quiz
-  // tient donc en sept écrans. Le ciblage ne perd presque rien : les
-  // rayons qu'elle apportait (bijoux, beauté, enfants, maison) sont
-  // déjà couverts par les deux questions des 100 €. Seule la colonne
-  // « enfants » repose maintenant sur le seul samedi idéal, ce qui
-  // suffit : c'est la même information, dite autrement.
+  }
 ];
+
 
 // LES COLONNES LIÉES D'UNE QUESTION À CHOIX MULTIPLE
 // --------------------------------------------------
@@ -530,7 +487,7 @@ function consoliderCiblage() {
   // La priorité, c'est la PREMIÈRE case cochée du premier écran (dans
   // l'ordre affiché, pas dans l'ordre des doigts), et à défaut celle du
   // second. Elle décide de la première offre qu'on enverra au joueur.
-  reponses.envie = premierRayonCoche('envie1') || premierRayonCoche('envie2') || '';
+  reponses.envie = premierRayonCoche('envie1') || '';
   const priorite = reponses.envie;
   const liste = Array.from(rayons);
   if (priorite && liste.indexOf(priorite) > 0) {
@@ -617,17 +574,39 @@ function afficherQuestion() {
   const zoneOptions = document.getElementById('question-options');
   const zoneTexte = document.getElementById('question-texte-zone');
   const zoneMulti = document.getElementById('question-multi-zone');
+  // L'écran mixte réordonne ses blocs par CSS (classe sur la zone).
+  const zoneQuiz = document.querySelector('#ecran-quiz .quiz-zone');
+  if (zoneQuiz) zoneQuiz.classList.toggle('mixte', q.type === 'mixte');
   zoneOptions.innerHTML = '';
   zoneMulti.hidden = true;
 
-  if (q.type === 'texte') {
-    zoneOptions.hidden = true;
+  if (q.type === 'texte' || q.type === 'mixte') {
     zoneTexte.hidden = false;
     zoneMulti.hidden = true;
     const input = document.getElementById('question-texte-input');
     input.value = reponses[q.id] || '';
     input.placeholder = q.placeholder || '';
     input.focus();
+    // LE TYPE MIXTE (V2, 28/08/2026) : sous le champ du prénom, les
+    // puces d'un second champ (le genre). Le clic sélectionne sans
+    // avancer : c'est le bouton Continuer qui valide les deux.
+    zoneOptions.hidden = q.type !== 'mixte';
+    if (q.type === 'mixte' && q.options) {
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        const dessin = (opt.ic && typeof iconeQuiz === 'function') ? iconeQuiz(opt.ic) : '';
+        if (dessin) btn.classList.add('option-avec-icone');
+        btn.innerHTML = `${dessin}<span>${opt.l}</span>`;
+        if (reponses[q.second] === opt.v) btn.classList.add('choisie');
+        btn.addEventListener('click', () => {
+          reponses[q.second] = opt.v;
+          zoneOptions.querySelectorAll('.option').forEach(b => b.classList.remove('choisie'));
+          btn.classList.add('choisie');
+        });
+        zoneOptions.appendChild(btn);
+      });
+    }
   } else {
     zoneTexte.hidden = true;
     zoneOptions.hidden = false;
@@ -718,13 +697,13 @@ function questionSuivante() {
   } else {
     document.getElementById('barre-progression').style.width = '100%';
     adapterCoordonneesMineur();
-    // LES BONS PLANS SE DEMANDENT ICI (26/08/2026, demande de Romain).
-    // Avant, la question tombait après la saisie de l'adresse : le
-    // joueur avait déjà donné son mail, il n'avait plus rien à gagner à
-    // dire oui. Maintenant elle arrive juste après le test, quand il
-    // vient de dire ce qu'il aime, et avant qu'on lui demande quoi que
-    // ce soit. Un joueur mineur ne voit jamais cet écran.
-    proposerLesOffres(() => afficherEcran('ecran-coordonnees'));
+    // V2 (28/08/2026, retour Cap Sacré-Cœur : « trop de choses avant
+    // d'arriver au jeu »). La question des bons plans ne coupe plus la
+    // route : le quiz enchaîne droit sur les coordonnées, puis le
+    // ticket. Elle se pose maintenant APRÈS le résultat, au moment où
+    // le joueur découvre ses bons : c'est là qu'elle a le plus de
+    // poids, et la relance « Es-tu sûr ? » y vit toujours.
+    afficherEcran('ecran-coordonnees');
   }
 }
 
@@ -751,6 +730,17 @@ document.getElementById('btn-texte-suivant').addEventListener('click', () => {
   const q = QUESTIONS[questionActuelle];
   const val = document.getElementById('question-texte-input').value.trim();
   if (!val) return;
+  // Écran mixte : le second champ (le genre) doit aussi être choisi.
+  // Sans lui, le bouton secoue la liste plutôt que d'avancer.
+  if (q.type === 'mixte' && q.second && !reponses[q.second]) {
+    const zone = document.getElementById('question-options');
+    if (zone) {
+      zone.classList.remove('rappel');
+      void zone.offsetWidth;
+      zone.classList.add('rappel');
+    }
+    return;
+  }
   reponses[q.id] = val;
   questionSuivante();
 });
@@ -1573,7 +1563,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '27aout2026o';
+const VERSION_JEUX = '28aout2026a';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -3314,7 +3304,9 @@ const VUES_GALERIE = [
   // découverte, et par le bouton de fin de partie : deux portes larges
   // valent mieux qu'un quatrième onglet qui serre les trois autres.
   { cle: 'promos',     libelle: 'Réductions', ouvrir: function () { afficherPromos(); } },
-  { cle: 'nouveautes', libelle: 'Nouveautés', ouvrir: function () { afficherNouveautes(); } },
+  // V2 : l'onglet Nouveautés a été retiré (28/08/2026, « trop
+  // d'informations à la fin »). L'écran existe toujours dans la page,
+  // plus rien n'y mène.
   { cle: 'programme',  libelle: 'Programme',  ouvrir: function () { afficherProgramme(); } }
 ];
 let vueCourante = null;
@@ -3495,7 +3487,10 @@ async function afficherNouveautes() {
 document.getElementById('carte-mesbons').addEventListener('click', function () { afficherMesBons(); });
 document.getElementById('btn-mes-bons-retour').addEventListener('click', function () { afficherDecouverte(); });
 document.getElementById('carte-promos').addEventListener('click', function () { afficherPromos(); });
-document.getElementById('carte-nouveautes').addEventListener('click', function () { afficherNouveautes(); });
+// V2 : la carte des nouveautés n'existe plus dans la page ; on ne
+// l'écoute que si elle revient un jour.
+const carteNouveautes = document.getElementById('carte-nouveautes');
+if (carteNouveautes) carteNouveautes.addEventListener('click', function () { afficherNouveautes(); });
 document.getElementById('btn-decouverte-programme').addEventListener('click', function () { afficherProgramme(); });
 document.getElementById('btn-decouverte-retour').addEventListener('click', function () {
   afficherEcran('ecran-resultat', 'arriere');

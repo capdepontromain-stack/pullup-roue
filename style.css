@@ -1806,6 +1806,40 @@ h1 {
   margin: 0 0 4px;
 }
 
+/* L'ÉCRAN MIXTE DU QUIZ V2 (prénom + genre sur une page).
+   Le conteneur est en colonne flex : on réordonne sans toucher au
+   HTML. Le champ du prénom répond au titre, il passe donc devant ;
+   les puces du genre suivent, présentées par leur petit intitulé. */
+/* display: contents fait remonter le champ et le bouton au rang
+   d'enfants directs de la colonne : chacun prend alors son ordre.
+   Titre et sous-titre gardent l'ordre 0, donc la première place. */
+.quiz-zone.mixte #question-texte-zone { display: contents; }
+.quiz-zone.mixte #question-texte-input { order: 1; }
+.quiz-zone.mixte #question-options     { order: 2; }
+.quiz-zone.mixte #btn-texte-suivant    { order: 3; }
+.quiz-zone.mixte .options { margin-top: 4px; }
+.quiz-zone.mixte .options::before {
+  content: 'Tu es…';
+  display: block;
+  padding: 14px 2px 4px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--or);
+  font-weight: 600;
+}
+
+/* La petite secousse qui rappelle un champ oublié (écran mixte du
+   quiz V2) : la liste tremble, personne ne lit un message d'erreur. */
+.rappel { animation: rappel-secoue .4s ease; }
+@keyframes rappel-secoue {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-7px); }
+  55% { transform: translateX(7px); }
+  80% { transform: translateX(-4px); }
+}
+@media (prefers-reduced-motion: reduce) { .rappel { animation: none; } }
+
 /* --- En-tête : le client d'abord ---
    Le logo de la galerie tient la ligne du bas, à la place et à la
    taille du nom écrit : c'est lui, le nom de la galerie. */
