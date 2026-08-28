@@ -3687,7 +3687,15 @@ body.theme-csc .ticket-resultat.ticket-perdu { color: #FFFFFF; opacity: 1; }
    donc un BANDEAU en haut de page, dans un cadre proche de son
    format : la façade et son enseigne tiennent entières, franches,
    sans voile. Le reste de la page est le fond clair uni. */
+/* LE BANDEAU DÉFILE AVEC LA PAGE (28/08/2026, retour Romain :
+   « La Hotte des Commerçants passe par-dessus la photo »). Le fond
+   hérité du thème sombre est fixé à l'écran : dès que la page
+   défilait, le titre remontait SUR la façade restée immobile. En
+   absolu, la photo appartient à la page et le titre ne la recouvre
+   plus jamais. */
+body.theme-csc { position: relative; }
 body.theme-csc::before {
+  position: absolute;
   inset: 0 0 auto 0;
   height: 300px;
   background: url('img/client/facade-csc.jpg') center 58% / cover no-repeat;
@@ -3696,6 +3704,7 @@ body.theme-csc::before {
 }
 /* Le fondu vers le fond clair, sur le bas du bandeau seulement. */
 body.theme-csc::after {
+  position: absolute;
   inset: 0 0 auto 0;
   height: 300px;
   background: linear-gradient(180deg,
@@ -3712,7 +3721,9 @@ body.theme-csc .entete-jeu {
   text-shadow: 0 1px 10px rgba(255, 255, 255, .95);
 }
 body.theme-csc .logo-client { filter: drop-shadow(0 2px 10px rgba(255, 255, 255, .95)); }
-/* Le contenu de l'accueil commence sous le bandeau. */
+/* Le contenu de l'accueil commence sous le bandeau. La photo défile
+   désormais avec la page (voir plus haut) : le titre reste sous elle
+   quoi qu'il arrive. */
 body.theme-csc #ecran-accueil .hero { padding-top: 218px; }
 body.theme-csc #ecran-accueil .hero h1 { margin-top: 0; }
 /* LA PHOTO NE VIT QUE SUR L'ACCUEIL. Sur les écrans suivants, elle
