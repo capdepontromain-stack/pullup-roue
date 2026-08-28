@@ -3521,3 +3521,51 @@ body.theme-csc .question-soustitre,
 body.theme-csc .bandeau-vue h2,
 body.theme-csc .bons-vide,
 body.theme-csc .promo-vide { text-shadow: none; }
+
+/* LES CARTES DE L'ÉCRAN DE DÉCOUVERTE, VERSION CLAIRE (28/08/2026).
+   Elles gardaient leur photo sombre et leur voile noir : sur le fond
+   clair, les titres devenaient illisibles (constaté par Romain à
+   l'écran). Elles deviennent des cartes blanches arrondies, avec un
+   liseré rouge à gauche et une petite touche colorée en haut : la
+   photo disparaît, la lecture passe avant la décoration. */
+body.theme-csc .carte-univers {
+  min-height: 0;
+  display: block;
+  background: #FFFFFF;
+  border: 1px solid #E8EBEF;
+  border-left: 4px solid #E4373F;
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(23, 34, 44, .09);
+  color: #29343E;
+  padding: 18px 20px;
+}
+body.theme-csc .carte-photo,
+body.theme-csc .carte-voile { display: none; }
+body.theme-csc .carte-texte { position: static; padding: 0; }
+body.theme-csc .carte-etiquette { color: #C42730; }
+body.theme-csc .carte-titre { color: #17222C; text-shadow: none; }
+body.theme-csc .carte-detail { color: #5E6B77; }
+body.theme-csc .carte-action, body.theme-csc .carte-action-mot { color: #E4373F; }
+/* La carte du cadeau, elle, garde un fond doré très pâle : c'est la
+   seule qui porte une récompense, elle doit se distinguer. */
+body.theme-csc .carte-mesbons {
+  background: linear-gradient(160deg, #FFF9EC 0%, #FFF3D8 100%);
+  border-left-color: #C9962E;
+}
+body.theme-csc .carte-mesbons .carte-etiquette { color: #8A6A21; }
+body.theme-csc .carte-mesbons .carte-action,
+body.theme-csc .carte-mesbons .carte-action-mot { color: #8A6A21; }
+
+/* La machine à sous garde ses ors, même en thème clair : c'est un
+   objet de fête foraine, pas un élément d'interface. Le fronton et le
+   bouton du levier reprennent donc leur doré, que la surcharge du
+   thème avait teintés en rouge sur rouge. */
+body.theme-csc .bandit-fronton {
+  background: linear-gradient(165deg, #FFE9B8, #C9962E);
+  color: #241804;
+}
+body.theme-csc .bandit-consigne {
+  border-color: rgba(239, 195, 104, .55);
+  color: #FFE9B8;
+  background: rgba(36, 24, 4, .55);
+}

@@ -222,6 +222,12 @@
   // Huit dessins pleins, huit couleurs franches : cloche or, cerises
   // rouges, trèfle vert, diamant bleu, sept violet, fer à cheval
   // cuivre, étoile crème, couronne orange.
+  const LOGO_GALERIE = `
+    <rect x="6"  y="34" width="7" height="32" rx="3.5" fill="#E4373F"/>
+    <rect x="17" y="26" width="7" height="48" rx="3.5" fill="#E4373F"/>
+    <path d="M78 30 A26 26 0 1 0 78 70 L78 58 A15 15 0 1 1 78 42 Z" fill="#E4373F"/>
+    <path d="M56 36 L78 50 L56 64 Z" fill="#E4373F"/>`;
+
   const SYMBOLES_MACHINE = [
     // La cloche, or
     `<path d="M50 16 c-16 0 -24 14 -24 30 c0 14 -6 20 -10 24 h68 c-4 -4 -10 -10 -10 -24 c0 -16 -8 -30 -24 -30 Z" fill="#EFC368" stroke="#8A6A21" stroke-width="3"/>
@@ -257,6 +263,16 @@
      <circle cx="50" cy="56" r="4" fill="#FFF3D4"/>`
   ];
 
+  // Le nom de la galerie, pour écrire la règle du jeu. Repli neutre si
+  // l'opération ne le porte pas : la phrase reste juste.
+  function nomGalerie() {
+    // OPERATION est déclaré en « let » dans app.js : il vit dans la
+    // portée globale mais n'est PAS une propriété de window. On le lit
+    // donc directement, en se protégeant s'il n'existe pas encore.
+    const n = (typeof OPERATION !== 'undefined' && OPERATION.lieu || '').trim();
+    return n || 'de la galerie';
+  }
+
   window.PullUpJeux = window.PullUpJeux || {};
 
   window.PullUpJeux.bandit = {
@@ -279,9 +295,11 @@
       // la dernière manche qui tranche, pour tout le monde pareil.
       const gagne = ctx.decisif !== false && !ctx.lot.perdant;
       let cibles;
+      let placeLogo;
       if (gagne) {
         const i = Math.max(0, symboles.findIndex(l => l.nom === ctx.lot.nom));
         cibles = [i, i, i];
+        placeLogo = i;          // trois logos alignés = gagné
       } else {
         // Perdu : deux symboles identiques, le troisième à côté.
         // BLINDAGE DU 27/08/2026 : deux lots différents peuvent porter
@@ -295,6 +313,7 @@
         const paire = melange[0];
         const seul = melange[1] !== undefined ? melange[1] : (paire + 1) % n;
         cibles = [paire, paire, seul];
+        placeLogo = paire;      // deux logos, et le troisième à côté
       }
 
       // Chaque rouleau a son propre ordre (la même liste, décalée) :
@@ -308,8 +327,11 @@
         for (let b = 0; b < BOUCLES; b++) {
           ordres[i].forEach(lot => {
             const place = symboles.indexOf(lot);
+            const dessin = (place === placeLogo)
+              ? LOGO_GALERIE
+              : SYMBOLES_MACHINE[place % SYMBOLES_MACHINE.length];
             html += `<div class="bandit-case"><svg viewBox="0 0 100 100"
-                     aria-hidden="true">${SYMBOLES_MACHINE[place % SYMBOLES_MACHINE.length]}</svg></div>`;
+                     aria-hidden="true">${dessin}</svg></div>`;
           });
         }
         return html;
@@ -317,7 +339,7 @@
 
       ctx.zone.innerHTML = `
         <h2>Le bandit manchot</h2>
-        <p class="question-soustitre">Trois symboles alignés sur la ligne dorée, c’est gagné.</p>
+        <p class="question-soustitre">Trois logos ${ctx.echap(nomGalerie())} alignés sur la ligne, c’est gagné.</p>
         <div class="bandit-plateau">
           <div class="bandit-machine" id="bandit-machine" style="--case:${CASE}px">
             <span class="bandit-fronton">Tente ta chance</span>
