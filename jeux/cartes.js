@@ -416,9 +416,9 @@
             const restantes = (ctx.manches || 1) - (ctx.manche || 1);
             ecrire('Le troisième n’est pas sorti.',
                    restantes > 0
-                     ? 'Le troisième était là. Il reste ' +
+                     ? 'Il se cachait dans les cartes restantes. Il reste ' +
                        (restantes === 1 ? 'une manche.' : restantes + ' manches.')
-                     : 'Le troisième était là. Ton lot était tiré avant la première ' +
+                     : 'Il se cachait dans les cartes restantes. Ton lot était tiré avant la première ' +
                        'carte : aucune autre carte n’y aurait rien changé.');
           }, ctx.sobre ? 60 : 700);
           setTimeout(ctx.terminer, ctx.sobre ? 700 : 3400);

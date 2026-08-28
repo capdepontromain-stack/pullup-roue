@@ -23,6 +23,11 @@
 // Le mot-clé « aujourdhui » dans la colonne jour marque une entrée
 // du jour courant, quelle que soit la date ; une vraie date en
 // toutes lettres (« samedi 12 décembre ») marche aussi.
+// ⚠️ Les entrées « aujourdhui » ci-dessous sont un SECOURS DE
+// DÉMONSTRATION : app.js les masque automatiquement dès que le jour
+// de la visite a son vrai programme daté (donc pendant toute
+// l'opération de décembre). Elles ne servent que pour montrer
+// l'écran vivant avant le 9 décembre. Pas besoin de les retirer.
 // La « photo dans la Hotte Géante » N'EXISTE PAS : ne jamais la
 // remettre, ni ici, ni dans les lots, ni dans un texte du jeu.
 const PROGRAMME_DEMO = [
@@ -170,7 +175,9 @@ const PROGRAMME_DEMO = [
 const OFFRES_DEMO = [
   // LES CONDITIONS COLLENT À LA RÉALITÉ (28/08/2026, Romain : « le
   // commerçant ne se retrouvera pas, on se rapproche de la réalité »).
-  // Chaque bon demande un achat à la hauteur du cadeau offert.
+  // Chaque bon demande un achat à la hauteur du cadeau offert, SAUF
+  // les deux découvertes beauté (Nocibé, Avril) : sans obligation
+  // d'achat, assumées comme générateurs de trafic en boutique.
   {
     enseigne: 'L’igloo', univers: 'gourmandise',
     titre: 'Une boisson offerte pour l’achat de deux glaces',
@@ -186,7 +193,7 @@ const OFFRES_DEMO = [
   {
     enseigne: 'Taïlu', univers: 'gourmandise',
     titre: 'Le sixième samoussa offert',
-    detail: 'Cinq samoussas achetés, le sixième est offert, tous parfums.',
+    detail: 'Cinq samoussas achetés, le sixième est offert, toutes les variétés.',
     bon: 'Le sixième samoussa offert'
   },
   {
@@ -221,13 +228,14 @@ const OFFRES_DEMO = [
   }
 ];
 
-// ATTENTION : ces offres sont des EXEMPLES de démonstration. Les noms de
-// boutiques sont volontairement GÉNÉRIQUES (la boulangerie de la galerie,
-// l'institut beauté...). Depuis le 25/08/2026, plus aucune enseigne réelle
-// n'est citée ici : montrer une vraie marque avec une offre inventée, sans
-// l'accord du commerçant, est un risque juridique et commercial, y compris
-// pendant une démonstration. Ces exemples sont remplacés automatiquement
-// par les vraies offres dès que les commerçants les saisissent.
+// ATTENTION : ces offres sont des EXEMPLES de démonstration. Elles
+// citent de VRAIES enseignes de Cap Sacré-Cœur, dictées par Romain le
+// 27/08/2026 avec les conditions qu'il a données : c'est SA décision,
+// qui fait exception à la règle générale « jamais d'enseigne réelle
+// sans engagement signé » (toujours valable pour tout ce que Romain
+// n'a pas dicté lui-même, et pour les NOUVEAUTÉS ci-dessous, restées
+// génériques). Ces exemples sont remplacés automatiquement par les
+// vraies offres dès que les commerçants les saisissent en base.
 
 
 // ============================================

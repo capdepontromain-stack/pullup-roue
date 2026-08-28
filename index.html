@@ -50,22 +50,22 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=29aout2026h">
+  <link rel="stylesheet" href="style.css?v=29aout2026i">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=29aout2026h" defer></script>
-  <script src="icones-quiz.js?v=29aout2026h" defer></script>
-  <script src="contenus-demo.js?v=29aout2026h" defer></script>
+  <script src="icones.js?v=29aout2026i" defer></script>
+  <script src="icones-quiz.js?v=29aout2026i" defer></script>
+  <script src="contenus-demo.js?v=29aout2026i" defer></script>
   <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
        Il tient la liste des bons du joueur et sait la dessiner. Chargé
        avant app.js, qui l'appelle à deux endroits : quand un lot est
        gagné, et quand un bon de promotion est pris. Voir bons.js. -->
-  <script src="bons.js?v=29aout2026h" defer></script>
-  <script src="app.js?v=29aout2026h" defer></script>
+  <script src="bons.js?v=29aout2026i" defer></script>
+  <script src="app.js?v=29aout2026i" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -80,7 +80,7 @@
   <!-- Le pré-thème : synchrone et minuscule, il habille la page du bon
        thème avant la première image (voir pretheme.js). Il doit rester
        le premier élément de body. -->
-  <script src="pretheme.js?v=29aout2026h"></script>
+  <script src="pretheme.js?v=29aout2026i"></script>
 
   <div class="app">
 
@@ -127,13 +127,13 @@
         <p id="accueil-lieu" class="lieu-badge" hidden></p>
         <p class="sous-titre">Un mini test de personnalité, tu fais tourner la roue, et tu repars peut-être avec un cadeau&nbsp;!</p>
         <p class="accueil-compte" id="accueil-compte"></p>
-        <button class="btn btn-or btn-grand" id="btn-jouer">C'est parti&nbsp;!</button>
+        <button class="btn btn-or btn-grand" id="btn-jouer">C’est parti&nbsp;!</button>
         <!-- Rempli par app.js quand le téléphone garde un bon encore
              valable : le joueur qui revient (ou qui a rechargé la page)
              retrouve son code sans avoir à rejouer. -->
         <div id="accueil-rappel-bons"></div>
         <div class="mentions">
-          <p class="mini-mention">Jeu gratuit, sans obligation d'achat · 1 partie par jour · <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">Règlement</a> · Moins de 18 ans&nbsp;: joue avec l'accord d'un parent.</p>
+          <p class="mini-mention">Jeu gratuit, sans obligation d’achat · 1 partie par jour · <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">Règlement</a> · Moins de 18 ans&nbsp;: joue avec l’accord d’un parent.</p>
         </div>
       </div>
     </section>
@@ -187,7 +187,7 @@
           <p class="suggestion-texte">Petite vérification&nbsp;: tu voulais peut-être écrire <strong id="suggestion-valeur"></strong>&nbsp;?</p>
           <div class="suggestion-actions">
             <button type="button" class="btn-mini btn-mini-or" id="btn-suggestion-oui">Oui, corriger</button>
-            <button type="button" class="btn-mini" id="btn-suggestion-non">Non, c'est la bonne</button>
+            <button type="button" class="btn-mini" id="btn-suggestion-non">Non, c’est la bonne</button>
           </div>
         </div>
         <label class="champ">
@@ -196,14 +196,14 @@
         </label>
         <label class="case">
           <input type="checkbox" id="check-reglement">
-          <span>J'ai lu et j'accepte le <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">règlement du jeu</a> et l'enregistrement de mes réponses par l'organisateur. *</span>
+          <span>J’ai lu et j’accepte le <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">règlement du jeu</a> et l’enregistrement de mes réponses par l’organisateur. *</span>
         </label>
 
         <p id="erreur-coordonnees" class="erreur" hidden></p>
         <!-- Ce bouton ouvre le ticket à gratter, et le jeu du jour n'est
              pas toujours la roue : « Je tente ma chance » reste vrai. -->
         <button class="btn btn-or btn-grand" id="btn-valider">Je tente ma chance</button>
-        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Juste après, on te demandera si tu veux aussi recevoir les bons plans des commerçants&nbsp;: ce choix ne changera rien à ta partie ni à ton lot, et tu pourras en changer quand tu veux. Données conservées un an après l'opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">En savoir plus sur tes données</a></p>
+        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Juste après, on te demandera si tu veux aussi recevoir les bons plans des commerçants&nbsp;: ce choix ne changera rien à ta partie ni à ton lot, et tu pourras en changer quand tu veux. Données conservées un an après l’opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">En savoir plus sur tes données</a></p>
       </div>
     </section>
 
@@ -211,7 +211,7 @@
     <section id="ecran-grattage" class="ecran">
       <div class="roue-zone">
         <h2 id="grattage-titre">Ton ticket à gratter</h2>
-        <p class="question-soustitre" id="grattage-consigne">Gratte avec ton doigt pour découvrir ce qu'il cache.</p>
+        <p class="question-soustitre" id="grattage-consigne">Gratte avec ton doigt pour découvrir ce qu’il cache.</p>
         <div class="ticket" id="ticket">
           <div class="ticket-fond" id="ticket-fond">
             <!-- Le nom de la galerie est écrit par appliquerOperation() :
@@ -352,7 +352,7 @@
     <section id="ecran-decouverte" class="ecran">
       <div class="quiz-zone decouverte-zone">
         <h2 id="decouverte-titre">Et maintenant ?</h2>
-        <p class="question-soustitre" id="decouverte-soustitre">Qu'est-ce que tu as envie de voir dans la galerie&nbsp;?</p>
+        <p class="question-soustitre" id="decouverte-soustitre">Qu’est-ce que tu as envie de voir dans la galerie&nbsp;?</p>
 
         <!-- Le bloc « Ce qui t'attend quand même » (la petite liste des
              promos, nouveautés et programme) a été RETIRÉ le 27/08/2026 :
@@ -373,7 +373,7 @@
             <span class="carte-texte">
               <span class="carte-etiquette">À retirer chez le commerçant</span>
               <span class="carte-titre" id="carte-mesbons-titre">Obtenir mon cadeau</span>
-              <span class="carte-detail">Présente ton bon au commerçant, c'est lui qui le valide.</span>
+              <span class="carte-detail">Présente ton bon au commerçant, c’est lui qui le valide.</span>
               <span class="carte-action">
                 <span class="carte-action-mot">Aller le chercher</span>
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
@@ -388,12 +388,12 @@
             <span class="carte-photo" aria-hidden="true"></span>
             <span class="carte-voile" aria-hidden="true"></span>
             <span class="carte-texte">
-              <span class="carte-etiquette">Rien qu'aujourd'hui</span>
+              <span class="carte-etiquette">Rien qu’aujourd’hui</span>
               <!-- « offre », jamais « remporté » : le perdant passe ici
                    juste après « Pas de cadeau aujourd'hui », et le
                    règlement interdit de laisser croire à un gain. -->
-              <span class="carte-titre">La galerie t'offre des réductions sympas</span>
-              <span class="carte-detail">Des bons à utiliser aujourd'hui chez tes commerçants. Demain, il y en aura d'autres.</span>
+              <span class="carte-titre">La galerie t’offre des réductions sympas</span>
+              <span class="carte-detail">Des bons à utiliser aujourd’hui chez tes commerçants. Demain, il y en aura d’autres.</span>
               <span class="carte-action">
                 <span class="carte-action-mot">Voir les offres du jour</span>
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
@@ -418,9 +418,9 @@
             <span class="carte-photo" aria-hidden="true"></span>
             <span class="carte-voile" aria-hidden="true"></span>
             <span class="carte-texte">
-              <span class="carte-etiquette">Aujourd'hui</span>
+              <span class="carte-etiquette">Aujourd’hui</span>
               <span class="carte-titre">Les animations du jour</span>
-              <span class="carte-detail">Le Père Noël, les ateliers, les spectacles : ce qui t'attend aujourd'hui, heure par heure.</span>
+              <span class="carte-detail">Le Père Noël, les ateliers, les spectacles : ce qui t’attend aujourd’hui, heure par heure.</span>
               <span class="carte-action">
                 <span class="carte-action-mot">Voir les animations</span>
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
@@ -446,7 +446,7 @@
         <div class="onglets-zone" data-vue="mesbons"></div>
         <div class="bandeau-vue bandeau-mesbons">
           <h2>Mes bons</h2>
-          <p class="question-soustitre" id="mesbons-soustitre">Présente ton code au commerçant. Un bon ne sert qu'une fois.</p>
+          <p class="question-soustitre" id="mesbons-soustitre">Présente ton code au commerçant. Un bon ne sert qu’une fois.</p>
         </div>
         <div id="mes-bons-liste" class="mes-bons-liste"></div>
         <button class="btn btn-discret" id="btn-mes-bons-retour">Retour</button>
@@ -459,7 +459,7 @@
         <div class="onglets-zone" data-vue="promos"></div>
         <div class="bandeau-vue bandeau-promos">
           <h2>Les offres du jour</h2>
-          <p class="question-soustitre" id="promos-soustitre">Des bons à utiliser aujourd'hui chez tes commerçants. Ils changent chaque jour.</p>
+          <p class="question-soustitre" id="promos-soustitre">Des bons à utiliser aujourd’hui chez tes commerçants. Ils changent chaque jour.</p>
         </div>
         <div id="promos-liste" class="promos-liste"></div>
         <button class="btn btn-discret" id="btn-promos-retour">Retour</button>
@@ -472,7 +472,7 @@
         <div class="onglets-zone" data-vue="nouveautes"></div>
         <div class="bandeau-vue bandeau-nouveautes">
           <h2>Les nouveautés</h2>
-          <p class="question-soustitre" id="nouveautes-soustitre">Ce qui vient d'arriver dans les boutiques de la galerie.</p>
+          <p class="question-soustitre" id="nouveautes-soustitre">Ce qui vient d’arriver dans les boutiques de la galerie.</p>
         </div>
         <div id="nouveautes-liste" class="nouveautes-liste"></div>
         <button class="btn btn-discret" id="btn-nouveautes-retour">Retour</button>
@@ -499,12 +499,12 @@
              est définitif, personne n'insiste au-delà. -->
         <div id="offres-relance" class="offres-relance" hidden>
           <p class="offres-relance-titre">Es-tu sûr ?</p>
-          <p class="offres-relance-texte">C'est juste un mail par semaine, et il y a vraiment des bons plans !</p>
-          <button class="btn btn-or btn-grand" id="btn-offres-oui2">Allez, d'accord, je m'inscris</button>
+          <p class="offres-relance-texte">C’est juste un e-mail par semaine, et il y a vraiment des bons plans !</p>
+          <button class="btn btn-or btn-grand" id="btn-offres-oui2">Allez, d’accord, je m’inscris</button>
           <button class="btn-offres-refus" id="btn-offres-non2">Non, vraiment</button>
         </div>
         <p id="offres-mineurs" class="mini-mention" hidden>Les offres par e-mail sont réservées aux joueurs majeurs.</p>
-        <p class="mini-mention offres-liberte">Ton choix ne change <strong>rien</strong> à ta partie, ni à tes chances, ni à ton lot, et tu peux en changer quand tu veux. <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">Ce qu'on fait de tes données</a></p>
+        <p class="mini-mention offres-liberte">Ton choix ne change <strong>rien</strong> à ta partie, ni à tes chances, ni à ton lot, et tu peux en changer quand tu veux. <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">Ce qu’on fait de tes données</a></p>
       </div>
     </section>
 
@@ -514,7 +514,7 @@
         <div class="onglets-zone" data-vue="programme"></div>
         <div class="bandeau-vue bandeau-programme">
           <h2>Les animations du jour</h2>
-          <p class="question-soustitre">Ce qui se passe aujourd'hui dans la galerie. Demain, tout change.</p>
+          <p class="question-soustitre">Ce qui se passe aujourd’hui dans la galerie. Demain, tout change.</p>
         </div>
         <div id="programme-liste" class="programme-liste"></div>
         <button class="btn btn-discret" id="btn-programme-retour">Retour</button>
@@ -569,7 +569,7 @@
         <h1 id="ferme-titre">À bientôt&nbsp;!</h1>
         <!-- Le texte est adapté par app.js : pas encore commencé,
              terminé, ou simplement fermé pour l'instant. -->
-        <p class="sous-titre" id="ferme-texte">Cette opération n'est pas ouverte en ce moment.<br>Reviens vite tenter ta chance&nbsp;!</p>
+        <p class="sous-titre" id="ferme-texte">Cette opération n’est pas ouverte en ce moment.<br>Reviens vite tenter ta chance&nbsp;!</p>
         <!-- Le gagnant garde l'accès à son bon même une fois le jeu
              fermé : le règlement le promet. Affiché par app.js s'il
              reste un bon valable dans le téléphone. -->
@@ -588,10 +588,10 @@
           </svg>
         </div>
         <h1>Pas si vite&nbsp;!</h1>
-        <p class="sous-titre">Tu as déjà tenté ta chance aujourd'hui avec cette adresse e-mail.<br><strong>Reviens demain pour rejouer&nbsp;!</strong></p>
+        <p class="sous-titre">Tu as déjà tenté ta chance aujourd’hui avec cette adresse e-mail.<br><strong>Reviens demain pour rejouer&nbsp;!</strong></p>
         <!-- Visible uniquement sur la version d'essai (voir PARTIES_ILLIMITEES) -->
         <div id="deja-joue-essai" hidden>
-          <p class="sous-titre">Mais comme tu es sur la <strong>version d'essai</strong>, tu peux rejouer autant de fois que tu veux. Dans la vraie opération, c'est une partie par personne et par jour.</p>
+          <p class="sous-titre">Mais comme tu es sur la <strong>version d’essai</strong>, tu peux rejouer autant de fois que tu veux. Dans la vraie opération, c’est une partie par personne et par jour.</p>
           <button class="btn btn-or btn-grand" id="btn-rejouer-essai">Rejouer quand même</button>
         </div>
         <!-- Le gagnant qui recharge sa page atterrit ici : sans ce

@@ -249,7 +249,7 @@
     id: 'hotte',
     nom: 'La Hotte Géante',
     mot: 'la hotte',                                   // « la hotte a hésité… »
-    suite: 'La hotte géante attend en bas de l’écran.', // fin du ticket à gratter
+    suite: 'La Hotte Géante attend en bas de l’écran.', // fin du ticket à gratter
 
     styles: STYLES,
 

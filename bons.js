@@ -61,6 +61,20 @@
     return JOURS[d.getDay()] + ' ' + d.getDate() + ' ' + MOIS[d.getMonth()];
   }
 
+  // Le « jour » d'un bon se compte en heure de La Réunion, comme
+  // l'ouverture de l'opération dans app.js. Avant (tour n°6, 29/08/2026),
+  // il se comptait en jour UTC : la journée basculait à 4 h du matin,
+  // et un bon pris entre minuit et 4 h s'affichait « expiré » alors
+  // qu'il venait d'être pris.
+  function jourReunion(d) {
+    const date = d || new Date();
+    try {
+      return new Intl.DateTimeFormat('fr-CA', { timeZone: 'Indian/Reunion' }).format(date);
+    } catch (e) {
+      return new Date(date.getTime() + 4 * 3600000).toISOString().slice(0, 10);
+    }
+  }
+
   const Bons = {
 
     // --------------------------------------------------------
@@ -83,7 +97,21 @@
     ajouter(bon) {
       if (!bon || !bon.code) return null;
       const tout = lire(CLE_PORTEFEUILLE, '{}');
-      if (tout[bon.code]) return tout[bon.code];      // déjà dans la poche
+      const existant = tout[bon.code];
+      if (existant) {
+        // Une offre permanente garde le même code d'un jour à l'autre.
+        // Si le joueur la reprend un autre jour, le bon redevient celui
+        // du jour : sans ça, il resterait marqué « expiré » alors que
+        // le joueur vient de le reprendre sous les yeux du commerçant.
+        // Un bon déjà UTILISÉ, lui, reste utilisé : c'est le verrou.
+        const utilise = !!lire(CLE_UTILISES, '{}')[bon.code];
+        if (existant.source === 'promo' && !utilise &&
+            jourReunion(new Date(existant.obtenu)) !== jourReunion()) {
+          existant.obtenu = new Date().toISOString();
+          ecrire(CLE_PORTEFEUILLE, tout);
+        }
+        return existant;
+      }
 
       tout[bon.code] = {
         code:       String(bon.code),
@@ -115,14 +143,14 @@
       // comprenne la règle, mais il ne compte plus et ne s'utilise
       // plus. Les bons gagnés AU JEU, eux, vivent jusqu'à la date de
       // l'opération (24 décembre) : rien ne les expire ici.
-      const aujourdHui = new Date().toISOString().slice(0, 10);
+      const aujourdHui = jourReunion();
       return Object.keys(tout).map(code => {
         const b = Object.assign({}, tout[code]);
         const u = utilises[code];
         b.utilise = !!u;
         b.utiliseLe = u ? u.date : null;
         b.expire = b.source === 'promo' &&
-          String(b.obtenu || '').slice(0, 10) !== aujourdHui;
+          jourReunion(new Date(b.obtenu || 0)) !== aujourdHui;
         return b;
       }).sort((a, b) => {
         const aMort = a.utilise || a.expire, bMort = b.utilise || b.expire;

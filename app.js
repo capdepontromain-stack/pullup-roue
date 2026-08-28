@@ -1181,9 +1181,22 @@ function jourReunion(date) {
   }
 }
 
+// Lecture de la file qui RÉPARE : si la clé est corrompue (écriture
+// interrompue, stockage abîmé), on la supprime et on repart d'une file
+// vide. Sans ça, une seule corruption désactivait le filet anti-panne
+// pour toujours sur ce téléphone, en silence (tour n°6, 29/08/2026).
+function lireAttente() {
+  try {
+    return purgerAttente(JSON.parse(localStorage.getItem(CLE_ATTENTE) || '[]'));
+  } catch (e) {
+    try { localStorage.removeItem(CLE_ATTENTE); } catch (e2) { /* rien */ }
+    return [];
+  }
+}
+
 function mettreEnAttente(participation) {
   try {
-    const attente = purgerAttente(JSON.parse(localStorage.getItem(CLE_ATTENTE) || '[]'));
+    const attente = lireAttente();
     attente.push(Object.assign({}, participation, {
       jour: jourReunion(),
       created_at: new Date().toISOString()
@@ -1226,9 +1239,7 @@ let renvoiEnCours = false;
 
 async function renvoyerAttente() {
   if (renvoiEnCours) return;
-  let attente;
-  try { attente = purgerAttente(JSON.parse(localStorage.getItem(CLE_ATTENTE) || '[]')); }
-  catch (e) { return; }
+  const attente = lireAttente();
   if (!attente.length) {
     // La purge a pu vider la file : on nettoie aussi ce qui est écrit
     // sur le téléphone, au lieu d'y laisser des adresses périmées.
@@ -1350,7 +1361,7 @@ document.addEventListener('visibilitychange', () => {
 // LE TICKET PERD TOUJOURS (27/08/2026, Romain : « fais perdre
 // toujours le ticket à gratter »). C'est le faux départ voulu de la
 // soirée : le ticket dit non, et la partie rebondit aussitôt sur les
-// cinq manches qui suivent. Le vrai résultat, lui, est déjà tiré par
+// manches qui suivent. Le vrai résultat, lui, est déjà tiré par
 // le serveur : c'est la DERNIÈRE manche qui le révèle.
 // Les phrases sont écrites pour relancer, jamais pour clore : un
 // ticket qui dirait « c'est fini » à un joueur qui va peut-être
@@ -1590,10 +1601,10 @@ let jeuActuel = JEU_ROUE;
 let cibleRoue = null;
 
 // ============================================
-// LE PARCOURS EN TROIS MANCHES (25/08/2026)
+// LE PARCOURS DU JOUEUR (parcours réel : MANCHES_DEFAUT)
 // --------------------------------------------
-// Le joueur enchaîne trois jeux : le bandit manchot, la roue, puis
-// les trois cadeaux pareils. Il n'y a toujours qu'UN SEUL lot par
+// Le joueur enchaîne les manches de MANCHES_DEFAUT (aujourd'hui :
+// le bandit manchot puis la roue). Il n'y a toujours qu'UN SEUL lot par
 // joueur et par jour : les manches ne multiplient pas les cadeaux,
 // elles montent la tension autour d'un résultat tiré une seule fois,
 // avant la première manche, selon le taux de gagnants de l'opération.
@@ -1719,7 +1730,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '29aout2026h';
+const VERSION_JEUX = '29aout2026i';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -1834,8 +1845,8 @@ function poserBandeauManche() {
 // quiz). On s'en assure quand même avant de lancer la partie.
 function lancerJeu(secondTour) {
   MANCHES = listeDesManches();
-  // Aucune case « retente » dans cette opération : tout le monde gagne,
-  // de toute façon (voir tirerLot). Faire rater deux manches avant un
+  // Aucun lot perdant configuré dans cette opération : aucun perdant
+  // possible (voir tirerLot). Faire rater deux manches avant un
   // gain certain n'aurait aucun sens, et la roue n'aurait aucune case
   // sur laquelle s'arrêter sans promettre un lot. On n'en joue qu'une.
   if (!LOTS.some(l => l.perdant && l.poids > 0)) MANCHES = MANCHES.slice(0, 1);
@@ -1913,8 +1924,10 @@ function libelleRoue(lot) {
 // tiré AVANT la roue, par le serveur, selon le taux de gagnants de
 // l'opération : la roue ne décide de rien, elle révèle. Le nombre de
 // cases affichées n'a donc aucun effet sur les chances réelles, qui
-// restent celles du tirage (environ 7 joueurs sur 10 repartent avec un
-// lot). L'affichage annonce moins que la réalité, jamais l'inverse :
+// restent celles du tirage : la colonne taux_gagnants de l'opération
+// (25 % par défaut si elle est vide ; le discours commercial
+// « 7 joueurs sur 10 » suppose que la galerie configure un taux à la
+// hauteur). L'affichage annonce moins que la réalité, jamais l'inverse :
 // c'est le sens prudent. Les vraies chances doivent être écrites au
 // règlement, c'est là qu'elles font foi.
 let SEGMENTS = [];
@@ -2778,7 +2791,7 @@ function afficherEcranFerme() {
       texte.innerHTML = 'Le jeu ouvre le <strong>' + echap(dateEnLettres(OPERATION.date_debut)) + '</strong>.<br>Reviens à ce moment-là !';
     } else if (etat === 'apres') {
       titre.textContent = 'L’opération est terminée';
-      texte.textContent = 'Merci à tous les joueurs ! Les bons gagnés restent valables jusqu’à leur date limite.';
+      texte.textContent = 'Merci à tous les joueurs ! Si la date limite de ton bon n’est pas passée, tu peux encore l’utiliser en boutique.';
     }
     // 'pause' : le texte par défaut du HTML convient.
   }
@@ -2960,19 +2973,34 @@ const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 's
 const deuxChiffres = n => String(n).padStart(2, '0');
 
 function dateLisible(d) {
+  // L'heure ne prend jamais de zéro de tête (« 9h05 », pas « 09h05 »).
+  // Les minutes restent sur deux chiffres : cette forme sert l'horloge
+  // de validation, qui lui accole « minXXs ».
   return JOURS[d.getDay()] + ' ' + d.getDate() + ' à ' +
-         deuxChiffres(d.getHours()) + 'h' + deuxChiffres(d.getMinutes());
+         d.getHours() + 'h' + deuxChiffres(d.getMinutes());
+}
+
+// La même date pour une mention calme (« Utilisé le mardi 22 à 14h ») :
+// les minutes ne s'écrivent pas quand elles sont nulles.
+function dateLisibleCourte(d) {
+  return JOURS[d.getDay()] + ' ' + d.getDate() + ' à ' +
+         d.getHours() + 'h' + (d.getMinutes() ? deuxChiffres(d.getMinutes()) : '');
 }
 
 // Validation EN DIRECT : la seconde défile sous les yeux du commerçant.
 // Une capture d'écran est figée, donc elle ne trompe personne.
 function demarrerHorloge() {
   const zone = document.getElementById('valide-horloge');
-  const debut = new Date();
   function battre() {
     // Séparateur cohérent avec les minutes : « 11h10min20 » et non
     // « 11h10:20 », qui mélangeait deux façons d'écrire l'heure.
-    zone.textContent = dateLisible(debut) + 'min' + deuxChiffres(new Date().getSeconds()) + 's';
+    // L'heure affichée est l'heure COURANTE, minutes comprises :
+    // avant, les minutes étaient figées au moment de la validation et
+    // seule la seconde tournait, si bien qu'au bout d'une minute
+    // l'horloge semblait revenir en arrière : le pire effet possible
+    // pour un dispositif anti-capture d'écran.
+    const t = new Date();
+    zone.textContent = dateLisible(t) + 'min' + deuxChiffres(t.getSeconds()) + 's';
   }
   battre();
   clearInterval(horlogeValidation);
@@ -3009,7 +3037,7 @@ function afficherBonUtilise(lot, depuis) {
     clearInterval(horlogeValidation);
     bloc.classList.add('bon-perime');
     document.querySelector('.valide-titre').textContent = 'Bon déjà utilisé';
-    horloge.textContent = 'Le ' + dateLisible(new Date(depuis));
+    horloge.textContent = 'Le ' + dateLisibleCourte(new Date(depuis));
     document.querySelector('.valide-mention').textContent =
       'Ce bon a déjà servi. Rejoue demain pour en gagner un autre.';
   } else {
@@ -3110,8 +3138,11 @@ window.roueAfficherBonRetrouve = function (bon) {
   emoji.classList.remove('hero-photo');
   medaillonLot(emoji, bon.lot);
   document.getElementById('resultat-titre').textContent = 'Ton bon cadeau';
+  // Pas de « te voilà de retour » : cet écran s'ouvre aussi DEPUIS
+  // « Mes bons » dix secondes après le gain (tour n°6, 29/08/2026) ;
+  // la phrase neutre est juste dans les deux cas.
   document.getElementById('resultat-texte').textContent =
-    (bon.prenom ? bon.prenom + ', te' : 'Te') + ' voilà de retour. Ton cadeau t’attend.';
+    (bon.prenom ? bon.prenom + ', ton' : 'Ton') + ' cadeau t’attend. Montre-le au commerçant pour le récupérer.';
 
   const bandeau = document.getElementById('resultat-commercant');
   if (bon.commercant) {
@@ -3322,10 +3353,10 @@ async function afficherPromos() {
       // la position change d'une visite à l'autre. Avec l'ancienne clé,
       // un bon déjà utilisé pouvait réapparaître comme neuf sur une autre
       // carte, et un bon neuf s'afficher comme déjà utilisé.
-      const deja = bonsUtilises()[codePromo(o.enseigne, index)];
+      const deja = bonsUtilises()[codePromo(o)];
       btn.className = 'btn btn-or promo-bon' + (deja ? ' obtenu' : '');
       btn.textContent = deja ? 'Bon déjà utilisé' : 'Obtenir mon bon';
-      btn.addEventListener('click', () => ouvrirBonPromo(o, index));
+      btn.addEventListener('click', () => ouvrirBonPromo(o));
       carte.appendChild(btn);
     } else {
       // Pas de bon à retirer : c'est une offre qui s'applique
@@ -3352,11 +3383,11 @@ let promoEnCours = null;
 // ramener d'où l'on vient, pas toujours au même endroit.
 let retourDuBonPromo = 'promos';
 
-function ouvrirBonPromo(offre, index) {
+function ouvrirBonPromo(offre) {
   // `offre.codeFige` arrive quand on rouvre un bon depuis « Mes bons » :
   // le code doit être celui qui a été donné au joueur, pas un code
   // recalculé depuis une position dans une liste qui a pu bouger.
-  const code = offre.codeFige || codePromo(offre.enseigne, index);
+  const code = offre.codeFige || codePromo(offre);
   promoEnCours = { offre: offre, cle: code, code: code };
   medaillonLot(document.getElementById('bon-promo-medaillon'), offre.titre);
   document.getElementById('bon-promo-medaillon').classList.remove('hero-photo');
@@ -3393,10 +3424,19 @@ function ouvrirBonPromo(offre, index) {
   afficherEcran('ecran-bon-promo');
 }
 
-// Code lisible, stable pour une même offre
-function codePromo(enseigne, index) {
-  const lettres = (enseigne || 'PU').replace(/[^A-Za-zÀ-ÿ]/g, '').toUpperCase().slice(0, 3) || 'PU';
-  return lettres + '-' + String(1000 + index * 137 % 9000);
+// Code lisible, stable pour une même offre. Il est calculé depuis
+// l'IDENTITÉ de l'offre (son id en base, sinon enseigne + titre),
+// jamais depuis sa position dans la liste : la liste est triée selon
+// les goûts du joueur et filtrée par jour, donc la position bouge
+// d'une visite à l'autre. Un code positionnel permettait à un bon
+// déjà utilisé de renaître neuf sous un autre code (corrigé le
+// 29/08/2026, tour n°6).
+function codePromo(offre) {
+  const lettres = ((offre && offre.enseigne) || 'PU').replace(/[^A-Za-zÀ-ÿ]/g, '').toUpperCase().slice(0, 3) || 'PU';
+  const graine = String((offre && offre.id) || ((offre && offre.enseigne) || '') + '|' + ((offre && offre.titre) || ''));
+  let h = 0;
+  for (let i = 0; i < graine.length; i++) h = (h * 31 + graine.charCodeAt(i)) % 9000;
+  return lettres + '-' + String(1000 + h);
 }
 
 function afficherBonPromoUtilise(lot, depuis) {
@@ -3411,15 +3451,16 @@ function afficherBonPromoUtilise(lot, depuis) {
     clearInterval(horlogeValidation);
     bloc.classList.add('bon-perime');
     document.getElementById('bon-promo-valide-titre').textContent = 'Bon déjà utilisé';
-    horloge.textContent = 'Le ' + dateLisible(new Date(depuis));
+    horloge.textContent = 'Le ' + dateLisibleCourte(new Date(depuis));
     document.getElementById('bon-promo-valide-mention').textContent = 'Ce bon a déjà servi.';
   } else {
     bloc.classList.remove('bon-perime');
     document.getElementById('bon-promo-valide-titre').textContent = 'Bon utilisé';
     document.getElementById('bon-promo-valide-mention').textContent = 'Cet écran est la preuve. Le bon ne peut plus servir.';
-    const debut = new Date();
     function battre() {
-      horloge.textContent = dateLisible(debut) + 'min' + deuxChiffres(new Date().getSeconds()) + 's';
+      // Heure courante complète : mêmes raisons que demarrerHorloge().
+      const t = new Date();
+      horloge.textContent = dateLisible(t) + 'min' + deuxChiffres(t.getSeconds()) + 's';
     }
     battre();
     clearInterval(horlogeValidation);
@@ -3508,9 +3549,9 @@ function habillerLesOffres() {
     // Le rayon préféré du joueur se glisse dans la phrase, sans
     // l'allonger : « côté mode », « côté gourmandise ».
     sousTitre.textContent = MOT_DU_RAYON[rayon]
-      ? 'Chaque jeudi, reçois un mail avec les cadeaux, les promos et les nouveautés, côté ' +
-        MOT_DU_RAYON[rayon] + ' en premier. Un seul mail par semaine, promis.'
-      : 'Chaque jeudi, reçois un mail avec les cadeaux, les promos et les nouvelles collections. Un seul mail par semaine, promis.';
+      ? 'Chaque jeudi, reçois un e-mail avec les cadeaux, les promos et les nouveautés, côté ' +
+        MOT_DU_RAYON[rayon] + ' en premier. Un seul e-mail par semaine, promis.'
+      : 'Chaque jeudi, reçois un e-mail avec les cadeaux, les promos et les nouvelles collections. Un seul e-mail par semaine, promis.';
   }
 }
 
@@ -3683,7 +3724,7 @@ function afficherMesBons() {
         titre: bon.lot,
         bon: bon.detail,
         codeFige: bon.code
-      }, null);
+      });
     } else {
       // LE BON DU JEU ROUVRE L'ÉCRAN DE VALIDATION (corrigé le
       // 27/08/2026 : afficherResultat() masque le bloc du code depuis
@@ -3840,8 +3881,16 @@ rafraichirOngletBons();
 // colonne jour « Samedi 12 décembre ». Le mot-clé « aujourdhui »
 // passe toujours : il sert aux contenus valables le jour même.
 function jourCourantLisible() {
-  return new Date().toLocaleDateString('fr-FR',
-    { weekday: 'long', day: 'numeric', month: 'long' });
+  // En heure de La Réunion, comme l'ouverture de l'opération : un
+  // téléphone resté à l'heure de métropole verrait sinon les offres et
+  // les animations de la veille entre minuit et 3 h du matin.
+  try {
+    return new Date().toLocaleDateString('fr-FR',
+      { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Indian/Reunion' });
+  } catch (e) {
+    return new Date(Date.now() + 4 * 3600000).toLocaleDateString('fr-FR',
+      { weekday: 'long', day: 'numeric', month: 'long' });
+  }
 }
 function sansAccents(t) {
   return String(t || '').toLowerCase()
@@ -3881,6 +3930,30 @@ async function afficherProgramme(mode) {
   // l'animation du jour et il faut cliquer pour voir tout le
   // calendrier »).
   const tous = evenements.slice();
+
+  // LES ENTRÉES « aujourdhui » SONT UN SECOURS (tour n°6, 29/08/2026).
+  // Elles font vivre l'écran tant qu'aucune journée DATÉE ne couvre le
+  // jour de la visite (démonstrations avant décembre). Dès que le jour
+  // courant a son vrai programme daté, elles s'effacent : sinon, en
+  // décembre, le joueur voyait chaque animation en double (« La photo
+  // avec le Père Noël » deux fois à 14h) et des horaires d'exemple
+  // mélangés aux vrais. Dans le calendrier du mois, elles ne
+  // s'affichent jamais quand des journées datées existent : un bloc
+  // « Aujourd'hui » d'exemples n'a pas sa place au milieu des vraies
+  // dates.
+  const estMotCleAujourdhui = ev => sansAccents(ev.jour) === 'aujourdhui';
+  const journeeDateeCouverte = tous.some(ev => {
+    const j = sansAccents(ev.jour);
+    return j && j !== 'aujourdhui' && estDuJour(ev.jour);
+  });
+  const aDesJourneesDatees = tous.some(ev => {
+    const j = sansAccents(ev.jour);
+    return j && j !== 'aujourdhui';
+  });
+  if (toutLeMois ? aDesJourneesDatees : journeeDateeCouverte) {
+    evenements = evenements.filter(ev => !estMotCleAujourdhui(ev));
+  }
+
   if (!toutLeMois) evenements = evenements.filter(ev => estDuJour(ev.jour));
 
   if (!evenements.length) {
