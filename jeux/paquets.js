@@ -179,7 +179,7 @@
 
   window.PullUpJeux.paquets = {
     id: 'paquets',
-    nom: 'Les trois paquets',
+    nom: 'Les Trois Paquets',
     mot: 'le paquet',                       // « le paquet a parlé… »
     suite: 'Trois paquets t’attendent.',    // phrase affichée à la fin du ticket à gratter
     styles: STYLES,

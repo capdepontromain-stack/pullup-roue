@@ -372,7 +372,9 @@
       // veut et le numéro se déroule pareil.
       let balancement = 0;
       const horloge = setInterval(() => {
-        if (parti) return;
+        // Auto-nettoyage : le compteur s'arrête si le jeu a quitté la
+        // page (manche suivante) ou si le saut est parti.
+        if (parti || !kicker.isConnected) { clearInterval(horloge); return; }
         balancement++;
         kicker.innerHTML = 'Balancement <strong>' + balancement + '</strong>';
       }, 2600);

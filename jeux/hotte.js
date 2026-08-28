@@ -327,14 +327,18 @@
       hotte.style.transform = 'translateX(' + position + 'px)';
 
       // --- Le doigt ------------------------------------------
-      function suivre(x) {
+      function suivre(x, peutDemarrer) {
         const boite = scene.getBoundingClientRect();
         cible = Math.max(BORD, Math.min(boite.width - BORD, x - boite.left));
-        if (!commence) demarrer();
+        // Seul un vrai toucher (ou un clic) lance la partie : le simple
+        // passage de la souris sur la scène, en démonstration sur un
+        // ordinateur, faisait partir le jeu sans intention.
+        if (!commence && peutDemarrer) demarrer();
       }
       function surPointeur(e) {
-        if (e.touches && e.touches[0]) suivre(e.touches[0].clientX);
-        else if (typeof e.clientX === 'number') suivre(e.clientX);
+        const demarre = e.type === 'pointerdown' || e.type === 'touchstart' || commence;
+        if (e.touches && e.touches[0]) suivre(e.touches[0].clientX, demarre);
+        else if (typeof e.clientX === 'number') suivre(e.clientX, demarre);
       }
       scene.addEventListener('pointerdown', surPointeur);
       scene.addEventListener('pointermove', surPointeur);
@@ -380,7 +384,7 @@
       function marquer(rang, reussi) {
         const puces = jauge.querySelectorAll('i');
         if (puces[rang]) puces[rang].classList.add(reussi ? 'pleine' : 'ratee');
-        jauge.setAttribute('aria-label', recus + ' cadeau' + (recus > 1 ? 'x' : '') + ' reçus');
+        jauge.setAttribute('aria-label', recus + ' cadeau' + (recus > 1 ? 'x reçus' : ' reçu'));
       }
 
       // --- La boucle d'animation -----------------------------
@@ -492,9 +496,12 @@
       }
 
       // La largeur de la scène peut changer (rotation du téléphone).
-      window.addEventListener('resize', () => {
+      const surResize = () => {
+        // Auto-nettoyage : la scène a quitté la page, l'écouteur aussi.
+        if (!scene.isConnected) { window.removeEventListener('resize', surResize); return; }
         largeur = scene.clientWidth || largeur;
-      });
+      };
+      window.addEventListener('resize', surResize);
 
       ecrire('Quatre cadeaux vont tomber.', 'Pose ton doigt sur l’écran.');
     }

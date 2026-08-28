@@ -2049,7 +2049,12 @@ h1 {
 .manche-mot {
   font-size: var(--t-etiquette); font-weight: 600;
   letter-spacing: 2.6px; text-transform: uppercase; color: var(--or);
+  /* « Manche 1 sur 15 » ne se casse jamais en deux lignes : en
+     vitrine, les quinze points prenaient toute la place et le texte
+     pliait. Les points, eux, peuvent passer sur plusieurs rangs. */
+  white-space: nowrap;
 }
+.manche-points { flex-wrap: wrap; justify-content: flex-end; row-gap: 4px; }
 .manche-mot strong {
   font-family: var(--serif); font-weight: 800;
   font-size: 19px; letter-spacing: 0; color: var(--or-blanc);

@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>La Hotte des Commerçants : tente ta chance !</title>
   <meta name="description" content="Réponds à quelques questions, joue, et tente de gagner un cadeau offert par les commerçants de la galerie !">
+  <!-- L'IDENTITÉ DE PARTAGE (29/08/2026) : l'icône d'onglet, l'icône
+       « ajouter à l'écran d'accueil », la couleur de la barre du
+       navigateur, et la carte d'aperçu quand le lien circule sur
+       WhatsApp ou Messenger (la façade de la galerie en grand). Les
+       adresses og: sont absolues : les messageries l'exigent. -->
+  <link rel="icon" href="img/hotte-medaillon.svg" type="image/svg+xml">
+  <link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#E4373F">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="La Hotte des Commerçants : tente ta chance !">
+  <meta property="og:description" content="Réponds à quelques questions, joue, et repars peut-être avec un cadeau offert par les commerçants de la galerie.">
+  <meta property="og:image" content="https://capdepontromain-stack.github.io/pullup-roue/img/partage-og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://capdepontromain-stack.github.io/pullup-roue/">
+  <meta property="og:locale" content="fr_FR">
+  <meta name="twitter:card" content="summary_large_image">
   <!-- SÉCURITÉ (26/08/2026) : la page ne s'autorise QUE ses propres
        fichiers et la base Supabase. Si un jour un texte venu de la base
        contenait du code (ou si quelqu'un parvenait à en glisser un), le
@@ -31,22 +50,22 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=29aout2026f">
+  <link rel="stylesheet" href="style.css?v=29aout2026g">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=29aout2026f" defer></script>
-  <script src="icones-quiz.js?v=29aout2026f" defer></script>
-  <script src="contenus-demo.js?v=29aout2026f" defer></script>
+  <script src="icones.js?v=29aout2026g" defer></script>
+  <script src="icones-quiz.js?v=29aout2026g" defer></script>
+  <script src="contenus-demo.js?v=29aout2026g" defer></script>
   <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
        Il tient la liste des bons du joueur et sait la dessiner. Chargé
        avant app.js, qui l'appelle à deux endroits : quand un lot est
        gagné, et quand un bon de promotion est pris. Voir bons.js. -->
-  <script src="bons.js?v=29aout2026f" defer></script>
-  <script src="app.js?v=29aout2026f" defer></script>
+  <script src="bons.js?v=29aout2026g" defer></script>
+  <script src="app.js?v=29aout2026g" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -61,7 +80,7 @@
   <!-- Le pré-thème : synchrone et minuscule, il habille la page du bon
        thème avant la première image (voir pretheme.js). Il doit rester
        le premier élément de body. -->
-  <script src="pretheme.js?v=29aout2026f"></script>
+  <script src="pretheme.js?v=29aout2026g"></script>
 
   <div class="app">
 
@@ -159,7 +178,7 @@
       </div>
       <div class="quiz-zone">
         <h2>Tes coordonnées</h2>
-        <p class="question-soustitre">Ton mail sert à valider ta participation. Une seule partie par jour.</p>
+        <p class="question-soustitre">Ton e-mail sert à valider ta participation. Une seule partie par jour.</p>
         <label class="champ">
           <span>Ton adresse e-mail *</span>
           <input type="email" id="input-email" placeholder="ton.mail@exemple.com" autocomplete="email" inputmode="email">
@@ -184,7 +203,7 @@
         <!-- Ce bouton ouvre le ticket à gratter, et le jeu du jour n'est
              pas toujours la roue : « Je tente ma chance » reste vrai. -->
         <button class="btn btn-or btn-grand" id="btn-valider">Je tente ma chance</button>
-        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Juste après, on te demandera si tu veux aussi recevoir les bons plans des commerçants&nbsp;: ce choix ne changera rien à ta partie ni à ton lot, et tu pourras en changer quand tu veux. Données conservées un an après l&rsquo;opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">En savoir plus sur tes données</a></p>
+        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Juste après, on te demandera si tu veux aussi recevoir les bons plans des commerçants&nbsp;: ce choix ne changera rien à ta partie ni à ton lot, et tu pourras en changer quand tu veux. Données conservées un an après l'opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">En savoir plus sur tes données</a></p>
       </div>
     </section>
 
@@ -354,7 +373,7 @@
             <span class="carte-texte">
               <span class="carte-etiquette">À retirer chez le commerçant</span>
               <span class="carte-titre" id="carte-mesbons-titre">Obtenir mon cadeau</span>
-              <span class="carte-detail">Présente ton bon au commerçant, c’est lui qui le valide.</span>
+              <span class="carte-detail">Présente ton bon au commerçant, c'est lui qui le valide.</span>
               <span class="carte-action">
                 <span class="carte-action-mot">Aller le chercher</span>
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
@@ -427,7 +446,7 @@
         <div class="onglets-zone" data-vue="mesbons"></div>
         <div class="bandeau-vue bandeau-mesbons">
           <h2>Mes bons</h2>
-          <p class="question-soustitre" id="mesbons-soustitre">Présente ton code au commerçant. Un bon ne sert qu’une fois.</p>
+          <p class="question-soustitre" id="mesbons-soustitre">Présente ton code au commerçant. Un bon ne sert qu'une fois.</p>
         </div>
         <div id="mes-bons-liste" class="mes-bons-liste"></div>
         <button class="btn btn-discret" id="btn-mes-bons-retour">Retour</button>
@@ -547,8 +566,14 @@
             <circle cx="50" cy="50" r="32"/><path d="M50 30 v22 l15 9"/>
           </svg>
         </div>
-        <h1>À bientôt&nbsp;!</h1>
-        <p class="sous-titre">Cette opération n'est pas ouverte en ce moment.<br>Reviens vite tenter ta chance&nbsp;!</p>
+        <h1 id="ferme-titre">À bientôt&nbsp;!</h1>
+        <!-- Le texte est adapté par app.js : pas encore commencé,
+             terminé, ou simplement fermé pour l'instant. -->
+        <p class="sous-titre" id="ferme-texte">Cette opération n'est pas ouverte en ce moment.<br>Reviens vite tenter ta chance&nbsp;!</p>
+        <!-- Le gagnant garde l'accès à son bon même une fois le jeu
+             fermé : le règlement le promet. Affiché par app.js s'il
+             reste un bon valable dans le téléphone. -->
+        <button class="btn btn-discret btn-grand" id="btn-ferme-bons" hidden>Revoir mes bons</button>
       </div>
     </section>
 
@@ -563,7 +588,7 @@
           </svg>
         </div>
         <h1>Pas si vite&nbsp;!</h1>
-        <p class="sous-titre">Tu as déjà tenté ta chance aujourd'hui avec cette adresse mail.<br><strong>Reviens demain pour rejouer&nbsp;!</strong></p>
+        <p class="sous-titre">Tu as déjà tenté ta chance aujourd'hui avec cette adresse e-mail.<br><strong>Reviens demain pour rejouer&nbsp;!</strong></p>
         <!-- Visible uniquement sur la version d'essai (voir PARTIES_ILLIMITEES) -->
         <div id="deja-joue-essai" hidden>
           <p class="sous-titre">Mais comme tu es sur la <strong>version d'essai</strong>, tu peux rejouer autant de fois que tu veux. Dans la vraie opération, c'est une partie par personne et par jour.</p>

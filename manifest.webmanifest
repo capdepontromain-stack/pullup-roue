@@ -1,0 +1,14 @@
+{
+  "name": "La Hotte des Commerçants",
+  "short_name": "La Hotte",
+  "description": "Réponds à quelques questions, joue, et repars peut-être avec un cadeau offert par les commerçants de la galerie.",
+  "start_url": "./?e=cap-sacre-coeur",
+  "display": "standalone",
+  "background_color": "#F7F8FA",
+  "theme_color": "#E4373F",
+  "lang": "fr",
+  "icons": [
+    { "src": "img/icone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "img/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

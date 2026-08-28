@@ -3,24 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'">
   <title>Règlement du jeu</title>
   <meta name="robots" content="noindex">
   <style>
+    /* Les polices du jeu, pour que le règlement ne fasse pas pièce
+       rapportée quand on arrive depuis l'application. */
+    @font-face { font-family: 'Jost'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/jost-400.woff2') format('woff2'); }
+    @font-face { font-family: 'Jost'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/jost-400.woff2') format('woff2'); }
+    @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/playfairdisplay-600.woff2') format('woff2'); }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: 'Jost', Arial, Helvetica, sans-serif;
       background: #F1ECE2;
       color: #1C1A17;
       line-height: 1.6;
       padding: 24px 20px 60px;
+      /* L'adresse du site est un mot de 52 caractères : sans cette
+         règle, elle débordait de l'écran d'un téléphone. */
+      overflow-wrap: anywhere;
     }
     .page { max-width: 640px; margin: 0 auto; }
     .entete { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
     .pastille { width: 12px; height: 12px; border-radius: 50%; background: #C9962E; }
-    .marque { font-size: 12px; letter-spacing: 3px; color: #C9962E; font-weight: bold; }
-    h1 { font-size: 26px; margin-bottom: 6px; }
+    .marque { font-size: 12px; letter-spacing: 3px; color: #8F6A1E; font-weight: bold; }
+    h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 26px; margin-bottom: 6px; }
     .sous-titre { color: #5A554B; margin-bottom: 28px; }
     h2 {
+      font-family: 'Playfair Display', Georgia, serif;
       font-size: 17px; margin: 28px 0 10px;
       padding-bottom: 6px; border-bottom: 2px solid #C9962E;
     }
@@ -63,10 +73,11 @@
         un joueur sur quatre lisait une promesse sans effet. Le billet
         n'annonce plus qu'une place et le programme de la partie.
         Ne jamais réintroduire d'avantage sans que le SERVEUR le calcule.
-      - Article 4 : la liste des jeux ne cite plus « Suis le Cadeau »,
-        « Le Juste Prix » ni le jeu de mémoire, qui ne sont atteignables par
-        aucun joueur. Elle cite les cinq jeux réellement disponibles, et elle
-        décrit le parcours en plusieurs manches enchaînées dans la même partie.
+      - Article 4 (mis à jour le 29/08/2026) : le parcours réel joue
+        bandit manchot + roue (MANCHES_DEFAUT dans app.js) ; les autres jeux
+        listés restent activables par la colonne « jeu » de la base, la
+        formule « propose plusieurs jeux… la composition retenue peut
+        varier » couvre donc la réalité. À faire confirmer par le juriste.
       - Avant toute modification de cette liste, ouvrir app.js et lire la
         table FICHIERS_JEUX : elle est la seule source de vérité.
 
@@ -103,7 +114,7 @@
     <p class="sous-titre">Jeu gratuit sans obligation d'achat, organisé par Pull Up Événements</p>
 
     <h2>Article 1 : Organisateur</h2>
-    <p>Le jeu « La Hotte des Commerçants » (ci-après « le Jeu ») est organisé par <strong>Pull Up Événements</strong>, société par actions simplifiée, dont le siège social est situé 6 Impasse des Sœurs Brontë, 97430 Le Tampon, La Réunion (ci-après « l'Organisateur »), immatriculée au RCS de Saint-Denis de la Réunion sous le numéro 918 044 611 (SIRET 918 044 611 00013, TVA intracommunautaire FR41918044611), en partenariat avec les commerçants participants du centre commercial Cap Sacré-Cœur (Le Port, La Réunion).</p>
+    <p>Le jeu « La Hotte des Commerçants » (ci-après « le Jeu ») est organisé par <strong>Pull Up Événements</strong>, société par actions simplifiée, dont le siège social est situé 6 Impasse des Sœurs Brontë, 97430 Le Tampon, La Réunion (ci-après « l'Organisateur »), immatriculée au RCS de Saint-Denis de La Réunion sous le numéro 918 044 611 (SIRET 918 044 611 00013, TVA intracommunautaire FR41918044611), en partenariat avec les commerçants participants du centre commercial Cap Sacré-Cœur (Le Port, La Réunion).</p>
     <p>Toute question relative au Jeu peut être adressée à l'Organisateur par e-mail à <strong>romain@pullup.re</strong>.</p>
 
     <h2>Article 2 : Durée et lieu du Jeu</h2>
@@ -180,18 +191,6 @@
 
     <a class="retour" href="index.html" id="lien-retour">← Retour au jeu</a>
   </div>
-  <script>
-    // Le bouton « Retour au jeu » ramène vers la MÊME opération que
-    // celle d'où le joueur vient (le lien d'ouverture porte ?e=...).
-    // Sans cela, il retombait sur l'opération par défaut, c'est-à-dire
-    // un habillage qui n'est pas celui de sa galerie.
-    (function () {
-      var slug = new URLSearchParams(location.search).get('e');
-      if (slug) {
-        document.getElementById('lien-retour').href =
-          'index.html?e=' + encodeURIComponent(slug);
-      }
-    })();
-  </script>
+  <script src="reglement.js" defer></script>
 </body>
 </html>

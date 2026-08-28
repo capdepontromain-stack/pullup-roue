@@ -480,9 +480,11 @@
         }, ctx.sobre ? 60 : duree + 60);
       });
 
-      window.addEventListener('resize', () => {
+      const surResize = () => {
+        if (!jauge.isConnected) { window.removeEventListener('resize', surResize); return; }
         largeur = jauge.clientWidth || largeur;
-      });
+      };
+      window.addEventListener('resize', surResize);
 
       ecrire('Un canon, un filet, tout au fond.', 'Arrête la poudre quand tu veux.');
     }

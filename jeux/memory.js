@@ -177,7 +177,7 @@
 
   window.PullUpJeux.memory = {
     id: 'memory',
-    nom: 'Le memory de Noël',
+    nom: 'Le Memory de Noël',
     mot: 'la hotte',                       // « la hotte a parlé… »
     suite: 'Les cartes sont mélangées.',   // phrase affichée à la fin du ticket à gratter
     styles: STYLES,

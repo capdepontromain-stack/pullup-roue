@@ -371,12 +371,30 @@ function creerFlocons() {
   }
 }
 
+// La date du jour À LA RÉUNION (UTC+4). La comparaison se faisait en
+// UTC : le jeu vivait avec 4 heures de retard (ouverture à 4 h du
+// matin le premier jour, fermeture à 4 h du matin le lendemain de la
+// fin). fr-CA donne le format AAAA-MM-JJ, comparable en chaînes.
+function dateDuJourReunion() {
+  try {
+    return new Intl.DateTimeFormat('fr-CA', { timeZone: 'Indian/Reunion' }).format(new Date());
+  } catch (e) {
+    return new Date().toISOString().slice(0, 10);
+  }
+}
+
+// 'ouverte' | 'avant' (pas encore commencée) | 'apres' (terminée) |
+// 'pause' (désactivée à la main). Trois fermetures, trois messages.
+function etatOperation() {
+  const aujourdhui = dateDuJourReunion();
+  if (OPERATION.date_debut && aujourdhui < OPERATION.date_debut) return 'avant';
+  if (OPERATION.date_fin && aujourdhui > OPERATION.date_fin) return 'apres';
+  if (!OPERATION.actif) return 'pause';
+  return 'ouverte';
+}
+
 function operationOuverte() {
-  if (!OPERATION.actif) return false;
-  const aujourdhui = new Date().toISOString().slice(0, 10);
-  if (OPERATION.date_debut && aujourdhui < OPERATION.date_debut) return false;
-  if (OPERATION.date_fin && aujourdhui > OPERATION.date_fin) return false;
-  return true;
+  return etatOperation() === 'ouverte';
 }
 
 // --------------------------------------------
@@ -1546,7 +1564,7 @@ document.getElementById('btn-grattage-suite').addEventListener('click', () => {
 // on l'enveloppe simplement dans la même interface que les autres.
 const JEU_ROUE = {
   id: 'roue',
-  nom: 'La roue de la fortune',
+  nom: 'La Roue de la Fortune',
   mot: 'la roue',
   suite: 'C’est parti pour la roue.',
   preparer(ctx) {
@@ -2182,12 +2200,16 @@ const MESSAGES_PERDU = [
 
 function messageAleatoire(liste) {
   const m = liste[Math.floor(Math.random() * liste.length)];
-  const prenom = echap(reponses.prenom || 'toi');
+  const prenom = echap(reponses.prenom || '');
   const lot = lotGagne ? echap(lotGagne.nom) : '';
   const jeu = (jeuActuel && jeuActuel.mot) || 'la chance';
   const Jeu = jeu.charAt(0).toUpperCase() + jeu.slice(1);
-  const remplacer = t => t
-    .split('{prenom}').join(prenom)
+  // Sans prénom (vitrine, démonstration), la virgule et le prénom
+  // s'effacent ensemble : « Bravo, tu as gagné. » et non « Bravo toi ».
+  const remplacer = t => (prenom
+    ? t.split('{prenom}').join(prenom)
+    : t.split(', {prenom},').join(',').split(' {prenom},').join(',')
+       .split(', {prenom}').join('').split('{prenom}, ').join('').split('{prenom}').join(''))
     .split('{lot}').join(lot)
     .split('{Jeu}').join(Jeu)
     .split('{jeu}').join(jeu);
@@ -2578,7 +2600,7 @@ async function validerCoordonnees() {
     return;
   }
   if (!reglement) {
-    erreur.textContent = 'Il faut cocher la première case pour participer.';
+    erreur.textContent = 'Il faut cocher la case du règlement pour participer.';
     reveler(erreur);
     return;
   }
@@ -2596,6 +2618,11 @@ async function validerCoordonnees() {
 
   reponses.email = email;
   reponses.telephone = tel || null;
+
+  // L'onglet peut être resté ouvert au-delà de la fermeture (minuit du
+  // dernier jour) : on revérifie ici, sinon la participation partirait
+  // quand même en base.
+  if (!operationOuverte()) { afficherEcranFerme(); return; }
 
   // Le code de la partie précédente (version d'essai) ne doit pas
   // traîner : la réponse aux bons plans partira avec la NOUVELLE
@@ -2734,7 +2761,39 @@ async function chargerOperation() {
   }
   appliquerOperation();
   creerFlocons();
-  if (!operationOuverte()) afficherEcran('ecran-ferme');
+  if (!operationOuverte()) afficherEcranFerme();
+}
+
+// L'écran fermé dit la vérité de chaque situation : un jeu pas encore
+// commencé donne rendez-vous, un jeu terminé remercie (sans promettre
+// de revenir), une fermeture du soir invite à revenir. Et le gagnant
+// garde toujours le chemin vers son bon : le règlement le promet.
+function afficherEcranFerme() {
+  const etat = etatOperation();
+  const titre = document.getElementById('ferme-titre');
+  const texte = document.getElementById('ferme-texte');
+  if (titre && texte) {
+    if (etat === 'avant') {
+      titre.textContent = 'Encore un peu de patience !';
+      texte.innerHTML = 'Le jeu ouvre le <strong>' + echap(dateEnLettres(OPERATION.date_debut)) + '</strong>.<br>Reviens à ce moment-là !';
+    } else if (etat === 'apres') {
+      titre.textContent = 'L’opération est terminée';
+      texte.textContent = 'Merci à tous les joueurs ! Les bons gagnés restent valables jusqu’à leur date limite.';
+    }
+    // 'pause' : le texte par défaut du HTML convient.
+  }
+  const versBons = document.getElementById('btn-ferme-bons');
+  if (versBons) versBons.hidden = !(window.PullUpBons && window.PullUpBons.combienValables() > 0);
+  afficherEcran('ecran-ferme');
+}
+
+// « 2026-12-09 » -> « 9 décembre » (l'année n'apporte rien au joueur).
+function dateEnLettres(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  if (isNaN(d)) return iso;
+  const MOIS_LETTRES = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  return d.getDate() + ' ' + MOIS_LETTRES[d.getMonth()];
 }
 
 // FILET : AUCUNE VRAIE ENSEIGNE À L'ÉCRAN TANT QU'ELLE N'A PAS SIGNÉ
@@ -3731,6 +3790,10 @@ document.getElementById('carte-mesbons').addEventListener('click', function () {
 // Depuis l'écran « Pas si vite ! » : rouvrir le portefeuille de bons.
 const btnDejaJoueBons = document.getElementById('btn-deja-joue-bons');
 if (btnDejaJoueBons) btnDejaJoueBons.addEventListener('click', function () { afficherMesBons(); });
+// Depuis l'écran fermé : le bon d'un gagnant reste accessible, même
+// une fois l'opération finie (promesse du règlement).
+const btnFermeBons = document.getElementById('btn-ferme-bons');
+if (btnFermeBons) btnFermeBons.addEventListener('click', function () { afficherMesBons(); });
 document.getElementById('btn-mes-bons-retour').addEventListener('click', function () { afficherDecouverte(); });
 document.getElementById('carte-promos').addEventListener('click', function () { afficherPromos(); });
 // V2 : la carte des nouveautés n'existe plus dans la page ; on ne

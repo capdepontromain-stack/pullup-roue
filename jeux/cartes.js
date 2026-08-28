@@ -414,7 +414,7 @@
             // Manche non décisive : on ne parle jamais du lot, seulement
             // de ce qu'il reste à jouer.
             const restantes = (ctx.manches || 1) - (ctx.manche || 1);
-            ecrire('La troisième n’est pas tombée.',
+            ecrire('Le troisième n’est pas sorti.',
                    restantes > 0
                      ? 'Le troisième était là. Il reste ' +
                        (restantes === 1 ? 'une manche.' : restantes + ' manches.')
