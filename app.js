@@ -411,31 +411,23 @@ const COULEURS_SEGMENTS = ['#C9962E', '#F1ECE2', '#5A554B', '#E3B85A', '#8A8378'
 //
 // TABLE DE CORRESPONDANCE (question à l'écran -> colonne(s) en base)
 // ------------------------------------------------------------------
-// 01  « Ton prénom ? »                        -> prenom
-// 02  « Tu es… »                              -> genre
-// 03  « Ton âge ? »                           -> age_tranche
+// Mise à jour du 29/08/2026 : le quiz compte QUATRE écrans depuis la
+// V2 (« condenser les questions du début »).
+// 01  « On t'appelle comment ? » (mixte)      -> prenom + genre
+// 02  « Ton âge ? »                           -> age_tranche
 //        ATTENTION : -18 force le consentement aux offres à « non ».
 //        C'est la protection des mineurs, elle ne bouge jamais.
-// 04  « Tes amis disent que tu es plutôt… »   -> style, frequence, univers
-//        (plusieurs réponses) Chaque option porte un rayon :
-//        élégant -> mode, coquet -> beauté, sportif -> sport,
-//        gourmand -> gourmandise, curieux -> high-tech,
-//        généreux -> bijoux, cocon -> maison.
-//        frequence reçoit le tempérament de la PREMIÈRE réponse cochée
-//        dans l'ordre de la liste (une seule valeur, c'est un
-//        tempérament, pas une liste).
-// 05  « Ton samedi idéal ? »                  -> univers ET enfants
-//        (plusieurs réponses) LA question de ciblage : ses valeurs sont
-//        les huit rayons des boutiques (mode, beaute, bijoux, sport,
-//        hightech, enfants, gourmandise, maison). La réponse brute est
-//        gardée dans « samedi », univers est recalculé par-dessus.
-// 06  « Tu cherches un cadeau pour qui ? »    -> univers ET enfants
-//        (plusieurs réponses) La question qui relie le jeu aux vitrines :
-//        amoureux -> bijoux + beauté, enfants -> rayon enfants,
-//        parents -> maison, amis -> gourmandise, moi -> mode.
-//        « Mes enfants » remplit aussi la colonne enfants.
-//        Sa colonne à elle n'existe pas en base : c'est voulu, tout
-//        atterrit dans univers et enfants, rien à modifier dans Supabase.
+// 03  « On t'offre 100 € à dépenser » (multi) -> envie1 + univers
+//        LA question de ciblage : chaque réponse porte ses rayons
+//        (mode, beaute, bijoux+hightech, gourmandise), consolidés
+//        dans univers (voir consoliderCiblage).
+// 04  « Ton samedi idéal ? » (multi)          -> samedi + univers,
+//        enfants (« En famille » remplit aussi frequence=famille).
+// Les colonnes style et frequence existent toujours en base mais ne
+// sont plus alimentées que partiellement : les questions qui les
+// remplissaient (« Tes amis disent que tu es plutôt… », « Un cadeau
+// pour qui ? ») ont été retirées avec la V2. Rien ne casse : elles
+// partent vides, le schéma n'a pas bougé.
 const QUESTIONS = [
   {
     // V2 (28/08/2026, retour Cap Sacré-Cœur : « condenser les
@@ -648,7 +640,8 @@ function afficherQuestion() {
   // Un décompte qui rassure au lieu d'informer : le joueur voit la fin
   // arriver. « 3 / 5 » ne disait rien à personne.
   document.getElementById('quiz-compteur').innerHTML = compteRebours();
-  document.getElementById('btn-question-retour').disabled = questionActuelle === 0;
+  // Toujours actif : sur la première question, il ramène à l'accueil.
+  document.getElementById('btn-question-retour').disabled = false;
   document.getElementById('question-titre').textContent = q.titre;
   // Numéro de chapitre affiché en très grand à côté de la question (01, 02...)
   document.getElementById('question-titre')
@@ -738,12 +731,16 @@ function afficherQuestion() {
       if (multiple && choisies.has(opt.v)) btn.classList.add('choisie');
       // Retour en arrière : on remontre ce qui avait été répondu
       if (!multiple && reponses[q.id] === opt.v) btn.classList.add('choisie');
+      // Les lecteurs d'écran doivent entendre ce qui est coché : la
+      // classe « choisie » est purement visuelle.
+      btn.setAttribute('aria-pressed', btn.classList.contains('choisie') ? 'true' : 'false');
 
       btn.addEventListener('click', () => {
         if (multiple) {
           // On coche ou décoche, sans quitter la question
           if (choisies.has(opt.v)) { choisies.delete(opt.v); btn.classList.remove('choisie'); }
           else { choisies.add(opt.v); btn.classList.add('choisie'); }
+          btn.setAttribute('aria-pressed', btn.classList.contains('choisie') ? 'true' : 'false');
           reponses[q.id] = Array.from(choisies).join(',');
           majBoutonMulti(choisies.size);
         } else {
@@ -784,7 +781,9 @@ function majBoutonMulti(nombre) {
 // Revenir sur la question précédente : personne ne doit rester coincé
 // sur une réponse cochée par erreur.
 function questionPrecedente() {
-  if (questionActuelle === 0) return;
+  // Depuis la première question, le retour ramène à l'accueil : rester
+  // coincé au seuil du quiz n'a jamais aidé personne.
+  if (questionActuelle === 0) { afficherEcran('ecran-accueil', 'arriere'); return; }
   questionActuelle--;
   document.getElementById('ecran-quiz').classList.add('recule');
   afficherQuestion();
@@ -811,12 +810,9 @@ function questionSuivante() {
   } else {
     document.getElementById('barre-progression').style.width = '100%';
     adapterCoordonneesMineur();
-    // V2 (28/08/2026, retour Cap Sacré-Cœur : « trop de choses avant
-    // d'arriver au jeu »). La question des bons plans ne coupe plus la
-    // route : le quiz enchaîne droit sur les coordonnées, puis le
-    // ticket. Elle se pose maintenant APRÈS le résultat, au moment où
-    // le joueur découvre ses bons : c'est là qu'elle a le plus de
-    // poids, et la relance « Es-tu sûr ? » y vit toujours.
+    // Le quiz enchaîne droit sur les coordonnées. La question des
+    // bons plans se pose juste après (29/08/2026, décision de Romain),
+    // voir validerCoordonnees().
     afficherEcran('ecran-coordonnees');
   }
 }
@@ -842,6 +838,11 @@ function adapterCoordonneesMineur() {
 
 document.getElementById('btn-texte-suivant').addEventListener('click', () => {
   const q = QUESTIONS[questionActuelle];
+  // Ce bouton vit dans la page en permanence : s'il est déclenché
+  // pendant une question d'un autre type (double événement, Entrée
+  // fantôme), il écrirait le prénom dans la colonne de la question en
+  // cours. Sur « Ton âge ? », cela casserait la détection des mineurs.
+  if (q.type !== 'texte' && q.type !== 'mixte') return;
   const val = document.getElementById('question-texte-input').value.trim();
   if (!val) return;
   // Écran mixte : le second champ (le genre) doit aussi être choisi.
@@ -860,6 +861,9 @@ document.getElementById('btn-texte-suivant').addEventListener('click', () => {
 });
 document.getElementById('btn-multi-suivant').addEventListener('click', () => {
   const q = QUESTIONS[questionActuelle];
+  // Même garde que le bouton texte : il ne répond qu'aux questions à
+  // choix multiples, jamais à une autre question du parcours.
+  if (q.type !== 'multi') return;
   if (!reponses[q.id]) return;
   // Une réponse cochée peut remplir une deuxième colonne (le tempérament
   // derrière « tes amis disent que tu es plutôt… ») : c'est la première
@@ -2257,19 +2261,12 @@ function afficherResultat() {
   // Avec un taux de gagnants à 25 %, c'est l'écran que voient trois
   // joueurs sur quatre : il porte à lui seul l'image de l'opération
   // en galerie, il n'a pas le droit d'être une porte fermée.
-  const consolation = null;   // le bloc consolation a été retiré (27/08/2026)
-  const boutonGalerie = document.getElementById('btn-voir-promos');
-
   if (lotGagne.perdant) {
     const msg = messageAleatoire(MESSAGES_PERDU);
     emoji.innerHTML = medaillonIcone(ICONES.etoile);
     titre.innerHTML = msg.titre;
     texte.innerHTML = msg.texte;
     codeBloc.hidden = true;
-    if (consolation) consolation.hidden = false;
-    // Le bouton doré ne dit plus « découvrir », mot d'accueil : il dit
-    // ce que le joueur va vraiment y trouver, tout de suite.
-    if (boutonGalerie) boutonGalerie.textContent = 'Voir les promos du jour';
     // LE PERDANT REPART AVEC QUELQUE CHOSE (29/08/2026, Romain :
     // « il faut inciter à cliquer, du genre : profite de bons cadeaux
     // offerts par la galerie »). La promesse est exacte : les bons de
@@ -2284,8 +2281,6 @@ function afficherResultat() {
     mention.hidden = false;
     vibrer(120);
   } else {
-    if (consolation) consolation.hidden = true;
-    if (boutonGalerie) boutonGalerie.textContent = 'Découvrir la galerie';
     const suite = document.getElementById('btn-resultat-continuer');
     if (suite) suite.textContent = 'Obtenir mon cadeau';
     const msg = messageAleatoire(MESSAGES_GAGNE);
@@ -3063,10 +3058,13 @@ window.roueAfficherBonRetrouve = function (bon) {
   document.getElementById('confirme-utilisation').hidden = true;
   document.getElementById('btn-utiliser').disabled = false;
   document.getElementById('btn-rejouer-bonus').hidden = true;
-  // Le joueur revient sur un bon gagné : le bloc de non-gain n'a rien
-  // à faire là.
-  const consolationRetour = document.getElementById('resultat-consolation');
-  if (consolationRetour) consolationRetour.hidden = true;
+  // Le joueur revient sur un bon déjà gagné : les boutons du résultat
+  // reprennent des libellés neutres (sinon ils gardent « Obtenir mon
+  // cadeau », qui rebouclerait sur l'écran d'où il vient).
+  const continuerRetour = document.getElementById('btn-resultat-continuer');
+  if (continuerRetour) continuerRetour.textContent = 'Continuer';
+  const plusTardRetour = document.getElementById('btn-resultat-plus-tard');
+  if (plusTardRetour) plusTardRetour.hidden = true;
   // La mention est masquée sur l'écran d'un perdant : on la rouvre ici,
   // sinon un joueur qui revient sur son bon ne lirait plus la règle.
   document.getElementById('resultat-mention').hidden = false;
@@ -3120,7 +3118,9 @@ document.getElementById('btn-rejouer-bonus').addEventListener('click', async (e)
   lancerJeu(true);
 });
 
-document.getElementById('btn-voir-promos').addEventListener('click', proposerLesOffres);
+// (Les boutons btn-voir-promos / btn-voir-programme / btn-retour-accueil
+// de l'écran de résultat ont été retirés le 29/08/2026 : ils étaient
+// masqués et inatteignables, l'espace découverte porte les siens.)
 
 // « Continuer » : le seul bouton de l'écran de résultat. C'est lui qui
 // ouvre la galerie, les promos et le programme, une fois que le joueur
@@ -3130,10 +3130,12 @@ document.getElementById('btn-voir-promos').addEventListener('click', proposerLes
 // gagnés). Le gagnant part donc droit sur ses bons ; celui qui n'a
 // rien gagné continue vers la galerie, comme avant.
 // La question des bons plans a déjà été posée AVANT les jeux
-// (29/08/2026) : après le résultat, on file droit au but.
+// (29/08/2026) : après le résultat, on file droit au but. Le perdant
+// part directement sur les offres du jour : son bouton promet des
+// bons de réduction, on les lui montre sans écran intermédiaire.
 document.getElementById('btn-resultat-continuer').addEventListener('click', () => {
   const gagnant = lotGagne && !lotGagne.perdant;
-  if (gagnant) afficherMesBons(); else afficherDecouverte();
+  if (gagnant) afficherMesBons(); else afficherPromos();
 });
 // « Je dépenserai mon cadeau plus tard » : le gagnant part vers la
 // galerie, son bon reste dans la poche et la carte « Obtenir mon
@@ -3143,7 +3145,6 @@ if (btnPlusTard) {
   btnPlusTard.addEventListener('click', () => afficherDecouverte());
 }
 document.getElementById('btn-promos-retour').addEventListener('click', () => afficherDecouverte());
-document.getElementById('btn-retour-accueil').addEventListener('click', () => afficherEcran('ecran-accueil', 'arriere'));
 
 // Offres du moment : celles de l'opération, filtrées sur le profil du joueur
 // Le contenu qui arrive est dessiné en creux, avec un reflet qui le
@@ -3379,8 +3380,9 @@ document.getElementById('btn-bon-promo-retour').addEventListener('click', functi
 // LES BONS PLANS
 // L'écran est passé AVANT les jeux le 25/08/2026 : il arrive juste
 // après les coordonnées, quand le joueur vient de dire ce qu'il aime.
-// Il garde son bouton d'accès depuis l'espace découverte, pour celui
-// qui a d'abord dit non et change d'avis.
+// L'écran se pose une seule fois par partie, juste après les
+// coordonnées (29/08/2026) ; celui qui a dit non peut changer d'avis
+// en rejouant un autre jour.
 //
 // RGPD : le consentement doit rester libre et éclairé. On explique donc
 // exactement ce qui sera envoyé, à quelle fréquence, et on écrit noir
@@ -3391,8 +3393,11 @@ document.getElementById('btn-bon-promo-retour').addEventListener('click', functi
 // réponse est forcée à non en amont (voir adapterCoordonneesMineur).
 // --------------------------------------------
 let suiteApresOffres = null;
+// Vrai le temps de traiter une réponse à la question des bons plans.
+let reponseOffresEnCours = false;
 
 function proposerLesOffres(suite) {
+  reponseOffresEnCours = false;
   suiteApresOffres = (typeof suite === 'function') ? suite : afficherDecouverte;
   // Déjà répondu, ou joueur mineur : on ne repose pas la question
   if (reponses.consentement_marketing !== undefined || reponses.age_tranche === '-18') {
@@ -3445,6 +3450,11 @@ const MOT_DU_RAYON = {
 };
 
 async function repondreOffres(accepte) {
+  // Deux tapes rapides sur « Oui » (ou « Non ») déclenchaient deux
+  // suites : la première partait vers le jeu, la seconde retombait sur
+  // l'écran découverte par-dessus. Un seul passage à la fois.
+  if (reponseOffresEnCours) return;
+  reponseOffresEnCours = true;
   reponses.consentement_marketing = accepte;
   // Si la participation est déjà en base (le joueur revient sur la
   // question depuis l'espace découverte), on tente la mise à jour par
@@ -3902,7 +3912,6 @@ function ligneAgenda(ev, index, permanent) {
   return ligne;
 }
 
-document.getElementById('btn-voir-programme').addEventListener('click', afficherProgramme);
 document.getElementById('btn-programme-retour').addEventListener('click', () => afficherDecouverte());
 
 document.getElementById('btn-tourner').addEventListener('click', lancerRoue);

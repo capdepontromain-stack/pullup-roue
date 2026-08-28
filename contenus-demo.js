@@ -160,7 +160,10 @@ const PROGRAMME_DEMO = [
 ];
 
 
-// LES OFFRES D'EXEMPLE, DICTÉES PAR ROMAIN (27/08/2026). Ce sont de
+// LES OFFRES D'EXEMPLE, DICTÉES PAR ROMAIN (27/08/2026).
+// (Le champ valable_jusqu_au a été retiré le 29/08/2026 : rien ne le
+// lisait, et il contredisait la règle réelle, écrite dans app.js et
+// bons.js : un bon d'offre du jour vaut le jour même, point.) Ce sont de
 // vraies enseignes de la galerie, données par lui pour la version
 // d'essai. Chaque offre EST un bon : quelque chose à présenter au
 // commerçant, jamais une simple annonce.
@@ -172,49 +175,49 @@ const OFFRES_DEMO = [
     enseigne: 'L’igloo', univers: 'gourmandise',
     titre: 'Une boisson offerte pour l’achat de deux glaces',
     detail: 'Sur présentation de ce bon, deux glaces achetées et la boisson est offerte.',
-    valable_jusqu_au: '31 décembre', bon: 'Une boisson offerte pour l’achat de deux glaces'
+    bon: 'Une boisson offerte pour l’achat de deux glaces'
   },
   {
     enseigne: 'Jina', univers: 'mode',
     titre: '10 % sur toute la boutique',
     detail: 'Sur présentation de ce bon, 10 % de remise sur tout, même les nouveautés.',
-    valable_jusqu_au: '31 décembre', bon: '10 % sur toute la boutique'
+    bon: '10 % sur toute la boutique'
   },
   {
     enseigne: 'Taïlu', univers: 'gourmandise',
     titre: 'Le sixième samoussa offert',
     detail: 'Cinq samoussas achetés, le sixième est offert, tous parfums.',
-    valable_jusqu_au: '31 décembre', bon: 'Le sixième samoussa offert'
+    bon: 'Le sixième samoussa offert'
   },
   {
     enseigne: 'Madame Cookie', univers: 'gourmandise',
     titre: 'Un cookie offert dès trois achetés',
     detail: 'Trois cookies achetés, le quatrième est offert, à choisir dans toute la vitrine.',
-    valable_jusqu_au: '31 décembre', bon: 'Un cookie offert dès trois achetés'
+    bon: 'Un cookie offert dès trois achetés'
   },
   {
     enseigne: 'Nocibé', univers: 'beaute',
     titre: 'Un maquillage flash offert',
     detail: 'Dix minutes avec une conseillère, sans rendez-vous et sans obligation d’achat.',
-    valable_jusqu_au: '24 décembre', bon: 'Un maquillage flash offert'
+    bon: 'Un maquillage flash offert'
   },
   {
     enseigne: 'Avril', univers: 'beaute',
     titre: 'Un bilan peau offert',
     detail: 'Un diagnostic complet et un échantillon adapté à ta peau.',
-    valable_jusqu_au: '31 décembre', bon: 'Un bilan peau offert'
+    bon: 'Un bilan peau offert'
   },
   {
     enseigne: "My Crep's", univers: 'gourmandise',
     titre: 'La crêpe sucre offerte dès 25 € d’achat',
     detail: 'Pour toute commande de 25 € ou plus, la crêpe au sucre est offerte.',
-    valable_jusqu_au: '31 décembre', bon: 'La crêpe sucre offerte dès 25 € d’achat'
+    bon: 'La crêpe sucre offerte dès 25 € d’achat'
   },
   {
     enseigne: 'LGM', univers: 'gourmandise',
     titre: 'La troisième glace offerte pour l’achat de deux',
     detail: 'Deux glaces achetées, la troisième est offerte, en cornet ou en pot.',
-    valable_jusqu_au: '31 décembre', bon: 'La troisième glace offerte pour l’achat de deux'
+    bon: 'La troisième glace offerte pour l’achat de deux'
   }
 ];
 

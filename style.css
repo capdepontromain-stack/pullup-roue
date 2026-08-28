@@ -3437,8 +3437,13 @@ body.theme-csc {
   --noir: #F7F8FA;                        /* le fond de la page */
   --encre: #FFFFFF;
   --verre: rgba(255, 255, 255, .96);      /* les cartes deviennent blanches */
-  --or: #E4373F;                          /* l'accent : le rouge du centre */
-  --or-clair: #FF4F4F;
+  /* #C42730 et pas le rouge vif du site : dès qu'une de ces variables
+     écrit du TEXTE sur le fond clair, le #E4373F d'origine (4,0:1) et
+     le #FF4F4F (3,2:1) échouent au contraste AA. Le rouge sombre passe
+     (5,7:1) et reste le rouge de la maison. Les grands boutons, eux,
+     gardent leurs dégradés écrits en littéraux plus bas. */
+  --or: #C42730;                          /* l'accent : le rouge du centre */
+  --or-clair: #C42730;
   --or-blanc: #17222C;                    /* les grands titres : encre profonde */
   --creme: #3A4652;                       /* le texte courant */
   /* #5E6A76 et pas plus clair : les mentions en 12,5 px doivent tenir
@@ -3780,3 +3785,178 @@ body.theme-csc .agenda-ligne.vedette .agenda-corps {
   box-shadow: 0 12px 30px rgba(201, 150, 46, .22);
 }
 body.theme-csc .agenda-ligne.vedette .agenda-heure { color: #8A6A21; }
+
+/* ============================================================
+   CORRECTIONS D'AUDIT DU 29/08/2026 (thème Cap Sacré-Cœur)
+   ============================================================
+   Un tour complet de contraste et d'harmonie sur le thème clair :
+   tout ce qui suit corrige des restes du thème doré qui se lisaient
+   mal (ou pas du tout) sur le fond clair. Le parti pris ne bouge
+   pas : page claire et rouge, machines de jeu sombres et dorées. */
+
+/* Les cases à cocher (quiz et règlement) : elles étaient restées
+   brun-kaki bordées d'or, et la coche devenait invisible une fois
+   cochée (dégradé encre sur coche brune). Blanc cassé au repos,
+   rouge plein quand c'est coché, coche blanche. */
+body.theme-csc .option .coche {
+  background: #FFFFFF;
+  border-color: #C9D2DA;
+}
+body.theme-csc .option.choisie .coche {
+  background: #E4373F;
+  border-color: #C42730;
+}
+body.theme-csc .option.choisie .coche::after { border-color: #FFFFFF; }
+body.theme-csc .case input {
+  background: #FFFFFF;
+  border-color: #C9D2DA;
+}
+body.theme-csc .case input:checked {
+  background-color: #E4373F;
+  border-color: #C42730;
+}
+
+/* Le message d'erreur des coordonnées : saumon pensé pour le fond
+   noir, illisible sur le clair (2,3:1). */
+body.theme-csc .erreur { color: #C42730; }
+
+/* Les deux verts pâles (badge « Gratuit, sans achat » de l'agenda et
+   « Bon déjà utilisé » des promos) : 1,6:1 sur carte blanche. */
+body.theme-csc .evenement-gratuit,
+body.theme-csc .promo-bon.obtenu {
+  color: #1F7A44;
+  border-color: rgba(31, 122, 68, .5);
+  background: rgba(31, 122, 68, .08);
+}
+
+/* La carte verte « Bon utilisé » (la preuve du commerçant) : deux de
+   ses textes lisaient les variables du thème, devenues foncées sur
+   fond clair, donc sombre sur sombre. Des clairs figés. */
+.bon-valide .valide-mention { color: #B9C9BC; }
+.remerciement-texte { color: #E9F2EA; }
+
+/* Le levier du bandit manchot vit HORS de la machine, sur le fond
+   clair : sa flèche et son halo crème y étaient invisibles, et le
+   bras était passé au rouge. Tout redevient or, comme la machine. */
+body.theme-csc .bandit-levier .trait { stroke: #C9962E; }
+body.theme-csc .bandit-fleche { stroke: #C9962E; color: #C9962E; }
+body.theme-csc .bandit-halo { stroke: #C9962E; color: #C9962E; }
+body.theme-csc .bandit-ligne::before { border-left-color: #C9962E; }
+body.theme-csc .bandit-ligne::after { border-right-color: #C9962E; }
+
+/* La barre de progression du quiz : piste crème invisible sur clair,
+   et une lueur dorée sous une barre devenue rouge. */
+body.theme-csc .progression { background: #E3E7EC; }
+body.theme-csc .progression-barre { box-shadow: none; }
+
+/* Le panneau « Es-tu sûr ? » de la question des bons plans : il était
+   resté brun translucide (le velours du thème doré) sur la page
+   claire. Il devient une carte blanche cerclée de rouge, comme les
+   autres. */
+body.theme-csc .offres-relance {
+  background: #FFFFFF;
+  border: 1px solid rgba(228, 55, 63, .4);
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(23, 34, 44, .07);
+}
+
+/* Les angles à 2 px hérités du thème doré, au milieu de cartes toutes
+   arrondies à 14 : la suggestion d'e-mail, la case du règlement, la
+   confirmation commerçant et la carte du bon validé s'alignent. */
+body.theme-csc .suggestion,
+body.theme-csc .case,
+body.theme-csc .confirme,
+body.theme-csc .bon-valide { border-radius: 14px; }
+body.theme-csc .btn-mini { border-radius: 999px; }
+
+/* La suggestion d'e-mail parlait encore doré : bordures et boutons
+   passent au langage rouge du thème. */
+body.theme-csc .suggestion { border-color: rgba(228, 55, 63, .35); }
+body.theme-csc .btn-mini { border-color: #DDE2E8; color: #3A4652; }
+body.theme-csc .btn-mini-or {
+  background: linear-gradient(165deg, #E4373F, #C42730);
+  color: #FFFFFF;
+  border-color: #C42730;
+}
+
+/* Le bouton désactivé (« Choisis au moins une réponse ») : fantôme
+   doré à peine visible sur le clair. */
+body.theme-csc .btn-or:disabled {
+  background: rgba(228, 55, 63, .06);
+  color: rgba(196, 39, 48, .8);
+  box-shadow: inset 0 0 0 1px rgba(228, 55, 63, .35);
+  text-shadow: none;
+}
+
+/* Les encres or sombre sur la partie basse des tickets dorés : elles
+   passaient sous le seuil de lecture sur le bas du dégradé. Le brun
+   profond du détail tient partout. */
+body.theme-csc .code-libelle,
+body.theme-csc .bon-origine,
+body.theme-csc .bon-code-libelle { color: #4A3A16; }
+body.theme-csc .bon-validite { color: #4A3A16; }
+
+/* Le signet des réponses choisies : moitié encre moitié rouge depuis
+   le changement de variables. Rouge plein. */
+body.theme-csc .option::before { background: #E4373F; }
+
+/* La pastille de la manche en cours : encre à lueur dorée. Rouge. */
+body.theme-csc .manche-points span.manche-encours {
+  background: #E4373F;
+  border-color: #E4373F;
+  box-shadow: 0 0 9px rgba(228, 55, 63, .6);
+}
+
+/* Le squelette de chargement : la surcharge claire avait écrasé le
+   dégradé, l'animation de balayage tournait sur un aplat invisible. */
+body.theme-csc .squelette {
+  background: linear-gradient(100deg, #E9EDF1 30%, #F5F7F9 50%, #E9EDF1 70%);
+  background-size: 240% 100%;
+}
+
+/* Les mentions du pied : #77828D passait juste sous le seuil AA. */
+body.theme-csc .pied,
+body.theme-csc .pied-marque { color: #68737F; }
+
+/* Un seul noir de titres : l'encre profonde partout. */
+body.theme-csc .quiz-zone h2,
+body.theme-csc .roue-zone h2 { color: #17222C; }
+
+/* Le focus clavier : la surcharge claire des cartes découvertes avait
+   éteint leur seul indicateur, et les onglets n'en avaient pas. */
+body.theme-csc .carte-univers:focus-visible,
+body.theme-csc .onglet:focus-visible {
+  outline: 3px solid #C42730;
+  outline-offset: 3px;
+}
+
+/* Les ombres noires du thème doré, adoucies sur le clair. */
+body.theme-csc .bon-ticket { box-shadow: 0 14px 30px rgba(23, 34, 44, .22); }
+body.theme-csc .bon-valide { box-shadow: 0 14px 30px rgba(23, 34, 44, .25); }
+body.theme-csc .hero-emoji { box-shadow: 0 12px 28px rgba(23, 34, 44, .22); }
+
+/* La mention du ticket sur le velours rouge : un cran plus claire. */
+body.theme-csc .ticket-mention { color: #FFE9CB; }
+
+/* Le placeholder des champs : un cran plus foncé, sans changer l'effet. */
+body.theme-csc input::placeholder { color: #8A95A1; }
+
+/* Le double-tap ne doit jamais zoomer en plein jeu (le zoom par
+   pincement, lui, redevient possible : voir le viewport). */
+body { touch-action: manipulation; }
+
+/* Le bandit : les animations d'ambiance suivent aussi le réglage
+   « moins d'animations » du téléphone. */
+@media (prefers-reduced-motion: reduce) {
+  .bandit-machine::before,
+  .bandit-halo,
+  .bandit-fleche,
+  .bandit-consigne { animation: none !important; }
+}
+
+/* La coche de la case du règlement : blanche sur le rouge coché
+   (l'ancienne coche brune se perdait dans le rouge). */
+body.theme-csc .case input:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.6l3.4 3.4L13 5' fill='none' stroke='%23FFFFFF' stroke-width='2.6' stroke-linecap='square'/%3E%3C/svg%3E");
+}
+body.theme-csc .case input:focus-visible { box-shadow: 0 0 0 3px rgba(228, 55, 63, .3); }

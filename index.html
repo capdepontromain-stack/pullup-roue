@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>La Hotte des Commerçants : tente ta chance !</title>
   <meta name="description" content="Réponds à quelques questions, joue, et tente de gagner un cadeau offert par les commerçants de la galerie !">
   <!-- SÉCURITÉ (26/08/2026) : la page ne s'autorise QUE ses propres
@@ -31,22 +31,22 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=29aout2026c">
+  <link rel="stylesheet" href="style.css?v=29aout2026e">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=29aout2026c" defer></script>
-  <script src="icones-quiz.js?v=29aout2026c" defer></script>
-  <script src="contenus-demo.js?v=29aout2026c" defer></script>
+  <script src="icones.js?v=29aout2026e" defer></script>
+  <script src="icones-quiz.js?v=29aout2026e" defer></script>
+  <script src="contenus-demo.js?v=29aout2026e" defer></script>
   <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
        Il tient la liste des bons du joueur et sait la dessiner. Chargé
        avant app.js, qui l'appelle à deux endroits : quand un lot est
        gagné, et quand un bon de promotion est pris. Voir bons.js. -->
-  <script src="bons.js?v=29aout2026c" defer></script>
-  <script src="app.js?v=29aout2026c" defer></script>
+  <script src="bons.js?v=29aout2026e" defer></script>
+  <script src="app.js?v=29aout2026e" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -197,7 +197,7 @@
             <span class="ticket-resultat" id="ticket-resultat"></span>
             <span class="ticket-detail" id="ticket-detail"></span>
           </div>
-          <canvas class="ticket-voile" id="ticket-voile" width="600" height="380"></canvas>
+          <canvas class="ticket-voile" id="ticket-voile" width="600" height="380" aria-label="Zone à gratter du ticket" role="img"></canvas>
           <span class="doigt-consigne" id="doigt-consigne" aria-hidden="true"></span>
         </div>
         <button class="btn btn-or btn-grand" id="btn-grattage-suite" hidden>Continuer</button>
@@ -209,7 +209,7 @@
       <div class="roue-zone">
         <div class="manche-bandeau" id="manche-roue" hidden></div>
         <h2 id="roue-titre">À toi de jouer</h2>
-        <div class="roue-cadre" id="roue-cadre">
+        <div class="roue-cadre" id="roue-cadre" role="img" aria-label="La roue de la chance">
           <div class="roue-pointeur">
             <svg width="30" height="26" viewBox="0 0 30 26" aria-hidden="true">
               <defs>
@@ -222,7 +222,7 @@
               <path d="M2 2 L28 2 L15 24 Z" fill="url(#grad-pointeur)" stroke="#7a5410" stroke-width="1.2"/>
             </svg>
           </div>
-          <svg id="roue-svg" viewBox="0 0 300 300"></svg>
+          <svg id="roue-svg" viewBox="0 0 300 300" aria-hidden="true"></svg>
           <div class="roue-centre">
             <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
               <path d="M15 1.5 L18.2 10.6 L27.8 10.9 L20.2 16.8 L22.9 26.1 L15 20.7 L7.1 26.1 L9.8 16.8 L2.2 10.9 L11.8 10.6 Z"
@@ -312,15 +312,14 @@
         <button class="btn btn-discret" id="btn-resultat-plus-tard" hidden>Je dépenserai mon cadeau plus tard</button>
         <p class="mini-mention" id="resultat-mention"></p>
 
-        <!-- Les anciens boutons de suite restent dans la page, masqués :
-             ils portent des comportements encore utiles (le second tour
-             du bonus, le retour à l'accueil) que l'espace découverte
-             réutilise. Ne pas les retirer sans reprendre app.js. -->
+        <!-- Seule réserve conservée : le bouton du second tour (bonus du
+             ticket), débranché depuis que le ticket perd toujours mais
+             gardé avec sa mécanique complète dans app.js au cas où le
+             bonus reviendrait. Les autres boutons de suite (galerie,
+             programme, accueil) ont été retirés le 29/08/2026 :
+             l'espace découverte a les siens. -->
         <div class="suites" id="resultat-suites" hidden>
           <button class="btn btn-or" id="btn-rejouer-bonus" hidden>Il te reste un tour, vas-y !</button>
-          <button class="btn btn-or" id="btn-voir-promos">Découvrir la galerie</button>
-          <button class="btn btn-discret" id="btn-voir-programme">Le programme des animations</button>
-          <button class="btn btn-discret" id="btn-retour-accueil">Revenir à l'accueil</button>
         </div>
       </div>
     </section>
@@ -366,7 +365,10 @@
             <span class="carte-voile" aria-hidden="true"></span>
             <span class="carte-texte">
               <span class="carte-etiquette">Rien qu'aujourd'hui</span>
-              <span class="carte-titre">Tu as remporté des réductions sympas</span>
+              <!-- « offre », jamais « remporté » : le perdant passe ici
+                   juste après « Pas de cadeau aujourd'hui », et le
+                   règlement interdit de laisser croire à un gain. -->
+              <span class="carte-titre">La galerie t'offre des réductions sympas</span>
               <span class="carte-detail">Des bons à utiliser aujourd'hui chez tes commerçants. Demain, il y en aura d'autres.</span>
               <span class="carte-action">
                 <span class="carte-action-mot">Voir les offres du jour</span>
