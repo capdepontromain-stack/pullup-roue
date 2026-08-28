@@ -456,11 +456,16 @@ const QUESTIONS = [
     id: 'envie1', type: 'multi',
     titre: 'On t’offre 100 € à dépenser dans la galerie.',
     soustitre: 'Tu files où en premier ? Plusieurs réponses possibles.',
+    // LES PHOTOS DES RÉPONSES (28/08/2026, Romain : « plutôt que des
+    // petits dessins, autant avoir des vraies images ») : chaque rayon
+    // se montre en photographie. Le champ ic reste : c'est le repli si
+    // la photo ne charge pas. Toutes les photos viennent d'Unsplash
+    // (licence libre, usage commercial autorisé, voir SOURCES-PHOTOS.md).
     options: [
-      { v: 'mode',        l: 'M’habiller de la tête aux pieds',  ic: 'mode',        rayons: ['mode'] },
-      { v: 'beaute',      l: 'Coiffeur, institut, parfum',       ic: 'beaute',      rayons: ['beaute'] },
-      { v: 'bijoux',      l: 'Un bijou, ou du high-tech',        ic: 'bijoux',      rayons: ['bijoux', 'hightech'] },
-      { v: 'gourmandise', l: 'Un festin, resto et gourmandises', ic: 'gourmandise', rayons: ['gourmandise'] }
+      { v: 'mode',        l: 'M’habiller de la tête aux pieds',  ic: 'mode',        photo: 'img/photos/quiz/q100-mode.jpg',   rayons: ['mode'] },
+      { v: 'beaute',      l: 'Coiffeur, institut, parfum',       ic: 'beaute',      photo: 'img/photos/quiz/q100-beaute.jpg', rayons: ['beaute'] },
+      { v: 'bijoux',      l: 'Un bijou, ou du high-tech',        ic: 'bijoux',      photo: 'img/photos/quiz/q100-bijou.jpg',  rayons: ['bijoux', 'hightech'] },
+      { v: 'gourmandise', l: 'Un festin, resto et gourmandises', ic: 'gourmandise', photo: 'img/photos/quiz/q100-festin.jpg', rayons: ['gourmandise'] }
     ]
   },
   {
@@ -470,10 +475,10 @@ const QUESTIONS = [
     titre: 'Ton samedi idéal, c’est plutôt…',
     soustitre: 'Dernière question, et ensuite on joue.',
     options: [
-      { v: 'enfants', l: 'En famille, avec les enfants', ic: 'famille', rayons: ['enfants'],     aussi: { frequence: 'famille' } },
-      { v: 'mode',    l: 'Flâner entre amis',            ic: 'amis',    rayons: ['mode'] },
-      { v: 'sport',   l: 'Dehors, à bouger',              ic: 'dehors',  rayons: ['sport'] },
-      { v: 'maison',  l: 'Au calme, à la maison',         ic: 'maison',  rayons: ['maison'] }
+      { v: 'enfants', l: 'En famille, avec les enfants', ic: 'famille', photo: 'img/photos/quiz/samedi-famille.jpg', rayons: ['enfants'],     aussi: { frequence: 'famille' } },
+      { v: 'mode',    l: 'Flâner entre amis',            ic: 'amis',    photo: 'img/photos/quiz/samedi-amis.jpg',    rayons: ['mode'] },
+      { v: 'sport',   l: 'Dehors, à bouger',              ic: 'dehors',  photo: 'img/photos/quiz/samedi-dehors.jpg',  rayons: ['sport'] },
+      { v: 'maison',  l: 'Au calme, à la maison',         ic: 'maison',  photo: 'img/photos/quiz/samedi-maison.jpg',  rayons: ['maison'] }
     ]
   }
 ];
@@ -684,9 +689,33 @@ function afficherQuestion() {
       // simplement sa lettre ou sa case, l'écran ne bouge pas.
       const dessin = (opt.ic && typeof iconeQuiz === 'function') ? iconeQuiz(opt.ic) : '';
       if (dessin) btn.classList.add('option-avec-icone');
+      // LA PHOTO AVANT LE DESSIN (28/08/2026, Romain : « plutôt que des
+      // petites émoticônes, autant avoir des vraies images ») : quand la
+      // réponse a une photographie, elle prend la place du dessin au
+      // trait. Le dessin reste dessous en repli : si le fichier manque,
+      // l'image cassée se retire toute seule (onerror) et on retrouve
+      // l'écran d'avant, jamais un carré vide.
+      let visuel = dessin;
+      if (opt.photo) {
+        btn.classList.add('option-avec-photo');
+        visuel = `<span class="option-photo">` +
+                   `<img src="${echap(opt.photo)}" alt="" loading="lazy">` +
+                 `</span>` + (dessin ? `<span class="option-photo-repli">${dessin}</span>` : '');
+      }
       btn.innerHTML = multiple
-        ? `<span class="coche" aria-hidden="true"></span>${dessin}<span>${opt.l}</span>`
-        : `${dessin || `<span class="puce">${lettre}</span>`}<span>${opt.l}</span>`;
+        ? `<span class="coche" aria-hidden="true"></span>${visuel}<span>${opt.l}</span>`
+        : `${visuel || `<span class="puce">${lettre}</span>`}<span>${opt.l}</span>`;
+      // Repli : si la photo ne charge pas, on la retire et le dessin au
+      // trait reprend sa place. (En propriété JS : la CSP de la page
+      // interdit les attributs onerror écrits dans le HTML.)
+      const imgPhoto = btn.querySelector('.option-photo img');
+      if (imgPhoto) {
+        imgPhoto.onerror = () => {
+          btn.classList.remove('option-avec-photo');
+          const cadre = btn.querySelector('.option-photo');
+          if (cadre) cadre.remove();
+        };
+      }
       if (multiple && choisies.has(opt.v)) btn.classList.add('choisie');
       // Retour en arrière : on remontre ce qui avait été répondu
       if (!multiple && reponses[q.id] === opt.v) btn.classList.add('choisie');
@@ -2151,6 +2180,40 @@ function medaillonIcone(trace, taille) {
        ${trace}</svg>`;
 }
 
+// LA PHOTO DU LOT (28/08/2026, Romain : « quand on gagne le samoussa,
+// il faut faire apparaître le samoussa »). Le nom du lot est fouillé
+// par mots-clés : les lots viennent de la base et changent d'une
+// galerie à l'autre, un mot suffit à retrouver la bonne photographie.
+// Un lot sans photo garde son icône dorée : rien ne casse jamais.
+// Photos : Unsplash, usage commercial libre (voir SOURCES-PHOTOS.md).
+const PHOTOS_LOTS = [
+  { mots: /samoussa|samossa|samosa/i,          fichier: 'img/photos/lots/lot-samoussa.jpg' },
+  { mots: /glace|sorbet|esquimau/i,            fichier: 'img/photos/lots/lot-glace.jpg' },
+  { mots: /cookie/i,                           fichier: 'img/photos/lots/lot-cookie.jpg' },
+  { mots: /cr[êe]pe|galette sucr/i,            fichier: 'img/photos/lots/lot-crepe.jpg' },
+  { mots: /maquillage|make.?up/i,              fichier: 'img/photos/lots/lot-maquillage.jpg' },
+  { mots: /bilan peau|soin|institut|visage/i,  fichier: 'img/photos/lots/lot-soin.jpg' }
+];
+
+function photoPourLot(nom) {
+  const trouvee = PHOTOS_LOTS.find(p => p.mots.test(String(nom || '')));
+  return trouvee ? trouvee.fichier : null;
+}
+
+// Remplit un médaillon rond avec la photo du lot quand il y en a une,
+// sinon avec son icône au trait. Si la photo ne charge pas, l'icône
+// reprend sa place toute seule.
+function medaillonLot(zone, nomLot) {
+  const photo = photoPourLot(nomLot);
+  if (!photo) {
+    zone.innerHTML = medaillonIcone(iconePourLot(nomLot));
+    return;
+  }
+  zone.innerHTML = `<img class="medaillon-photo" src="${echap(photo)}" alt="" loading="lazy">`;
+  const img = zone.querySelector('img');
+  img.onerror = () => { zone.innerHTML = medaillonIcone(iconePourLot(nomLot)); };
+}
+
 function afficherResultat() {
   const emoji = document.getElementById('resultat-emoji');
   emoji.classList.remove('hero-photo');
@@ -2202,7 +2265,7 @@ function afficherResultat() {
     const suite = document.getElementById('btn-resultat-continuer');
     if (suite) suite.textContent = 'Obtenir mon cadeau';
     const msg = messageAleatoire(MESSAGES_GAGNE);
-    emoji.innerHTML = medaillonIcone(iconePourLot(lotGagne.nom));
+    medaillonLot(emoji, lotGagne.nom);
     titre.innerHTML = msg.titre;
     texte.innerHTML = msg.texte;
     let fete = true;
@@ -2942,7 +3005,7 @@ window.roueAfficherBonRetrouve = function (bon) {
 
   const emoji = document.getElementById('resultat-emoji');
   emoji.classList.remove('hero-photo');
-  emoji.innerHTML = medaillonIcone(iconePourLot(bon.lot));
+  medaillonLot(emoji, bon.lot);
   document.getElementById('resultat-titre').textContent = 'Ton bon cadeau';
   document.getElementById('resultat-texte').textContent =
     (bon.prenom ? bon.prenom + ', te' : 'Te') + ' voilà de retour. Ton cadeau t’attend.';
@@ -3184,7 +3247,7 @@ function ouvrirBonPromo(offre, index) {
   // recalculé depuis une position dans une liste qui a pu bouger.
   const code = offre.codeFige || codePromo(offre.enseigne, index);
   promoEnCours = { offre: offre, cle: code, code: code };
-  document.getElementById('bon-promo-medaillon').innerHTML = medaillonIcone(iconePourLot(offre.titre));
+  medaillonLot(document.getElementById('bon-promo-medaillon'), offre.titre);
   document.getElementById('bon-promo-medaillon').classList.remove('hero-photo');
   document.getElementById('bon-promo-enseigne').textContent = offre.enseigne || '';
   document.getElementById('bon-promo-code').textContent = promoEnCours.code;
