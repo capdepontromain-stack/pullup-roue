@@ -216,6 +216,16 @@ body.theme-noel .pastille { background: var(--rouge-clair); box-shadow: 0 0 14px
 .ecran { display: none; flex: 1; }
 .ecran.actif { display: flex; flex-direction: column; animation: ecran-avance .58s var(--signature) backwards; }
 .ecran.actif.recule { animation-name: ecran-recule; }
+/* La roue arrive SANS fondu (29/08/2026, retour Romain : « un effet
+   blanc bizarre quand le jeu s'affiche ») : pendant le fondu, cette
+   grande masse sombre laissait transparaître le fond clair et
+   semblait blanchie une demi-seconde. Elle garde le glissement
+   d'entrée, mais pleine et nette dès la première image. */
+#ecran-roue.actif { animation-name: ecran-avance-plein; }
+@keyframes ecran-avance-plein {
+  from { opacity: 1; transform: translate3d(26px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
 
 @keyframes ecran-avance {
   from { opacity: 0; transform: translate3d(26px, 0, 0); }

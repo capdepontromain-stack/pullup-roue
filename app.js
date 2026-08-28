@@ -836,7 +836,7 @@ function adapterCoordonneesMineur() {
   if (texte) {
     texte.textContent = mineur
       ? 'Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot, rien d’autre. Tu ne recevras aucune offre par e-mail : c’est réservé aux joueurs majeurs. Données supprimées au plus tard un an après l’opération, jamais vendues.'
-      : 'Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Après le jeu, on te demandera si tu veux aussi recevoir les bons plans des commerçants : ce choix ne changera rien à ta partie ni à ton lot, et tu pourras en changer quand tu veux. Données conservées un an après l’opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.';
+      : 'Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Juste après, on te demandera si tu veux aussi recevoir les bons plans des commerçants : ce choix ne changera rien à ta partie ni à ton lot, et tu pourras en changer quand tu veux. Données conservées un an après l’opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.';
   }
 }
 
@@ -2270,13 +2270,18 @@ function afficherResultat() {
     // Le bouton doré ne dit plus « découvrir », mot d'accueil : il dit
     // ce que le joueur va vraiment y trouver, tout de suite.
     if (boutonGalerie) boutonGalerie.textContent = 'Voir les promos du jour';
+    // LE PERDANT REPART AVEC QUELQUE CHOSE (29/08/2026, Romain :
+    // « il faut inciter à cliquer, du genre : profite de bons cadeaux
+    // offerts par la galerie »). La promesse est exacte : les bons de
+    // réduction du jour sont offerts à tous, gagnant ou pas. On dit
+    // « offerts », jamais « gagnés » : il vient de perdre, et le
+    // règlement ne permet pas de dire le contraire.
     const suitePerdue = document.getElementById('btn-resultat-continuer');
-    if (suitePerdue) suitePerdue.textContent = 'Voir la galerie';
+    if (suitePerdue) suitePerdue.textContent = 'Profiter de mes bons de réduction';
     const plusTardPerdu = document.getElementById('btn-resultat-plus-tard');
     if (plusTardPerdu) plusTardPerdu.hidden = true;
-    // Écran nu : le perdant ne lit que son résultat et le bouton.
-    mention.textContent = '';
-    mention.hidden = true;
+    mention.textContent = 'Ce n’est pas fini : la galerie t’offre quand même des bons de réduction chez tes commerçants.';
+    mention.hidden = false;
     vibrer(120);
   } else {
     if (consolation) consolation.hidden = true;
@@ -2591,9 +2596,18 @@ async function validerCoordonnees() {
   reponses.email = email;
   reponses.telephone = tel || null;
 
-  // La question des bons plans a déjà été posée, juste après le test :
-  // sa réponse part dans la même ligne que la participation.
-  lancerLaPartie();
+  // Le code de la partie précédente (version d'essai) ne doit pas
+  // traîner : la réponse aux bons plans partira avec la NOUVELLE
+  // participation, pas en correction de l'ancienne.
+  lotGagne = null;
+  codeLot = null;
+
+  // LA QUESTION DES BONS PLANS SE POSE ICI, AVANT LES JEUX (29/08/2026,
+  // décision de Romain : posée après le résultat, elle tombait mal,
+  // surtout pour le perdant qu'on venait de consoler). Elle arrive
+  // juste après les coordonnées : sa réponse part dans la même ligne
+  // que la participation. Les mineurs ne voient jamais cet écran.
+  proposerLesOffres(lancerLaPartie);
 }
 
 async function lancerLaPartie() {
@@ -2844,6 +2858,9 @@ function lancerLaVitrine() {
 
 document.getElementById('btn-jouer').addEventListener('click', () => {
   if (modeVitrine()) { lancerLaVitrine(); return; }
+  // Version d'essai : chaque partie repart vierge, la question des
+  // bons plans (posée avant les jeux) se repose donc à chaque fois.
+  if (PARTIES_ILLIMITEES) delete reponses.consentement_marketing;
   questionActuelle = 0;
   afficherEcran('ecran-quiz');
   afficherQuestion();
@@ -3062,7 +3079,7 @@ window.roueAfficherBonRetrouve = function (bon) {
 };
 
 document.getElementById('btn-garder-bon').addEventListener('click', () => {
-  proposerLesOffres();
+  afficherDecouverte();
 });
 
 // Le joueur peut remercier son commerçant d'un geste
@@ -3112,16 +3129,18 @@ document.getElementById('btn-voir-promos').addEventListener('click', proposerLes
 // « au lieu de continuer, il faut basculer sur la page » des cadeaux
 // gagnés). Le gagnant part donc droit sur ses bons ; celui qui n'a
 // rien gagné continue vers la galerie, comme avant.
+// La question des bons plans a déjà été posée AVANT les jeux
+// (29/08/2026) : après le résultat, on file droit au but.
 document.getElementById('btn-resultat-continuer').addEventListener('click', () => {
   const gagnant = lotGagne && !lotGagne.perdant;
-  proposerLesOffres(gagnant ? afficherMesBons : afficherDecouverte);
+  if (gagnant) afficherMesBons(); else afficherDecouverte();
 });
 // « Je dépenserai mon cadeau plus tard » : le gagnant part vers la
 // galerie, son bon reste dans la poche et la carte « Obtenir mon
 // cadeau » l'attendra sur l'écran suivant.
 const btnPlusTard = document.getElementById('btn-resultat-plus-tard');
 if (btnPlusTard) {
-  btnPlusTard.addEventListener('click', () => proposerLesOffres(afficherDecouverte));
+  btnPlusTard.addEventListener('click', () => afficherDecouverte());
 }
 document.getElementById('btn-promos-retour').addEventListener('click', () => afficherDecouverte());
 document.getElementById('btn-retour-accueil').addEventListener('click', () => afficherEcran('ecran-accueil', 'arriere'));
