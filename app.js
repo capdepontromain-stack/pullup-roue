@@ -254,8 +254,27 @@ function appliquerOperation() {
   // page) a son bon dans le téléphone, mais l'accueil ne lui en disait
   // rien : il fallait rejouer, tomber sur « Pas si vite ! », et rester
   // coincé. Une ligne discrète le mène droit à son code.
+  // LE RÈGLEMENT REPART VERS LA BONNE OPÉRATION (28/08/2026, retour
+  // Romain : « quand je fais retour, ça arrive sur une mauvaise version
+  // plus ancienne »). Les liens vers reglement.html emportent le slug
+  // de l'opération : la page du règlement le lit et son bouton
+  // « Retour au jeu » ramène vers l'habillage du jour, plus jamais
+  // vers l'opération par défaut.
+  document.querySelectorAll('a[href^="reglement.html"]').forEach(a => {
+    // L'habillage passe deux fois (secours local, puis la base) : on
+    // repart du lien nu pour ne pas empiler deux fois le paramètre.
+    const morceaux = a.getAttribute('href').split('#');
+    const page = morceaux[0].split('?')[0];
+    a.setAttribute('href', page + '?e=' + encodeURIComponent(EVENEMENT) +
+                           (morceaux[1] ? '#' + morceaux[1] : ''));
+  });
+
+  // JAMAIS sur la version d'essai (28/08/2026, Romain : « chaque fois
+  // qu'on rejoue, il faut faire comme si c'était vierge ») : en démo,
+  // chaque partie doit ressembler à une première visite. En production,
+  // le rappel reste : c'est lui qui sauve le gagnant qui a rechargé.
   const zoneRappel = document.getElementById('accueil-rappel-bons');
-  if (zoneRappel && window.PullUpBons) {
+  if (zoneRappel && window.PullUpBons && !PARTIES_ILLIMITEES) {
     // L'habillage passe deux fois (secours local, puis la base qui
     // répond) : on repart de zéro pour ne pas empiler deux rappels.
     zoneRappel.innerHTML = '';
@@ -1462,7 +1481,7 @@ function installerGrattage(voile, ctx) {
       // Le ticket perd toujours : la consigne relance vers les manches.
       const combien = listeDesManches().length;
       document.getElementById('grattage-consigne').textContent =
-        combien > 1 ? combien + ' manches pour te rattraper. Tout se joue à la dernière.'
+        combien > 1 ? combien + ' manches pour te rattraper.'
                     : 'À toi de jouer.';
     };
     majSuite();
@@ -2627,9 +2646,10 @@ async function lancerLaPartie() {
     const bloc = document.getElementById('deja-joue-essai');
     if (bloc) bloc.hidden = !PARTIES_ILLIMITEES;
     // Le gagnant du jour qui recharge sa page atterrit ici : son bon
-    // est toujours dans le téléphone, on lui rouvre le chemin.
+    // est toujours dans le téléphone, on lui rouvre le chemin. Jamais
+    // sur la version d'essai : chaque partie de démo repart vierge.
     const versBons = document.getElementById('btn-deja-joue-bons');
-    if (versBons) versBons.hidden = !(window.PullUpBons && window.PullUpBons.combienValables() > 0);
+    if (versBons) versBons.hidden = PARTIES_ILLIMITEES || !(window.PullUpBons && window.PullUpBons.combienValables() > 0);
     return;
   }
 

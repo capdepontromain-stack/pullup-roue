@@ -71,13 +71,26 @@
 }
 
 html, body { height: 100%; }
+/* AUCUN GLISSEMENT LATÉRAL DE L'ÉCRAN (28/08/2026, retour Romain :
+   « quand la roue tourne, l'écran bouge de gauche à droite »).
+   La roue est un carré qui tourne : à 45 degrés, ses coins débordent
+   de l'écran et la page devenait scrollable en largeur, donc l'écran
+   « flottait » sous le doigt pendant la rotation. Le débordement
+   horizontal est coupé sur html ET body (body seul ne suffisait pas
+   sur iPhone : sa règle se propage au viewport et le pan latéral
+   restait possible). Surtout PAS « clip » ici : clip sur un axe
+   contamine l'autre axe et supprimait tout défilement vertical. */
+html { overflow-x: hidden; }
 
 body {
   font-family: var(--sans);
   background: var(--noir);
   color: var(--creme);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  /* Le verrou anti-débordement horizontal vit sur html (voir plus
+     haut) : le laisser AUSSI sur body transformait body en zone de
+     défilement séparée, et window.scrollTo ne remontait plus les
+     écrans en haut. */
 }
 
 /* Photo d'ambiance : bokeh doré, voilée pour la lisibilité.
@@ -132,6 +145,15 @@ body.theme-noel::after {
   padding: var(--e4) var(--marge) var(--e7);
   position: relative;
   z-index: 2;
+  /* LE DÉBORDEMENT EST COUPÉ À LA SOURCE (28/08/2026, retour Romain :
+     « quand la roue tourne, l'écran bouge »). La roue en rotation et
+     les écrans qui glissent à leur arrivée dépassaient du bord : la
+     page devenait scrollable en largeur et flottait sous le doigt,
+     même avec overflow-x caché sur la racine (iPhone l'ignore pour le
+     geste). Clip ici : rien ne déborde, donc rien ne peut glisser.
+     Le rideau, les flocons et les confettis vivent hors de .app et ne
+     sont pas concernés. */
+  overflow: clip;
 }
 
 /* --- En-tête : l'identité de l'opération, sur tous les écrans ---
@@ -3524,8 +3546,27 @@ body.theme-csc .hero-emoji { box-shadow: 0 14px 34px rgba(23, 34, 44, .16); }
 body.theme-csc .squelette { background: #E9EDF1; }
 body.theme-csc .squelette-carte { background: #FFFFFF; }
 
-/* La promo et sa carte : blanches, arrondies. */
-body.theme-csc .promo { background: #FFFFFF; border-color: #EDF0F3; border-radius: 14px; box-shadow: 0 8px 22px rgba(23, 34, 44, .07); }
+/* La promo et sa carte : blanches, arrondies.
+   L'ÉCRAN DES OFFRES RESPIRE (28/08/2026, Romain : « les écritures ne
+   sont pas centrées, trop près de la marge, ça ne respire pas ») : le
+   bandeau sombre hérité du thème doré disparaît, les cartes s'espacent,
+   le texte se centre et s'écarte des bords. */
+body.theme-csc .promos-liste {
+  background: none;
+  border-top: none;
+  margin: 10px 0 20px;
+  padding: 0;
+  gap: 14px;
+}
+body.theme-csc .promo {
+  background: #FFFFFF;
+  border-color: #EDF0F3;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(23, 34, 44, .07);
+  padding: 26px 22px 24px;
+  text-align: center;
+}
+body.theme-csc .promo-haut { justify-content: center; }
 body.theme-csc .badge-test { background: #EDF0F3; color: #6A7682; border-radius: 8px; }
 body.theme-csc.mode-test .badge-test { background: #EDF0F3; }
 
