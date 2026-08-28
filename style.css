@@ -3569,3 +3569,28 @@ body.theme-csc .bandit-consigne {
   color: #FFE9B8;
   background: rgba(36, 24, 4, .55);
 }
+
+/* LE TICKET À GRATTER, VERSION CLAIRE (28/08/2026, Romain : « le
+   ticket à gratter n'est pas trop visible »). En thème sombre il
+   traverse l'écran de bord à bord ; sur le fond clair, cette bande
+   dorée se lisait comme un aplat sans forme. Il redevient un objet :
+   une carte arrondie dans la marge, avec son ombre et son liseré. */
+body.theme-csc .ticket {
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 16px;
+  border: 1px solid rgba(201, 150, 46, .5);
+  box-shadow: 0 16px 40px rgba(23, 34, 44, .18);
+}
+/* Les perforations du bord à bord n'ont plus lieu d'être : la carte a
+   ses propres coins ronds. */
+body.theme-csc .ticket::before,
+body.theme-csc .ticket::after { display: none; }
+/* Le fond du ticket, sous le voile à gratter : le velours rouge du
+   centre, pour que le résultat ressorte une fois découvert. */
+body.theme-csc .ticket-fond {
+  background: linear-gradient(160deg, #C42730 0%, #8E1418 100%);
+}
+body.theme-csc .ticket-mention { color: #FFD9A8; opacity: .95; }
+body.theme-csc .ticket-detail { color: #FFF1E4; }
+body.theme-csc .ticket-resultat.ticket-perdu { color: #FFFFFF; opacity: 1; }
