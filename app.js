@@ -1732,7 +1732,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '29aout2026j';
+const VERSION_JEUX = '29aout2026k';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -2320,12 +2320,21 @@ function afficherResultat() {
     if (suitePerdue) suitePerdue.textContent = 'Profiter de mes bons de réduction';
     const plusTardPerdu = document.getElementById('btn-resultat-plus-tard');
     if (plusTardPerdu) plusTardPerdu.hidden = true;
+    // La deuxième porte : le programme des animations (29/08/2026,
+    // Romain). Elle n'apparaît qu'au perdant : le gagnant, lui, file
+    // vers son bon.
+    const programmePerdu = document.getElementById('btn-resultat-programme');
+    if (programmePerdu) programmePerdu.hidden = false;
     mention.textContent = 'Ce n’est pas fini : la galerie t’offre quand même des bons de réduction chez tes commerçants.';
     mention.hidden = false;
     vibrer(120);
   } else {
     const suite = document.getElementById('btn-resultat-continuer');
     if (suite) suite.textContent = 'Obtenir mon cadeau';
+    // Le bouton du programme est réservé au perdant : on le referme
+    // ici, au cas où l'écran resservirait après une partie perdue.
+    const programmeGagne = document.getElementById('btn-resultat-programme');
+    if (programmeGagne) programmeGagne.hidden = true;
     const msg = messageAleatoire(MESSAGES_GAGNE);
     medaillonLot(emoji, lotGagne.nom);
     titre.innerHTML = msg.titre;
@@ -3169,6 +3178,8 @@ window.roueAfficherBonRetrouve = function (bon) {
   if (continuerRetour) continuerRetour.textContent = 'Continuer';
   const plusTardRetour = document.getElementById('btn-resultat-plus-tard');
   if (plusTardRetour) plusTardRetour.hidden = true;
+  const programmeRetour = document.getElementById('btn-resultat-programme');
+  if (programmeRetour) programmeRetour.hidden = true;
   // La mention est masquée sur l'écran d'un perdant : on la rouvre ici,
   // sinon un joueur qui revient sur son bon ne lirait plus la règle.
   document.getElementById('resultat-mention').hidden = false;
@@ -3247,6 +3258,12 @@ document.getElementById('btn-resultat-continuer').addEventListener('click', () =
 const btnPlusTard = document.getElementById('btn-resultat-plus-tard');
 if (btnPlusTard) {
   btnPlusTard.addEventListener('click', () => afficherDecouverte());
+}
+// La deuxième porte du perdant (29/08/2026, demande de Romain) : voir
+// le programme des animations de la galerie sans passer par les offres.
+const btnProgrammePerdu = document.getElementById('btn-resultat-programme');
+if (btnProgrammePerdu) {
+  btnProgrammePerdu.addEventListener('click', () => afficherProgramme());
 }
 document.getElementById('btn-promos-retour').addEventListener('click', () => afficherDecouverte());
 
