@@ -609,7 +609,8 @@ h1 {
 }
 .btn-retour {
   flex-shrink: 0;
-  width: 40px; height: 40px;
+  /* 44 px : la taille minimale d'une cible tactile confortable */
+  width: 44px; height: 44px;
   margin-left: -8px;
   display: flex;
   align-items: center;
@@ -2840,12 +2841,17 @@ body.theme-circus .guirlande i {
   box-shadow: 0 0 8px 1px rgba(239, 195, 104, .5);
   animation: ampoule 3.6s ease-in-out infinite;
 }
+/* L'opacité seule suffit au scintillement : elle atténue aussi la
+   lueur (box-shadow) de l'ampoule, et le navigateur peut la composer
+   sur la carte graphique au lieu de repeindre l'écran 60 fois par
+   seconde. Ne pas remettre box-shadow dans ces keyframes. */
 @keyframes ampoule {
-  0%, 100% { opacity: .45; box-shadow: 0 0 6px 0 rgba(239, 195, 104, .35); }
-  50%      { opacity: 1;   box-shadow: 0 0 11px 2px rgba(255, 233, 184, .75); }
+  0%, 100% { opacity: .45; }
+  50%      { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  body.theme-circus .guirlande i { animation: none; opacity: .8; }
+  body.theme-circus .guirlande i,
+  body.theme-csc .guirlande i { animation: none; opacity: .8; }
 }
 
 /* La pastille du pied et les filets prennent le rouge de la piste. */
@@ -3361,7 +3367,9 @@ body.theme-csc {
   --or-clair: #FF4F4F;
   --or-blanc: #17222C;                    /* les grands titres : encre profonde */
   --creme: #3A4652;                       /* le texte courant */
-  --gris: #6A7682;
+  /* #5E6A76 et pas plus clair : les mentions en 12,5 px doivent tenir
+     le contraste AA (4,5:1) sur le fond blanc cassé. */
+  --gris: #5E6A76;
   --rouge: #E4373F;
   --rouge-clair: #FF4F4F;
   --filet: rgba(228, 55, 63, .18);

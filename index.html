@@ -22,29 +22,31 @@
        la feuille de style, au lieu d'attendre qu'elle soit lue. -->
   <link rel="preload" href="fonts/playfairdisplay-600.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/jost-400.woff2" as="font" type="font/woff2" crossorigin>
-  <!-- Les deux images du premier écran, demandées tout de suite au lieu
-       d'attendre que la feuille de style soit lue et appliquée. -->
-  <link rel="preload" href="img/fond-bokeh-or.jpg" as="image">
+  <!-- Le fond doré n'est plus préchargé (28/08/2026) : le thème Cap
+       Sacré-Cœur, celui de tous les QR actuels, ne l'affiche pas et
+       ces 65 Ko partaient pour rien à chaque ouverture. Les thèmes
+       sombres le chargent par la feuille de style dès qu'ils en ont
+       besoin. -->
   <!-- Le numéro derrière le nom du fichier force le téléphone à recharger
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=28aout2026q">
+  <link rel="stylesheet" href="style.css?v=28aout2026r">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=28aout2026q" defer></script>
-  <script src="icones-quiz.js?v=28aout2026q" defer></script>
-  <script src="contenus-demo.js?v=28aout2026q" defer></script>
+  <script src="icones.js?v=28aout2026r" defer></script>
+  <script src="icones-quiz.js?v=28aout2026r" defer></script>
+  <script src="contenus-demo.js?v=28aout2026r" defer></script>
   <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
        Il tient la liste des bons du joueur et sait la dessiner. Chargé
        avant app.js, qui l'appelle à deux endroits : quand un lot est
        gagné, et quand un bon de promotion est pris. Voir bons.js. -->
-  <script src="bons.js?v=28aout2026q" defer></script>
-  <script src="app.js?v=28aout2026q" defer></script>
+  <script src="bons.js?v=28aout2026r" defer></script>
+  <script src="app.js?v=28aout2026r" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -93,12 +95,19 @@
     <!-- Écran 1 : accueil -->
     <section id="ecran-accueil" class="ecran actif">
       <div class="hero">
-        <div class="hero-emoji hero-photo" id="accueil-medaillon"></div>
+        <!-- La classe hero-photo (et ses 340 Ko de photographie en fond) est
+             posée par app.js uniquement pour les thèmes qui affichent le
+             médaillon : la déclarer ici la ferait télécharger par tous. -->
+        <div class="hero-emoji" id="accueil-medaillon"></div>
         <h1>La Hotte des<br><span class="or">Commerçants</span></h1>
         <p id="accueil-lieu" class="lieu-badge" hidden></p>
         <p class="sous-titre">Un mini test de personnalité, tu fais tourner la roue, et tu repars peut-être avec un cadeau&nbsp;!</p>
         <p class="accueil-compte" id="accueil-compte"></p>
         <button class="btn btn-or btn-grand" id="btn-jouer">C'est parti&nbsp;!</button>
+        <!-- Rempli par app.js quand le téléphone garde un bon encore
+             valable : le joueur qui revient (ou qui a rechargé la page)
+             retrouve son code sans avoir à rejouer. -->
+        <div id="accueil-rappel-bons"></div>
         <div class="mentions">
           <p class="mini-mention">Jeu gratuit, sans obligation d'achat · 1 partie par jour · <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">Règlement</a> · Moins de 18 ans&nbsp;: joue avec l'accord d'un parent.</p>
         </div>
@@ -170,7 +179,7 @@
         <!-- Ce bouton ouvre le ticket à gratter, et le jeu du jour n'est
              pas toujours la roue : « Je tente ma chance » reste vrai. -->
         <button class="btn btn-or btn-grand" id="btn-valider">Je tente ma chance</button>
-        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Tu viens de choisir librement si tu voulais aussi recevoir les bons plans des commerçants&nbsp;: ce choix ne change rien à ta participation. Données conservées trois ans au maximum, jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">En savoir plus sur tes données</a></p>
+        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Après le jeu, on te demandera si tu veux aussi recevoir les bons plans des commerçants&nbsp;: ce choix ne changera rien à ta partie ni à ton lot, et tu pourras en changer quand tu veux. Données conservées un an après l&rsquo;opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">En savoir plus sur tes données</a></p>
       </div>
     </section>
 
@@ -448,7 +457,7 @@
     <section id="ecran-offres" class="ecran">
       <div class="hero hero-offres">
         <div class="hero-emoji" id="offres-medaillon"></div>
-        <span class="offres-kicker">Avant de jouer</span>
+        <span class="offres-kicker">Avant de partir</span>
         <h1 id="offres-titre">Les bons plans de la galerie, chaque jeudi.</h1>
         <p class="sous-titre" id="offres-soustitre">Les bons de réduction, la remise chez ta boutique préférée, les nouvelles collections, le menu du midi.</p>
 
@@ -553,6 +562,10 @@
           <p class="sous-titre">Mais comme tu es sur la <strong>version d'essai</strong>, tu peux rejouer autant de fois que tu veux. Dans la vraie opération, c'est une partie par personne et par jour.</p>
           <button class="btn btn-or btn-grand" id="btn-rejouer-essai">Rejouer quand même</button>
         </div>
+        <!-- Le gagnant qui recharge sa page atterrit ici : sans ce
+             bouton, son bon dort dans le téléphone sans aucun chemin
+             pour le rouvrir. Affiché par app.js s'il reste un bon. -->
+        <button class="btn btn-discret btn-grand" id="btn-deja-joue-bons" hidden>Revoir mes bons</button>
       </div>
     </section>
 

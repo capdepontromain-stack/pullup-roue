@@ -221,6 +221,14 @@ function appliquerOperation() {
     logo.alt = OPERATION.lieu || '';
     logo.hidden = false;
     lieuEntete.hidden = true;
+    // Si l'image du logo ne charge pas (fichier déplacé, 4G qui coupe),
+    // l'en-tête de tous les écrans afficherait une icône cassée : on
+    // retombe sur le nom de la galerie en toutes lettres.
+    logo.onerror = () => {
+      logo.hidden = true;
+      lieuEntete.textContent = (OPERATION.lieu || OPERATION.nom || '').trim();
+      lieuEntete.hidden = !lieuEntete.textContent;
+    };
   } else {
     logo.hidden = true;
     lieuEntete.textContent = (OPERATION.lieu || OPERATION.nom || '').trim();
@@ -239,6 +247,31 @@ function appliquerOperation() {
     const n = QUESTIONS.length;
     compte.textContent = enLettres(n).charAt(0).toUpperCase() + enLettres(n).slice(1) +
       ' questions rapides';
+  }
+
+  // LE BON EN POCHE, RAPPELÉ DÈS L'ACCUEIL (28/08/2026)
+  // Le joueur qui rouvre le jeu devant la caisse (ou qui a rechargé sa
+  // page) a son bon dans le téléphone, mais l'accueil ne lui en disait
+  // rien : il fallait rejouer, tomber sur « Pas si vite ! », et rester
+  // coincé. Une ligne discrète le mène droit à son code.
+  const zoneRappel = document.getElementById('accueil-rappel-bons');
+  if (zoneRappel && window.PullUpBons) {
+    // L'habillage passe deux fois (secours local, puis la base qui
+    // répond) : on repart de zéro pour ne pas empiler deux rappels.
+    zoneRappel.innerHTML = '';
+    const enPoche = window.PullUpBons.combienValables();
+    if (enPoche > 0) {
+      const rappel = document.createElement('button');
+      rappel.type = 'button';
+      rappel.className = 'rappel-bons';
+      rappel.innerHTML =
+        '<span class="rappel-bons-mot">' +
+          (enPoche > 1 ? 'Tu as <strong>' + enPoche + ' bons</strong> à utiliser'
+                       : 'Tu as <strong>un bon</strong> à utiliser') +
+        '</span><span class="rappel-bons-lien">Le voir</span>';
+      rappel.addEventListener('click', function () { afficherMesBons(); });
+      zoneRappel.appendChild(rappel);
+    }
   }
   const lieu = document.getElementById('accueil-lieu');
   lieu.textContent = OPERATION.lieu || '';
@@ -526,8 +559,13 @@ function deduireFoyer() {
 // --------------------------------------------
 const reponses = {};
 let questionActuelle = 0;
+// Vrai entre la tape sur une réponse et l'affichage de la question
+// suivante : empêche une double tape d'avancer de deux questions.
+let avanceQuizEnCours = false;
 let lotGagne = null;
 let codeLot = null;
+// L'horloge « seconde qui défile » des écrans de validation d'un bon.
+let horlogeValidation = null;
 
 // --------------------------------------------
 // NAVIGATION ENTRE ÉCRANS
@@ -542,6 +580,11 @@ function afficherEcran(id, sens) {
   const ecran = document.getElementById(id);
   if (sens === 'arriere') ecran.classList.add('recule');
   ecran.classList.add('actif');
+  // L'horloge de validation (la seconde qui défile sous les yeux du
+  // commerçant) n'a de raison de battre que sur ses deux écrans.
+  if (id !== 'ecran-resultat' && id !== 'ecran-bon-promo') {
+    clearInterval(horlogeValidation);
+  }
   // L'écran d'accueil porte déjà le nom du jeu en très grand : l'en-tête
   // n'y répète pas la ligne dorée, elle reviendra dès l'écran suivant.
   document.body.classList.toggle('sur-accueil', id === 'ecran-accueil');
@@ -574,6 +617,7 @@ function compteRebours() {
 }
 
 function afficherQuestion() {
+  avanceQuizEnCours = false;
   const q = QUESTIONS[questionActuelle];
   document.getElementById('barre-progression').style.width =
     Math.round(((questionActuelle + 1) / QUESTIONS.length) * 100) + '%';
@@ -655,6 +699,12 @@ function afficherQuestion() {
           reponses[q.id] = Array.from(choisies).join(',');
           majBoutonMulti(choisies.size);
         } else {
+          // Deux tapes rapides sur une réponse planifiaient deux
+          // avancées : la deuxième sautait une question entière et la
+          // réponse suivante s'enregistrait sur la mauvaise colonne.
+          // Le verrou tombe tout seul au rendu de la question suivante.
+          if (avanceQuizEnCours) return;
+          avanceQuizEnCours = true;
           reponses[q.id] = opt.v;
           // Certaines réponses remplissent une deuxième colonne :
           // c'est ce qui permet de tenir en cinq questions.
@@ -738,7 +788,7 @@ function adapterCoordonneesMineur() {
   if (texte) {
     texte.textContent = mineur
       ? 'Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot, rien d’autre. Tu ne recevras aucune offre par e-mail : c’est réservé aux joueurs majeurs. Données supprimées au plus tard un an après l’opération, jamais vendues.'
-      : 'Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Tu viens de choisir librement si tu voulais aussi recevoir les bons plans des commerçants : ce choix ne change rien à ta participation, et tu peux en changer quand tu veux. Données conservées un an après l’opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.';
+      : 'Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Après le jeu, on te demandera si tu veux aussi recevoir les bons plans des commerçants : ce choix ne changera rien à ta partie ni à ton lot, et tu pourras en changer quand tu veux. Données conservées un an après l’opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.';
   }
 }
 
@@ -1273,7 +1323,10 @@ function preparerGrattage() {
 
   const voile = document.getElementById('ticket-voile');
   voile.classList.remove('efface');
-  const ctx = voile.getContext('2d');
+  // willReadFrequently : on relit les pixels pendant le grattage, ce
+  // réglage évite au navigateur des allers-retours avec la carte
+  // graphique qui font ramer les téléphones d'entrée de gamme.
+  const ctx = voile.getContext('2d', { willReadFrequently: true });
   const L = voile.width, H = voile.height;
 
   // Le voile doré à gratter
@@ -1342,6 +1395,11 @@ function installerGrattage(voile, ctx) {
     };
   }
 
+  // Mesurer la part grattée relit tout le canvas : le faire à chaque
+  // mouvement de doigt (souvent 60 par seconde) fait saccader le geste
+  // sur un téléphone modeste. Un coup sur cinq suffit largement, le
+  // seuil de 42 % ne se joue pas au mouvement près.
+  let mouvementsDepuisMesure = 0;
   function creuser(evenement) {
     if (!gratte || devoile) return;
     evenement.preventDefault();
@@ -1352,7 +1410,11 @@ function installerGrattage(voile, ctx) {
     ctx.beginPath();
     ctx.arc(p.x, p.y, 34, 0, Math.PI * 2);
     ctx.fill();
-    if (partGrattee(ctx, voile) > 0.42) revelerTicket();
+    mouvementsDepuisMesure++;
+    if (mouvementsDepuisMesure >= 5) {
+      mouvementsDepuisMesure = 0;
+      if (partGrattee(ctx, voile) > 0.42) revelerTicket();
+    }
   }
 
   function revelerTicket() {
@@ -1382,7 +1444,9 @@ function installerGrattage(voile, ctx) {
 
   voile.onpointerdown = e => { gratte = true; creuser(e); };
   voile.onpointermove = creuser;
-  voile.onpointerup = () => { gratte = false; };
+  // Au lever du doigt, une dernière mesure : la mesure espacée (un coup
+  // sur cinq) ne doit pas laisser un ticket gratté à 42 % sans verdict.
+  voile.onpointerup = () => { gratte = false; if (!devoile && partGrattee(ctx, voile) > 0.42) revelerTicket(); };
   voile.onpointerleave = () => { gratte = false; };
   // Filet de sécurité : au bout de 12 secondes, on révèle tout seul
   setTimeout(() => { if (!devoile) revelerTicket(); }, 12000);
@@ -2499,6 +2563,10 @@ async function lancerLaPartie() {
     afficherEcran('ecran-deja-joue');
     const bloc = document.getElementById('deja-joue-essai');
     if (bloc) bloc.hidden = !PARTIES_ILLIMITEES;
+    // Le gagnant du jour qui recharge sa page atterrit ici : son bon
+    // est toujours dans le téléphone, on lui rouvre le chemin.
+    const versBons = document.getElementById('btn-deja-joue-bons');
+    if (versBons) versBons.hidden = !(window.PullUpBons && window.PullUpBons.combienValables() > 0);
     return;
   }
 
@@ -2708,7 +2776,8 @@ document.getElementById('btn-jouer').addEventListener('click', () => {
 // et le bon est brûlé une fois pour toutes.
 // --------------------------------------------
 const CLE_BONS = 'roue_bons_utilises';
-let horlogeValidation = null;
+// (horlogeValidation est déclarée avec l'état du jeu, en tête de
+// fichier : afficherEcran l'arrête en changeant d'écran.)
 
 function bonsUtilises() {
   try { return JSON.parse(localStorage.getItem(CLE_BONS) || '{}'); }
@@ -2742,6 +2811,21 @@ function demarrerHorloge() {
   battre();
   clearInterval(horlogeValidation);
   horlogeValidation = setInterval(battre, 1000);
+}
+
+// Le serveur a répondu que ce code n'existe pas (voir btn-confirme-oui) :
+// même habillage que le bon périmé, mais le bon local n'est pas brûlé.
+function afficherBonInconnu() {
+  const bloc = document.getElementById('bon-valide');
+  clearInterval(horlogeValidation);
+  document.getElementById('confirme-utilisation').hidden = true;
+  document.getElementById('valide-lot').textContent = '';
+  bloc.classList.add('bon-perime');
+  bloc.hidden = false;
+  document.querySelector('.valide-titre').textContent = 'Bon non reconnu';
+  document.getElementById('valide-horloge').textContent = '';
+  document.querySelector('.valide-mention').textContent =
+    'Ce code n’est pas reconnu par le jeu. Si tu as bien gagné aujourd’hui, rouvre le jeu avec du réseau puis réessaie, ou passe à l’accueil de la galerie.';
 }
 
 // depuis = null : le bon vient d'être utilisé, à l'instant, devant le commerçant.
@@ -2798,24 +2882,41 @@ document.getElementById('btn-confirme-oui').addEventListener('click', async (evt
   // vider les données du site pour retrouver un bon d'apparence neuve et
   // se faire servir deux fois.
   //
-  // Trois réponses possibles :
+  // Quatre réponses possibles :
   //   - le bon vient d'être brûlé      -> écran vert « Bon utilisé »
   //   - le bon avait déjà servi        -> écran ROUGE « Bon déjà utilisé »
-  //   - le serveur ne connaît pas le code (participation encore en attente
-  //     d'envoi, réseau coupé) -> on fait confiance au joueur. Refuser un
-  //     vrai gagnant parce que la 4G est capricieuse coûterait plus cher,
-  //     en image, que la fraude évitée.
+  //   - le serveur ne répond pas (réseau coupé) -> on fait confiance au
+  //     joueur. Refuser un vrai gagnant parce que la 4G est capricieuse
+  //     coûterait plus cher, en image, que la fraude évitée.
+  //   - le serveur RÉPOND et ne connaît pas le code -> en production,
+  //     c'est un code fabriqué (résultat forcé, code inventé) : refus
+  //     poli, sauf si une participation attend encore d'être envoyée
+  //     (le vrai gagnant dont la 4G a coupé pendant la partie). Sur la
+  //     version d'essai, la confiance reste entière : les bons de
+  //     démonstration ne sont jamais en base.
   let dejaUtiliseLe = null;
+  let codeInconnu = false;
   try {
     const { data, error } = await sb.rpc('roue_bon_etat', { p_code: code });
     if (!error && data && data.trouve && data.deja_utilise) {
       dejaUtiliseLe = data.utilise_le || new Date().toISOString();
+    }
+    if (!error && data && !data.trouve && !PARTIES_ILLIMITEES) {
+      let enAttente = [];
+      try { enAttente = JSON.parse(localStorage.getItem(CLE_ATTENTE) || '[]'); } catch (e2) { /* vide */ }
+      if (enAttente.length === 0) codeInconnu = true;
     }
   } catch (e) {
     console.warn('Utilisation non remontée :', e);
   }
 
   bouton.disabled = false;
+  if (codeInconnu) {
+    // Le bon n'est PAS brûlé localement : si c'était un vrai bon mal
+    // synchronisé, le joueur pourra réessayer une fois le réseau revenu.
+    afficherBonInconnu();
+    return;
+  }
   marquerBonUtilise(code, lot);
   afficherBonUtilise(lot, dejaUtiliseLe);
 
@@ -3509,6 +3610,9 @@ async function afficherNouveautes() {
 }
 
 document.getElementById('carte-mesbons').addEventListener('click', function () { afficherMesBons(); });
+// Depuis l'écran « Pas si vite ! » : rouvrir le portefeuille de bons.
+const btnDejaJoueBons = document.getElementById('btn-deja-joue-bons');
+if (btnDejaJoueBons) btnDejaJoueBons.addEventListener('click', function () { afficherMesBons(); });
 document.getElementById('btn-mes-bons-retour').addEventListener('click', function () { afficherDecouverte(); });
 document.getElementById('carte-promos').addEventListener('click', function () { afficherPromos(); });
 // V2 : la carte des nouveautés n'existe plus dans la page ; on ne
