@@ -268,7 +268,7 @@ function appliquerOperation() {
         '<span class="rappel-bons-mot">' +
           (enPoche > 1 ? 'Tu as <strong>' + enPoche + ' bons</strong> à utiliser'
                        : 'Tu as <strong>un bon</strong> à utiliser') +
-        '</span><span class="rappel-bons-lien">Le voir</span>';
+        '</span><span class="rappel-bons-lien">' + (enPoche > 1 ? 'Les voir' : 'Le voir') + '</span>';
       rappel.addEventListener('click', function () { afficherMesBons(); });
       zoneRappel.appendChild(rappel);
     }
