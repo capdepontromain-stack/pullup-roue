@@ -123,12 +123,16 @@ const OPERATIONS_LOCALES = {
     // L'UNIVERS DE DÉCEMBRE 2026 EST LE CIRQUE (Romain, 26/08/2026) :
     // Cap Sacré-Cœur décore sa galerie sur ce thème, le jeu suit. Le
     // Père Noël reste de la partie, en Monsieur Loyal.
-    theme: 'circus',
+    theme: 'csc',
     // Le logo de la galerie dans sa vraie couleur (26/08/2026, Romain :
     // « le logo Cap Sacré-Cœur est rouge sur internet, mets-le en rouge
     // et plus gros »). La version blanche reste dans le dossier pour un
     // support qui ne supporterait pas le rouge.
     logo: 'img/client/logo-csc-couleur.png',
+    // Les bons GAGNÉS AU JEU valent jusqu'au 24 décembre (Romain,
+    // 28/08/2026). Les bons des offres du jour, eux, ne valent que le
+    // jour même : c'est bons.js qui les fait expirer.
+    validite_bons: '24 décembre',
     texte_tirage: '',
     // LES LOTS D'EXEMPLE, DICTÉS PAR ROMAIN LE 27/08/2026. Ce sont de
     // vraies enseignes de la galerie, données par lui pour la version
@@ -153,6 +157,11 @@ function appliquerOperation() {
   // L'UNIVERS DU CIRQUE (décembre 2026) : rideau de velours, ampoules
   // de chapiteau, fanions. Tout est dans style.css, sous .theme-circus.
   document.body.classList.toggle('theme-circus', OPERATION.theme === 'circus');
+  // LE THÈME CAP SACRÉ-CŒUR (V2 design, 28/08/2026) : fond clair,
+  // rouge du centre, cartes blanches arrondies, la façade du centre en
+  // tête. Calqué sur capsacrecoeur.re, à la demande de la galerie
+  // (« le design doit se baser sur notre site »).
+  document.body.classList.toggle('theme-csc', OPERATION.theme === 'csc');
 
   // LE MÉDAILLON D'ACCUEIL : le Père Noël, EN DESSIN.
   // 27/08/2026 : le médaillon montre LE CHAPITEAU, plus de Père Noël.
@@ -1563,7 +1572,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '28aout2026b';
+const VERSION_JEUX = '28aout2026e';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -3019,7 +3028,7 @@ async function afficherPromos() {
        </div>
        <div class="promo-titre">${echap(o.titre || '')}</div>
        <div class="promo-detail">${echap(o.detail || '')}</div>
-       ${o.valable_jusqu_au ? `<span class="promo-fin">Valable jusqu'au ${echap(o.valable_jusqu_au)}</span>` : ''}`;
+       <span class="promo-fin">Valable aujourd’hui seulement</span>`;
 
     if (o.bon) {
       const btn = document.createElement('button');
@@ -3084,7 +3093,7 @@ function ouvrirBonPromo(offre, index) {
       commercant: offre.enseigne || '',
       detail: offre.bon || '',
       source: 'promo',
-      validite: offre.valable_jusqu_au || ''
+      validite: 'aujourd’hui seulement'
     });
     rafraichirOngletBons();
   }
@@ -3545,7 +3554,8 @@ function estDuJour(jour) {
   return j === sansAccents(jourCourantLisible());
 }
 
-async function afficherProgramme() {
+async function afficherProgramme(mode) {
+  const toutLeMois = mode === 'mois';
   const liste = document.getElementById('programme-liste');
   liste.innerHTML = squelettes(3);
   activerOnglet('programme');
@@ -3566,12 +3576,16 @@ async function afficherProgramme() {
   if (!evenements.length && typeof PROGRAMME_DEMO !== 'undefined') evenements = PROGRAMME_DEMO;
 
   // V2 (28/08/2026) : une visite = une journée. On ne montre que les
-  // rendez-vous d'AUJOURD'HUI (et les permanents) : le programme
-  // change donc chaque jour tout seul, et l'écran reste léger.
-  evenements = evenements.filter(ev => estDuJour(ev.jour));
+  // rendez-vous d'AUJOURD'HUI (et les permanents), et un bouton ouvre
+  // le calendrier complet du mois (demande de Romain : « on voit
+  // l'animation du jour et il faut cliquer pour voir tout le
+  // calendrier »).
+  const tous = evenements.slice();
+  if (!toutLeMois) evenements = evenements.filter(ev => estDuJour(ev.jour));
 
   if (!evenements.length) {
     liste.innerHTML = '<p class="promo-vide">Pas d’animation prévue aujourd’hui.<br>Reviens demain, le programme change chaque jour.</p>';
+    if (tous.length) ajouterBoutonMois(liste);
     return;
   }
 
@@ -3587,18 +3601,51 @@ async function afficherProgramme() {
     });
   }
 
-  // 2. LES RENDEZ-VOUS DU JOUR, sur leur fil doré. Un seul intitulé :
-  // « Aujourd'hui », avec la date écrite en toutes lettres.
   const dates = evenements.filter(ev => String(ev.jour || '').trim());
-  if (dates.length) {
-    liste.appendChild(titreDeJournee('Aujourd’hui', jourCourantLisible()));
-    const fil = document.createElement('div');
-    fil.className = 'agenda-fil';
+  if (!toutLeMois) {
+    // MODE JOUR : un seul intitulé, « Aujourd'hui », puis le bouton
+    // qui ouvre le calendrier complet.
+    if (dates.length) {
+      liste.appendChild(titreDeJournee('Aujourd’hui', jourCourantLisible()));
+      const fil = document.createElement('div');
+      fil.className = 'agenda-fil';
+      dates.forEach(ev => fil.appendChild(ligneAgenda(ev, retard++, false)));
+      liste.appendChild(fil);
+    }
+    ajouterBoutonMois(liste);
+  } else {
+    // MODE MOIS : les journées groupées, dans l'ordre de la liste.
+    const journees = [];
     dates.forEach(ev => {
-      fil.appendChild(ligneAgenda(ev, retard++, false));
+      const jour = /^aujourd/i.test(sansAccents(ev.jour)) ? 'Aujourd’hui' : String(ev.jour).trim();
+      let bloc = journees.filter(j => j.jour === jour)[0];
+      if (!bloc) { bloc = { jour: jour, evenements: [] }; journees.push(bloc); }
+      bloc.evenements.push(ev);
     });
-    liste.appendChild(fil);
+    journees.forEach(bloc => {
+      liste.appendChild(titreDeJournee(bloc.jour, ''));
+      const fil = document.createElement('div');
+      fil.className = 'agenda-fil';
+      bloc.evenements.forEach(ev => fil.appendChild(ligneAgenda(ev, retard++, false)));
+      liste.appendChild(fil);
+    });
+    const retour = document.createElement('button');
+    retour.type = 'button';
+    retour.className = 'btn btn-discret btn-calendrier';
+    retour.textContent = 'Revenir à aujourd’hui';
+    retour.addEventListener('click', () => afficherProgramme());
+    liste.appendChild(retour);
   }
+}
+
+// Le bouton qui ouvre le calendrier complet du mois.
+function ajouterBoutonMois(liste) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'btn btn-discret btn-calendrier';
+  btn.textContent = 'Voir tout le calendrier du mois';
+  btn.addEventListener('click', () => afficherProgramme('mois'));
+  liste.appendChild(btn);
 }
 
 // L'intitulé d'une journée : un filet doré, la date, et au besoin une

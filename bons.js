@@ -109,21 +109,31 @@
     liste() {
       const tout = lire(CLE_PORTEFEUILLE, '{}');
       const utilises = lire(CLE_UTILISES, '{}');
+      // LE BON D'UNE OFFRE DU JOUR NE VAUT QUE LE JOUR MÊME (28/08/2026,
+      // décision de Romain). Un bon promo obtenu un autre jour est
+      // marqué expiré : il reste visible, barré, pour que le joueur
+      // comprenne la règle, mais il ne compte plus et ne s'utilise
+      // plus. Les bons gagnés AU JEU, eux, vivent jusqu'à la date de
+      // l'opération (24 décembre) : rien ne les expire ici.
+      const aujourdHui = new Date().toISOString().slice(0, 10);
       return Object.keys(tout).map(code => {
         const b = Object.assign({}, tout[code]);
         const u = utilises[code];
         b.utilise = !!u;
         b.utiliseLe = u ? u.date : null;
+        b.expire = b.source === 'promo' &&
+          String(b.obtenu || '').slice(0, 10) !== aujourdHui;
         return b;
       }).sort((a, b) => {
-        if (a.utilise !== b.utilise) return a.utilise ? 1 : -1;
+        const aMort = a.utilise || a.expire, bMort = b.utilise || b.expire;
+        if (aMort !== bMort) return aMort ? 1 : -1;
         return String(a.obtenu).localeCompare(String(b.obtenu));
       });
     },
 
     // Combien de bons le joueur peut encore présenter.
     combienValables() {
-      return this.liste().filter(b => !b.utilise).length;
+      return this.liste().filter(b => !b.utilise && !b.expire).length;
     },
 
     // --------------------------------------------------------
@@ -145,8 +155,8 @@
         return;
       }
 
-      const valables = bons.filter(b => !b.utilise);
-      const passes   = bons.filter(b => b.utilise);
+      const valables = bons.filter(b => !b.utilise && !b.expire);
+      const passes   = bons.filter(b => b.utilise || b.expire);
 
       if (valables.length) {
         const titre = document.createElement('p');
@@ -161,7 +171,7 @@
       if (passes.length) {
         const titre = document.createElement('p');
         titre.className = 'bons-section bons-section-passee';
-        titre.textContent = passes.length === 1 ? 'Bon déjà utilisé' : 'Bons déjà utilisés';
+        titre.textContent = passes.length === 1 ? 'Bon passé' : 'Bons passés';
         conteneur.appendChild(titre);
         passes.forEach(b => conteneur.appendChild(carteBon(b, surUtiliser)));
       }
@@ -200,11 +210,22 @@
         ? 'Utilisé le ' + jourLisible(bon.utiliseLe)
         : 'Déjà utilisé';
       el.appendChild(note);
+    } else if (bon.expire) {
+      // Le bon d'une offre du jour, le lendemain : barré, avec la
+      // règle écrite. Pas de bouton : il ne s'utilise plus.
+      el.classList.add('bon-passe');
+      const note = document.createElement('span');
+      note.className = 'bon-passe-note';
+      note.textContent = 'Expiré : ce bon n’était valable que le jour même.';
+      el.appendChild(note);
     } else {
       if (bon.validite) {
         const v = document.createElement('span');
         v.className = 'bon-validite';
-        v.textContent = 'Valable jusqu’au ' + bon.validite;
+        // « aujourd'hui seulement » ne se dit pas « jusqu'au »...
+        v.textContent = /aujourd/i.test(bon.validite)
+          ? 'Valable aujourd’hui seulement'
+          : 'Valable jusqu’au ' + bon.validite;
         el.appendChild(v);
       }
       const btn = document.createElement('button');

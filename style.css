@@ -3345,3 +3345,179 @@ body.theme-circus .ticket-detail { color: var(--toile); }
   color: var(--gris);
   font-style: italic;
 }
+
+/* ============================================================
+   LE THÈME CAP SACRÉ-CŒUR (V2 design, 28/08/2026)
+   ============================================================
+   Retour de la galerie : « le design doit se baser sur notre
+   site ». Donc : fond clair, cartes blanches arrondies aux
+   ombres douces, le rouge Cap Sacré-Cœur en accent, la façade
+   du centre en tête sous un voile clair, et une pointe de
+   cirque (la bande rayée) avec la profondeur de Noël (les
+   ampoules chaudes). Les machines des jeux, elles, restent des
+   objets sombres et dorés : posées sur le fond clair, elles
+   ressortent comme de vrais stands de fête foraine.
+   Le levier : les variables. Tout ce qui lisait l'or ou la
+   crème lit maintenant l'encre et le rouge. Ce qui était codé
+   en dur est surchargé plus bas. */
+body.theme-csc {
+  --noir: #F7F8FA;                        /* le fond de la page */
+  --encre: #FFFFFF;
+  --verre: rgba(255, 255, 255, .96);      /* les cartes deviennent blanches */
+  --or: #E4373F;                          /* l'accent : le rouge du centre */
+  --or-clair: #FF4F4F;
+  --or-blanc: #17222C;                    /* les grands titres : encre profonde */
+  --creme: #3A4652;                       /* le texte courant */
+  --gris: #6A7682;
+  --rouge: #E4373F;
+  --rouge-clair: #FF4F4F;
+  --filet: rgba(228, 55, 63, .18);
+  --filet-fort: rgba(228, 55, 63, .38);
+}
+
+/* Le fond : la façade du centre, très voilée de blanc. On la devine,
+   elle ne gêne jamais la lecture. */
+body.theme-csc::before {
+  background: url('img/client/facade-csc.jpg') center 22% / cover no-repeat;
+  filter: none;
+}
+body.theme-csc::after {
+  background:
+    linear-gradient(180deg,
+      rgba(247, 248, 250, .58) 0%,
+      rgba(247, 248, 250, .88) 26%,
+      rgba(247, 248, 250, .97) 55%,
+      #F7F8FA 78%);
+}
+
+/* La bande rayée du chapiteau, en rouge du centre : la pointe de
+   cirque demandée, discrète. */
+body.theme-csc .app::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  z-index: 6;
+  background: repeating-linear-gradient(90deg, #E4373F 0 14px, #FFFFFF 14px 28px);
+  opacity: .95;
+}
+
+/* La guirlande d'ampoules reste : c'est la profondeur de Noël. Elle
+   passe en rouge et or chauds sur le fond clair. */
+body.theme-csc .guirlande { display: flex; justify-content: space-between; align-items: center; gap: 4px; margin: -6px 0 var(--e3); padding: 0 2px; }
+body.theme-csc .guirlande i {
+  display: block; width: 7px; height: 7px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #FFD9A8 0%, #E4373F 60%, #9C1F26 100%);
+  box-shadow: 0 0 8px 1px rgba(228, 55, 63, .35);
+  animation: ampoule 3.6s ease-in-out infinite;
+}
+
+/* Les grands boutons : le rouge du site, en pilule arrondie. */
+body.theme-csc .btn-or {
+  background: linear-gradient(160deg, #FF4F4F 0%, #E4373F 60%, #C42730 100%);
+  color: #FFFFFF;
+  border-radius: 999px;
+  box-shadow: 0 10px 24px -8px rgba(228, 55, 63, .55);
+  text-shadow: none;
+}
+body.theme-csc .btn-discret {
+  border-radius: 999px;
+  border-color: rgba(228, 55, 63, .4);
+  color: #C42730;
+  background: #FFFFFF;
+}
+body.theme-csc .btn-offres-refus { color: var(--gris); }
+
+/* Les cartes et les listes posent des ombres douces à la manière du
+   site : coins ronds, blanc franc, séparations gris clair. */
+body.theme-csc .options { background: #FFFFFF; border-radius: 16px; border-top: 0; box-shadow: 0 10px 30px rgba(23, 34, 44, .08); padding-top: 4px; padding-bottom: 4px; }
+body.theme-csc .option { border-bottom-color: #EDF0F3; color: #29343E; }
+body.theme-csc .option.choisie { background: linear-gradient(90deg, rgba(228, 55, 63, .1) 0%, rgba(228, 55, 63, .02) 76%, transparent 100%); color: #17222C; }
+body.theme-csc .texte-zone input, body.theme-csc .champ input {
+  background: #FFFFFF; color: #17222C;
+  border-color: #DDE2E8; border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(23, 34, 44, .06);
+}
+body.theme-csc .texte-zone input::placeholder, body.theme-csc .champ input::placeholder { color: #9AA5B0; }
+
+/* Le ticket à gratter garde son velours rouge : il est déjà au bon
+   rouge. Les pastilles d'horaires de l'agenda passent au rouge. */
+body.theme-csc .agenda-duree,
+body.theme-csc .evenement-horaires {
+  background: linear-gradient(165deg, #FF6B72, #E4373F);
+  color: #FFFFFF;
+}
+body.theme-csc .agenda-corps { background: #FFFFFF; border-color: #EDF0F3; box-shadow: 0 8px 22px rgba(23, 34, 44, .07); border-radius: 12px; }
+body.theme-csc .agenda-detail, body.theme-csc .agenda-titre { color: #29343E; }
+body.theme-csc .agenda-lieu { color: #C42730; }
+body.theme-csc .agenda-fil { border-left-color: rgba(228, 55, 63, .35); }
+body.theme-csc .agenda-heure { color: #C42730; }
+body.theme-csc .agenda-heure::after { background: #E4373F; box-shadow: 0 0 0 3px #F7F8FA; }
+body.theme-csc .agenda-jour-nom { color: #17222C; }
+
+/* Les bandeaux de vues et les onglets sur fond clair. */
+body.theme-csc .bandeau-vue { background: #FFFFFF; border-radius: 14px; box-shadow: 0 8px 22px rgba(23, 34, 44, .07); }
+body.theme-csc .bandeau-vue h2 { color: #17222C; }
+body.theme-csc .bandeau-promos::before, body.theme-csc .bandeau-programme::before { display: none; }
+body.theme-csc .onglets-zone .onglet { color: #5E6B77; }
+body.theme-csc .onglets-zone .onglet.actif {
+  background: linear-gradient(160deg, #FF4F4F, #E4373F);
+  color: #FFFFFF;
+  border-radius: 999px;
+}
+
+/* Le pied de page et les mentions sur clair. */
+body.theme-csc .pied, body.theme-csc .mini-mention { color: #77828D; }
+body.theme-csc .lien-or { color: #C42730; }
+body.theme-csc .pastille { background: #E4373F; box-shadow: 0 0 10px rgba(228, 55, 63, .5); }
+body.theme-csc .entete { border-bottom-color: #E8EBEF; }
+
+/* Le médaillon d'accueil (le chapiteau dessiné) pose une ombre douce
+   au lieu d'un anneau lumineux. */
+body.theme-csc .hero-emoji { box-shadow: 0 14px 34px rgba(23, 34, 44, .16); }
+
+/* Le bon gagné garde son ticket doré : l'or sur fond clair, c'est le
+   cadeau. Rien à changer. Le squelette de chargement s'éclaircit. */
+body.theme-csc .squelette { background: #E9EDF1; }
+body.theme-csc .squelette-carte { background: #FFFFFF; }
+
+/* La promo et sa carte : blanches, arrondies. */
+body.theme-csc .promo { background: #FFFFFF; border-color: #EDF0F3; border-radius: 14px; box-shadow: 0 8px 22px rgba(23, 34, 44, .07); }
+body.theme-csc .badge-test { background: #EDF0F3; color: #6A7682; border-radius: 8px; }
+body.theme-csc.mode-test .badge-test { background: #EDF0F3; }
+
+/* Le bon expiré (offre du jour, le lendemain) : même gris que le bon
+   utilisé, la carte se lit mais ne se touche plus. */
+.bon-passe { opacity: .55; filter: grayscale(.6); }
+.btn-calendrier { margin-top: 14px; align-self: stretch; }
+
+/* Les surfaces sombres codées en dur qui restaient sur le thème clair :
+   le bandeau des vues et la barre d'onglets. Ils redeviennent des
+   cartes blanches, comme le reste. */
+body.theme-csc .bandeau-vue::before { background-image: none; background-color: #FFFFFF; }
+body.theme-csc .bandeau-vue::after  { background: none; }
+body.theme-csc .bandeau-vue { border-color: #EDF0F3; }
+body.theme-csc .bandeau-vue .question-soustitre { color: #5E6B77; opacity: 1; }
+body.theme-csc .bandeau-mesbons h2 { color: #17222C; }
+body.theme-csc .onglets {
+  background: #FFFFFF;
+  border-color: #E8EBEF;
+  border-radius: 999px;
+  box-shadow: 0 8px 22px rgba(23, 34, 44, .07);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+body.theme-csc .bons-section { color: #C42730; }
+body.theme-csc .bons-vide, body.theme-csc .promo-vide { color: #6A7682; }
+
+/* Les ombres portées du thème sombre n'ont aucun sens sur fond clair :
+   elles salissaient les titres. */
+body.theme-csc .hero h1,
+body.theme-csc .sous-titre,
+body.theme-csc .hero .mini-mention,
+body.theme-csc .quiz-zone h2,
+body.theme-csc .roue-zone h2,
+body.theme-csc .question-soustitre,
+body.theme-csc .bandeau-vue h2,
+body.theme-csc .bons-vide,
+body.theme-csc .promo-vide { text-shadow: none; }

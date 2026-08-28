@@ -55,6 +55,37 @@ const PROGRAMME_DEMO = [
     titre: 'Le cracheur de feu',
     lieu: 'Parvis de la galerie', horaires: 'À la tombée de la nuit',
     detail: 'Le grand final de la journée, dehors, à voir en famille.'
+  },
+
+  // ---- Les journées suivantes : visibles dans « tout le calendrier
+  // du mois », jamais sur l'écran du jour. Exemples à remplacer par
+  // le vrai planning de la galerie.
+  {
+    jour: 'Samedi 12 décembre', heure: '14h00',
+    titre: 'La photo avec le Père Noël',
+    lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true
+  },
+  {
+    jour: 'Samedi 12 décembre', heure: '16h30',
+    titre: 'Le spectacle du chapiteau',
+    lieu: 'Place centrale', horaires: '45 minutes'
+  },
+  {
+    jour: 'Mercredi 16 décembre', heure: '10h00',
+    titre: 'L’atelier des enfants',
+    lieu: 'Espace animation', horaires: '10h à 12h',
+    detail: 'Boules à décorer, cartes de vœux et couronnes. Gratuit, dès 3 ans.'
+  },
+  {
+    jour: 'Samedi 19 décembre', heure: '15h00',
+    titre: 'La brigade du Père Noël',
+    lieu: 'En déambulation dans les allées', horaires: '15h à 18h',
+    detail: 'Le Père Noël, la Mère Noël et leurs lutins remontent la galerie en musique.'
+  },
+  {
+    jour: 'Samedi 19 décembre', heure: '18h00',
+    titre: 'Le cracheur de feu',
+    lieu: 'Parvis de la galerie', horaires: 'À la tombée de la nuit'
   }
 ];
 
