@@ -1719,7 +1719,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '28aout2026q';
+const VERSION_JEUX = '29aout2026h';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -2907,7 +2907,13 @@ function lancerLaVitrine() {
   // vitrine s'ouvre sur le ticket à gratter, comme la vraie partie ;
   // ensuite, le flux standard enchaîne toutes les manches de
   // listeDesManches(), qui sait qu'on est en vitrine.
+  // LA VITRINE FINIT TOUJOURS SUR UN GAIN (29/08/2026) : c'est une
+  // démonstration commerciale, le client doit voir l'écran de
+  // victoire, le bon et la validation commerçant. Le cas perdant se
+  // montre avec le lien ?resultat=perdu, prévu pour ça.
   lotGagne = tirerLot();
+  let garde = 20;
+  while (lotGagne.perdant && garde-- > 0) lotGagne = tirerLot();
   codeLot = genererCode();
   reponses.prenom = reponses.prenom || '';
   preparerBonus();
