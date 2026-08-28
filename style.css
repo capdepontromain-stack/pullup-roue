@@ -223,10 +223,26 @@ body.theme-noel .pastille { background: var(--rouge-clair); box-shadow: 0 0 14px
    grande masse sombre laissait transparaître le fond clair et
    semblait blanchie une demi-seconde. Elle garde le glissement
    d'entrée, mais pleine et nette dès la première image. */
-#ecran-roue.actif { animation-name: ecran-avance-plein; }
+#ecran-roue.actif,
+#ecran-jeu.actif { animation-name: ecran-avance-plein; }
 @keyframes ecran-avance-plein {
   from { opacity: 1; transform: translate3d(26px, 0, 0); }
   to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+/* …et leurs ENFANTS arrivent pleins eux aussi (29/08/2026, retour de
+   Romain : « un flash blanc sur le jeu de la roue »). Le premier
+   correctif traitait le conteneur, mais la cascade d'entrée faisait
+   encore fondre chaque bloc depuis opacity 0 : pendant une fraction
+   de seconde, un grand rectangle clair occupait la place de la
+   machine sombre. Le mouvement de cascade reste (translation),
+   l'opacité n'y participe plus. Même traitement pour l'écran des
+   manches (#ecran-jeu) : bandit et cartes sont les mêmes masses
+   sombres sur fond clair. */
+#ecran-roue.actif .roue-zone > *,
+#ecran-jeu.actif .roue-zone > * { animation-name: pose-pleine; }
+@keyframes pose-pleine {
+  from { opacity: 1; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: none; }
 }
 
 @keyframes ecran-avance {
