@@ -84,6 +84,34 @@
       <path d="M34 28 c0 16 0 26 2 34" stroke="#4A3E2E" stroke-width="3" fill="none"/>`
   };
 
+  // LE LOGO DE LA GALERIE, LE TRIO À TROUVER (29/08/2026, Romain :
+  // « nous devons trouver trois fois le logo Cap Sacré-Cœur dans ce
+  // jeu »). Même principe que le jackpot du bandit manchot : c'est le
+  // VRAI pictogramme officiel (img/client/picto-csc.png), posé en
+  // image dans le SVG. Pour une autre galerie, il suffit de changer ce
+  // fichier. Les dessins du cirque ci-dessus restent les cartes
+  // « à côté » : le joueur cherche le logo au milieu du cirque.
+  const LOGO_GALERIE = `<image href="img/client/picto-csc.png" x="8" y="10"
+      width="84" height="80" preserveAspectRatio="xMidYMid meet"/>`;
+
+  // Le nom parlé de chaque carte, pour les lecteurs d'écran et les
+  // verdicts : « logo » n'est pas un mot qu'on montre tel quel.
+  const NOMS = {
+    logo: 'le logo de la galerie',
+    chapiteau: 'le chapiteau rouge',
+    etoile: 'l’étoile d’or',
+    balle: 'la balle de jongleur',
+    chapeau: 'le chapeau du magicien'
+  };
+
+  // Le nom de la galerie, pour écrire la règle du jeu (même lecture
+  // prudente que dans bandit.js : OPERATION est déclaré en « let »
+  // dans app.js, il n'est pas une propriété de window).
+  function nomGalerie() {
+    const n = (typeof OPERATION !== 'undefined' && OPERATION.lieu || '').trim();
+    return n || 'de la galerie';
+  }
+
   // Le dos des cartes : un losange et son cœur, rien de plus.
   const DOS = `
     <path d="M50 22 L66 50 L50 78 L34 50 Z"/>
@@ -248,8 +276,11 @@
       // elle se joue toujours « tout près » et passe la main. C'est
       // la dernière manche qui tranche, pour tout le monde pareil.
       const gagne = ctx.decisif !== false && !ctx.lot.perdant;
+      // Le trio à trouver est TOUJOURS le logo de la galerie (décision
+      // de Romain, 29/08/2026) ; les cartes « à côté » sont deux
+      // dessins du cirque tirés au hasard.
       const modeles = melanger(Object.keys(CADEAUX));
-      const A = modeles[0], B = modeles[1], C = modeles[2];
+      const A = 'logo', B = modeles[0], C = modeles[1];
 
       // Le scénario des quatre retournements, écrit avant que le
       // joueur touche la moindre carte. Le troisième cadeau pareil
@@ -269,7 +300,7 @@
 
       ctx.zone.innerHTML = `
         <h2>${ctx.secondTour ? 'Deuxième donne' : 'Trois Pareils'}</h2>
-        <p class="question-soustitre">Trouve trois dessins identiques en quatre cartes.</p>
+        <p class="question-soustitre">Trouve trois logos ${ctx.echap(nomGalerie())} en quatre cartes.</p>
 
         <div class="ct-plateau">
           <div class="ct-compte">
@@ -299,7 +330,8 @@
       const ouvertes = [];   // { bouton, modele }
 
       function svgCadeau(nom) {
-        return `<svg viewBox="0 0 100 100" aria-hidden="true">${CADEAUX[nom]}</svg>`;
+        const dessin = nom === 'logo' ? LOGO_GALERIE : CADEAUX[nom];
+        return `<svg viewBox="0 0 100 100" aria-hidden="true">${dessin}</svg>`;
       }
 
       function majCompte() {
@@ -327,7 +359,7 @@
           bouton.classList.add('ct-ouverte');
           if (marquee) bouton.classList.add('ct-marquee');
           bouton.classList.remove('ct-pince');
-          bouton.setAttribute('aria-label', 'Carte retournée, dessin ' + modele);
+          bouton.setAttribute('aria-label', 'Carte retournée : ' + (NOMS[modele] || modele));
           if (fini) setTimeout(fini, ctx.sobre ? 10 : PINCE);
         };
         if (ctx.sobre) { poser(); return; }
@@ -372,11 +404,11 @@
             ? 'Plus qu’une carte.'
             : 'Il te reste ' + (RETOURNEMENTS - retournees) + ' cartes.';
           if (retournees === 1) {
-            ecrire('Un dessin sur la table.', 'Il t’en faut trois pareils.');
+            ecrire('Le logo est sur la table.', 'Il t’en faut trois pour gagner.');
           } else if (pareilles.length >= 2) {
-            ecrire('Deux pareils.', 'Le troisième se cache encore quelque part.');
+            ecrire('Deux logos.', 'Le troisième se cache encore quelque part.');
           } else {
-            ecrire('Pas le même dessin.', 'Rien n’est joué, la table est encore pleine.');
+            ecrire('Pas le logo.', 'Rien n’est joué, la table est encore pleine.');
           }
           occupe = false;
           return;
@@ -389,7 +421,7 @@
             o.bouton.classList.add('ct-marquee', 'ct-gagnante');
           });
           const nom = ctx.lot && ctx.lot.nom ? ctx.echap(String(ctx.lot.nom)) : '';
-          ecrire('Trois pareils !', nom ? 'Ton cadeau : ' + nom : '');
+          ecrire('Trois logos !', nom ? 'Ton cadeau : ' + nom : '');
           ctx.vibrer([70, 50, 130]);
           setTimeout(ctx.terminer, ctx.sobre ? 600 : 2600);
           return;
@@ -398,7 +430,7 @@
         // Perdu : la table retourne elle-même la carte qui manquait.
         // C'est elle qui la choisit, pas le joueur : le presque-gain
         // reste excitant sans se transformer en reproche.
-        ecrire('Deux pareils sur trois.', 'La table en retourne une dernière…');
+        ecrire('Deux logos sur trois.', 'La table en retourne une dernière…');
         ctx.vibrer(70);
 
         const fermees = cartes.filter(b => !b.classList.contains('ct-ouverte'));
@@ -414,7 +446,7 @@
             // Manche non décisive : on ne parle jamais du lot, seulement
             // de ce qu'il reste à jouer.
             const restantes = (ctx.manches || 1) - (ctx.manche || 1);
-            ecrire('Le troisième n’est pas sorti.',
+            ecrire('Le troisième logo n’est pas sorti.',
                    restantes > 0
                      ? 'Il se cachait dans les cartes restantes. Il reste ' +
                        (restantes === 1 ? 'une manche.' : restantes + ' manches.')

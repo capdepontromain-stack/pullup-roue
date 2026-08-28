@@ -1624,16 +1624,18 @@ let cibleRoue = null;
 // LE PARCOURS PAR DÉFAUT NE CHANGE QUE SUR DÉCISION DE ROMAIN
 // (26/08/2026, remis en état en fin de soirée)
 // Onze jeux existent maintenant dans jeux/, tous jouables par
-// LE PARCOURS OFFICIEL, TRANCHÉ PAR ROMAIN LE 27/08/2026 AU SOIR :
-// « le ticket à gratter, ensuite le bandit manchot, puis la roue ».
-// C'est SA décision finale, elle remplace le parcours à cinq manches
-// de l'après-midi : ne pas y toucher sans lui. Le ticket perd
-// toujours (voir contenuDuBillet), et c'est la roue, en dernière
-// manche, qui révèle le vrai lot.
+// LE PARCOURS OFFICIEL, TRANCHÉ PAR ROMAIN (mis à jour le 29/08/2026) :
+// « le ticket à gratter, le bandit manchot, Trois Pareils, puis la
+// roue ». Le 29/08, Romain a ajouté « Trois Pareils » entre le bandit
+// et la roue, avec le logo Cap Sacré-Cœur comme trio à trouver (voir
+// jeux/cartes.js). Ne pas y toucher sans lui. Le ticket perd toujours
+// (voir contenuDuBillet), et c'est la roue, en dernière manche, qui
+// révèle le vrai lot : le bandit et les cartes se jouent « tout
+// près » et passent la main.
 // Les autres jeux (chamboule-tout, trapèze volant, homme obus) vivent
 // dans la VITRINE : « ?vitrine=1 », sans quiz ni coordonnées, pour
 // être montrés aux clients (voir modeVitrine plus bas).
-const MANCHES_DEFAUT = ['bandit', 'roue'];
+const MANCHES_DEFAUT = ['bandit', 'cartes', 'roue'];
 // La vitrine montre TOUS les jeux créés, y compris ceux écartés du
 // parcours : c'est le catalogue de démonstration pour les clients.
 // Le ticket à gratter l'ouvre, la roue la ferme.
@@ -1730,7 +1732,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '29aout2026i';
+const VERSION_JEUX = '29aout2026j';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
