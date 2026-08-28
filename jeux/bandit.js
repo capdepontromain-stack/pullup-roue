@@ -222,11 +222,14 @@
   // Huit dessins pleins, huit couleurs franches : cloche or, cerises
   // rouges, trèfle vert, diamant bleu, sept violet, fer à cheval
   // cuivre, étoile crème, couronne orange.
-  const LOGO_GALERIE = `
-    <rect x="6"  y="34" width="7" height="32" rx="3.5" fill="#E4373F"/>
-    <rect x="17" y="26" width="7" height="48" rx="3.5" fill="#E4373F"/>
-    <path d="M78 30 A26 26 0 1 0 78 70 L78 58 A15 15 0 1 1 78 42 Z" fill="#E4373F"/>
-    <path d="M56 36 L78 50 L56 64 Z" fill="#E4373F"/>`;
+  // LE LOGO DE LA GALERIE, SYMBOLE DU JACKPOT (28/08/2026, Romain :
+  // « aligner trois logos Cap Sacré-Cœur pour gagner »). Ce n'est plus
+  // un dessin approché mais le VRAI pictogramme, extrait du fichier
+  // officiel de la galerie (img/client/picto-csc.png). Il est posé en
+  // image dans le SVG : la forme est exacte, et il suffira de changer
+  // le fichier pour une autre galerie.
+  const LOGO_GALERIE = `<image href="img/client/picto-csc.png" x="8" y="10"
+      width="84" height="80" preserveAspectRatio="xMidYMid meet"/>`;
 
   const SYMBOLES_MACHINE = [
     // La cloche, or

@@ -37,6 +37,10 @@ const PROGRAMME_DEMO = [
     titre: 'La photo avec le Père Noël',
     lieu: 'Le trône, place centrale', horaires: '14h à 17h',
     detail: 'Le Père Noël reçoit les enfants sur son trône. Photo avec ton téléphone, gratuite et sans achat.',
+    // La colonne `image` porte le visuel de l'animation, fourni par la
+    // galerie (affiche, photo). Exemple ici avec la façade : à
+    // remplacer par les vrais visuels de Cap Sacré-Cœur.
+    image: 'img/client/facade-csc.jpg',
     vedette: true
   },
   {

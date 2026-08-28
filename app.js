@@ -1579,7 +1579,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '28aout2026n';
+const VERSION_JEUX = '28aout2026p';
 // Les quatre jeux retenus par Romain le 27/08/2026 (la roue, elle,
 // vit dans app.js et n'a rien à charger). Les écartés (sapin, hotte,
 // chapeau, etoiles, cartes, pingouin, paquets, memory…) n'ont plus
@@ -3680,9 +3680,11 @@ function ligneAgenda(ev, index, permanent) {
     ? '<span class="evenement-gratuit">Gratuit, sans achat</span>' : '';
   const heure = String(ev.heure || '').trim();
 
+  const visuel = String(ev.image || '').trim();
   ligne.innerHTML =
     `<div class="agenda-heure">${heure ? echap(heure) : '<span class="agenda-puce" aria-hidden="true"></span>'}</div>
      <div class="agenda-corps">
+       ${visuel ? `<img class="agenda-visuel" src="${echap(visuel)}" alt="" loading="lazy">` : ''}
        <div class="agenda-titre">${echap(ev.titre || '')}</div>
        ${ev.lieu ? `<div class="agenda-lieu">${echap(ev.lieu)}</div>` : ''}
        ${ev.horaires ? `<span class="agenda-duree">${echap(ev.horaires)}</span>` : ''}

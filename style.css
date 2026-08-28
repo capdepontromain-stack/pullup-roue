@@ -3640,3 +3640,38 @@ body.theme-csc:not(.sur-accueil) { background: #F7F8FA; }
 body.theme-csc:not(.sur-accueil) .entete { border-bottom-color: #E8EBEF; }
 body.theme-csc:not(.sur-accueil) .entete-jeu { text-shadow: none; }
 body.theme-csc:not(.sur-accueil) .logo-client { filter: none; }
+
+/* LA VIGNETTE D'UNE ANIMATION (28/08/2026) : le visuel fourni par la
+   galerie, en tête de la carte. Elle occupe toute la largeur, coins
+   ronds, hauteur bridée pour qu'une affiche verticale ne mange pas
+   l'écran. Sans image, la carte est identique à avant. */
+.agenda-visuel {
+  display: block;
+  width: 100%;
+  height: 128px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: -2px 0 10px;
+  background: rgba(0, 0, 0, .2);
+}
+body.theme-csc .agenda-visuel { background: #EDF0F3; }
+
+/* Le bouton du levier, en thème clair : doré plein, encre sombre.
+   La version précédente (contour sur fond translucide) se lisait mal
+   sur le fond clair. */
+body.theme-csc .bandit-consigne {
+  background: linear-gradient(165deg, #FFE9B8, #C9962E);
+  border-color: #C9962E;
+  color: #241804;
+}
+
+/* La carte « vedette » de l'agenda gardait le dégradé brun du thème
+   sombre : sur le clair, elle paraissait sale. Elle devient blanche,
+   avec un liseré doré et une ombre plus marquée : c'est la mise en
+   avant, pas un fond différent. */
+body.theme-csc .agenda-ligne.vedette .agenda-corps {
+  background: #FFFFFF;
+  border-color: #E3B85A;
+  box-shadow: 0 12px 30px rgba(201, 150, 46, .22);
+}
+body.theme-csc .agenda-ligne.vedette .agenda-heure { color: #8A6A21; }
