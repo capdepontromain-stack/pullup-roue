@@ -223,11 +223,20 @@ body.theme-noel .pastille { background: var(--rouge-clair); box-shadow: 0 0 14px
    grande masse sombre laissait transparaître le fond clair et
    semblait blanchie une demi-seconde. Elle garde le glissement
    d'entrée, mais pleine et nette dès la première image. */
+/* SANS glissement latéral non plus (29/08/2026, retour de Romain : « un
+   bug autour de la roue à l'affichage du jeu ») : la roue occupe presque
+   toute la largeur, et pendant le glissement d'entrée de 26px elle
+   sortait de l'écran à droite : on la voyait arriver COUPÉE net sur son
+   flanc, le temps de l'animation. Tant qu'elle entrait en fondu, la
+   coupe était invisible ; depuis qu'elle arrive pleine (correctif du
+   flash blanc), elle sautait aux yeux. Ces écrans arrivent donc EN
+   PLACE : c'est la cascade verticale de leurs blocs (pose-pleine, qui
+   ne déborde pas en largeur) qui fait le mouvement d'entrée. */
 #ecran-roue.actif,
-#ecran-jeu.actif { animation-name: ecran-avance-plein; }
-@keyframes ecran-avance-plein {
-  from { opacity: 1; transform: translate3d(26px, 0, 0); }
-  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+#ecran-jeu.actif { animation-name: ecran-sur-place; }
+@keyframes ecran-sur-place {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 1; transform: none; }
 }
 /* …et leurs ENFANTS arrivent pleins eux aussi (29/08/2026, retour de
    Romain : « un flash blanc sur le jeu de la roue »). Le premier
