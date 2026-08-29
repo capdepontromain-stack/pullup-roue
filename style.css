@@ -1978,6 +1978,17 @@ h1 {
 .hero-offres .hero-emoji { display: none; }
 .hero-offres h1 { text-align: left; font-size: clamp(30px, 8.8vw, 40px); }
 .hero-offres .sous-titre { text-align: left; }
+/* La promesse tient en UNE phrase courte depuis le 29/08/2026 (Romain :
+   « c'est plus court, du coup mets plus en avant ») : elle gagne en
+   taille et en présence, à mi-chemin entre un sous-titre et un titre. */
+#offres-soustitre {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.45;
+  opacity: 1;
+  max-width: 340px;
+}
+body.theme-csc #offres-soustitre { color: #29343E; }
 /* Les deux réponses prennent toute la largeur : un « non merci »
    rétréci dans un coin serait un faux choix, et le consentement doit
    rester aussi facile à refuser qu'à accepter. */

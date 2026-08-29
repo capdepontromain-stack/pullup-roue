@@ -3658,7 +3658,6 @@ function proposerLesOffres(suite) {
 // même endroit qu'avant.
 function habillerLesOffres() {
   const prenom = (reponses.prenom || '').trim();
-  const rayon = (reponses.univers || '').split(',').filter(Boolean)[0] || '';
   const titre = document.getElementById('offres-titre');
   const sousTitre = document.getElementById('offres-soustitre');
 
@@ -3668,20 +3667,18 @@ function habillerLesOffres() {
       : 'Les bons plans de la galerie, chaque jeudi.';
   }
   if (sousTitre) {
-    // Le rayon préféré du joueur se glisse dans la phrase, sans
-    // l'allonger : « côté mode », « côté gourmandise ».
-    sousTitre.textContent = MOT_DU_RAYON[rayon]
-      ? 'Chaque jeudi, reçois un e-mail avec les cadeaux, les promos et les nouveautés, côté ' +
-        MOT_DU_RAYON[rayon] + ' en premier. Un seul e-mail par semaine, promis.'
-      : 'Chaque jeudi, reçois un e-mail avec les cadeaux, les promos et les nouvelles collections. Un seul e-mail par semaine, promis.';
+    // UNE SEULE PHRASE, COURTE (29/08/2026, Romain : « enlève "côté
+    // beauté en premier", c'est tout, c'est plus court, du coup mets
+    // plus en avant »). La personnalisation par rayon est retirée ;
+    // la phrase est mise en valeur par le style (voir #offres-soustitre
+    // dans style.css).
+    sousTitre.textContent =
+      'Chaque jeudi : cadeaux, promos et nouveautés dans ta boîte mail.';
   }
 }
 
-// Le nom lisible d'un rayon, pour parler au joueur dans sa langue.
-const MOT_DU_RAYON = {
-  mode: 'mode', beaute: 'beauté', bijoux: 'bijoux', hightech: 'high-tech',
-  sport: 'sport', gourmandise: 'gourmandise', enfants: 'enfants', maison: 'maison'
-};
+// (La table des noms de rayons a été retirée le 29/08/2026 avec la
+// personnalisation « côté beauté en premier » : plus rien ne la lisait.)
 
 async function repondreOffres(accepte) {
   // Deux tapes rapides sur « Oui » (ou « Non ») déclenchaient deux

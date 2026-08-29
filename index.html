@@ -50,22 +50,22 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=29aout2026r">
+  <link rel="stylesheet" href="style.css?v=29aout2026s">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=29aout2026r" defer></script>
-  <script src="icones-quiz.js?v=29aout2026r" defer></script>
-  <script src="contenus-demo.js?v=29aout2026r" defer></script>
+  <script src="icones.js?v=29aout2026s" defer></script>
+  <script src="icones-quiz.js?v=29aout2026s" defer></script>
+  <script src="contenus-demo.js?v=29aout2026s" defer></script>
   <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
        Il tient la liste des bons du joueur et sait la dessiner. Chargé
        avant app.js, qui l'appelle à deux endroits : quand un lot est
        gagné, et quand un bon de promotion est pris. Voir bons.js. -->
-  <script src="bons.js?v=29aout2026r" defer></script>
-  <script src="app.js?v=29aout2026r" defer></script>
+  <script src="bons.js?v=29aout2026s" defer></script>
+  <script src="app.js?v=29aout2026s" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -80,7 +80,7 @@
   <!-- Le pré-thème : synchrone et minuscule, il habille la page du bon
        thème avant la première image (voir pretheme.js). Il doit rester
        le premier élément de body. -->
-  <script src="pretheme.js?v=29aout2026r"></script>
+  <script src="pretheme.js?v=29aout2026s"></script>
 
   <div class="app">
 
@@ -512,7 +512,12 @@
           <button class="btn-offres-refus" id="btn-offres-non2">Non, vraiment</button>
         </div>
         <p id="offres-mineurs" class="mini-mention" hidden>Les offres par e-mail sont réservées aux joueurs majeurs.</p>
-        <p class="mini-mention offres-liberte">Ton choix ne change <strong>rien</strong> à ta partie, ni à tes chances, ni à ton lot, et tu peux en changer quand tu veux. <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">Ce qu’on fait de tes données</a></p>
+        <!-- « Tu peux te désabonner à tout moment » plutôt que « tu peux
+             en changer quand tu veux » et « Ce qu'on fait de tes
+             données » (29/08/2026, tournures revues à la demande de
+             Romain ; le lien vers l'article données du règlement reste,
+             c'est lui qui porte le détail RGPD). -->
+        <p class="mini-mention offres-liberte">Tu peux te désabonner à tout moment. Ton choix ne change <strong>rien</strong> à ta partie, ni à tes chances, ni à ton lot. <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">Comment tes données sont protégées</a></p>
       </div>
     </section>
 
