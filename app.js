@@ -1781,7 +1781,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '29aout2026m';
+const VERSION_JEUX = '29aout2026n';
 // Tous les jeux jamais créés restent chargeables (la roue, elle, vit
 // dans app.js et n'a rien à charger) : le parcours officiel en joue
 // trois (bandit, cartes, roue depuis le 29/08/2026), et la vitrine de
@@ -4033,6 +4033,19 @@ function sansAccents(t) {
   return String(t || '').toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/['’]/g, '').trim();
 }
+
+// Le rang d'un jour en toutes lettres dans l'année (« mercredi 9
+// décembre » → 1109) : sert à savoir si la visite tombe dans la
+// fenêtre du programme daté. null si le texte ne porte pas de date.
+const MOIS_ORDRE = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin',
+                    'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
+function rangDansAnnee(texteJour) {
+  const m = sansAccents(texteJour).match(/(\d{1,2})\s+([a-z]+)/);
+  if (!m) return null;
+  const mois = MOIS_ORDRE.indexOf(m[2]);
+  if (mois === -1) return null;
+  return mois * 100 + parseInt(m[1], 10);
+}
 function estDuJour(jour) {
   const j = sansAccents(jour);
   if (!j) return true;                       // pas de jour : permanent
@@ -4090,7 +4103,21 @@ async function afficherProgramme(mode) {
     const j = sansAccents(ev.jour);
     return j && j !== 'aujourdhui';
   });
-  if (toutLeMois ? aDesJourneesDatees : journeeDateeCouverte) {
+  // UN JOUR CREUX N'AFFICHE PAS LE SECOURS (29/08/2026, vrai programme
+  // de Romain : le dimanche 13 décembre, la galerie n'a rien prévu).
+  // Si le jour de la visite tombe DANS la fenêtre du programme daté
+  // (entre sa première et sa dernière journée), les exemples
+  // « aujourdhui » restent masqués même sans entrée du jour : l'écran
+  // dit alors « Pas d'animation prévue aujourd'hui », qui est la
+  // vérité. Le secours ne sert qu'AVANT l'opération (démonstrations).
+  const rangsDates = tous
+    .map(ev => { const j = sansAccents(ev.jour); return (j && j !== 'aujourdhui') ? rangDansAnnee(ev.jour) : null; })
+    .filter(r => r !== null);
+  const rangCourant = rangDansAnnee(jourCourantLisible());
+  const dansLaFenetreDuProgramme = rangsDates.length > 0 && rangCourant !== null &&
+    rangCourant >= Math.min.apply(null, rangsDates) &&
+    rangCourant <= Math.max.apply(null, rangsDates);
+  if (toutLeMois ? aDesJourneesDatees : (journeeDateeCouverte || dansLaFenetreDuProgramme)) {
     evenements = evenements.filter(ev => !estMotCleAujourdhui(ev));
   }
 

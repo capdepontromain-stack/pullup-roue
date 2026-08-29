@@ -31,137 +31,101 @@
 // La « photo dans la Hotte Géante » N'EXISTE PAS : ne jamais la
 // remettre, ni ici, ni dans les lots, ni dans un texte du jeu.
 const PROGRAMME_DEMO = [
-  {
-    jour: 'aujourdhui', heure: '10h30',
-    titre: 'L’atelier ballons du lutin',
-    lieu: 'Place centrale', horaires: '10h30 à 12h30',
-    detail: 'Épée, fleur, petit chien : le lutin sculpte le ballon que l’enfant lui demande. Gratuit.'
-  },
-  {
-    jour: 'aujourdhui', heure: '14h',
-    titre: 'La photo avec le Père Noël',
-    lieu: 'Le trône, place centrale', horaires: '14h à 17h',
-    detail: 'Le Père Noël reçoit les enfants sur son trône. Photo avec ton téléphone, gratuite et sans achat.',
-    // La colonne `image` porte le visuel de l'animation, fourni par la
-    // galerie (affiche, photo). Exemple ici avec la façade : à
-    // remplacer par les vrais visuels de Cap Sacré-Cœur.
-    image: 'img/client/facade-csc.jpg',
-    vedette: true
-  },
-  {
-    jour: 'aujourdhui', heure: '15h30',
-    titre: 'La chorale de Noël',
-    lieu: 'Allée principale', horaires: '30 minutes de chants'
-  },
-  {
-    jour: 'aujourdhui', heure: '16h30',
-    titre: 'Le spectacle du chapiteau',
-    lieu: 'Place centrale', horaires: '45 minutes',
-    detail: 'Jonglage, acrobaties et magie : le chapiteau ouvre sa piste au milieu de la galerie.'
-  },
-  {
-    jour: 'aujourdhui', heure: '18h',
-    titre: 'Le cracheur de feu',
-    lieu: 'Parvis de la galerie', horaires: 'À la tombée de la nuit',
-    detail: 'Le grand final de la journée, dehors, à voir en famille.'
-  },
+  // LES EXEMPLES DU JOUR (secours d'avant décembre, masqués dès que le
+  // jour de la visite a son vrai programme daté) : tirés du VRAI
+  // programme ci-dessous, pour que la démo ressemble à la réalité.
+  { jour: 'aujourdhui', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.', vedette: true },
+  { jour: 'aujourdhui', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'aujourdhui', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30', detail: 'Création d’étiquettes cadeaux.' },
+  { jour: 'aujourdhui', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.' },
+  { jour: 'aujourdhui', heure: '19h', titre: 'Chakti, l’animation enflammée', horaires: '19h à 20h' },
 
-  // ---- LE GRAND PROGRAMME DU 9 AU 24 DÉCEMBRE (28/08/2026, demande
-  // de Romain : 3 à 4 animations par jour, dimanches ouverts compris).
-  // Visible dans « tout le calendrier du mois », jamais sur l'écran du
-  // jour. Les jours de la semaine sont ceux de décembre 2026. Le
-  // dimanche 20 décembre est la Fèt Kaf : c'est la grande journée, avec
-  // le concert de Kaloubadya. Exemples à faire valider par la galerie.
+  // LE VRAI PROGRAMME DE DÉCEMBRE 2026, donné par Romain le 29/08/2026
+  // (export de son outil de planification, fichier
+  // programme-noel-csc-2.json). Du mercredi 9 au jeudi 24 décembre ;
+  // le dimanche 13, la galerie n'a pas d'animation programmée : le
+  // jour n'apparaît pas, c'est voulu. JAMAIS de prix ici : l'export
+  // d'origine en contient, ils ne concernent que Pull Up.
 
-  // Mercredi 9 : ouverture de la quinzaine
-  { jour: 'Mercredi 9 décembre', heure: '10h30', titre: 'L’atelier des petits chefs', lieu: 'Espace animation', horaires: '10h30 à 12h', detail: 'Les enfants décorent leurs sablés de Noël et repartent avec. Gratuit, dès 4 ans.' },
-  { jour: 'Mercredi 9 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Mercredi 9 décembre', heure: '15h30', titre: 'L’atelier cirque des enfants', lieu: 'Place centrale', horaires: '15h30 à 17h', detail: 'Assiettes chinoises, foulards et équilibre : les artistes du chapiteau font essayer les enfants.' },
-  { jour: 'Mercredi 9 décembre', heure: '17h30', titre: 'Les histoires du Père Noël', lieu: 'Coin lecture, espace animation', horaires: '30 minutes', detail: 'Un conte de Noël raconté aux petits, assis sur les coussins.' },
+  // --- Mercredi 9 décembre ---
+  { jour: 'Mercredi 9 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Avec distribution de bonbons.' },
+  { jour: 'Mercredi 9 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Mercredi 9 décembre', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30', detail: 'Création d’étiquettes cadeaux.' },
+  { jour: 'Mercredi 9 décembre', heure: '19h', titre: 'Chakti, l’animation enflammée', horaires: '19h à 20h', vedette: true },
 
-  // Jeudi 10
-  { jour: 'Jeudi 10 décembre', heure: '10h30', titre: 'Le lutin sculpteur de ballons', lieu: 'En déambulation dans les allées', horaires: '10h30 à 12h30' },
-  { jour: 'Jeudi 10 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Jeudi 10 décembre', heure: '16h', titre: 'L’atelier gourmandises', lieu: 'Espace animation', horaires: '16h à 17h30', detail: 'Brochettes de bonbons et chocolats à décorer, à déguster sur place ou à offrir.' },
+  // --- Jeudi 10 décembre ---
+  { jour: 'Jeudi 10 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Jeudi 10 décembre', heure: '17h', titre: 'La chorale en déambulation, à quatre voix', horaires: '17h à 18h' },
 
-  // Vendredi 11
-  { jour: 'Vendredi 11 décembre', heure: '10h30', titre: 'Le maquillage des enfants', lieu: 'Espace animation', horaires: '10h30 à 12h30', detail: 'Flocons, rennes et étoiles : une maquilleuse transforme les enfants.' },
-  { jour: 'Vendredi 11 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Vendredi 11 décembre', heure: '16h30', titre: 'La chorale de Noël', lieu: 'Allée principale', horaires: '30 minutes de chants' },
-  { jour: 'Vendredi 11 décembre', heure: '18h', titre: 'Le cracheur de feu', lieu: 'Parvis de la galerie', horaires: 'À la tombée de la nuit', detail: 'Le grand final du vendredi, dehors, à voir en famille.' },
+  // --- Vendredi 11 décembre ---
+  { jour: 'Vendredi 11 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Vendredi 11 décembre', heure: '15h', titre: 'La déambulation jonglage de Chakti', horaires: '15h à 16h' },
 
-  // Samedi 12
-  { jour: 'Samedi 12 décembre', heure: '10h', titre: 'L’atelier des enfants', lieu: 'Espace animation', horaires: '10h à 12h', detail: 'Boules à décorer, cartes de vœux et couronnes. Gratuit, dès 3 ans.' },
-  { jour: 'Samedi 12 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Samedi 12 décembre', heure: '16h30', titre: 'Le spectacle du chapiteau', lieu: 'Place centrale', horaires: '45 minutes', detail: 'Jonglage, acrobaties et magie : le chapiteau ouvre sa piste au milieu de la galerie.' },
-  { jour: 'Samedi 12 décembre', heure: '18h', titre: 'La parade lumineuse', lieu: 'Toutes les allées', horaires: '30 minutes', detail: 'Échassiers et costumes lumineux remontent la galerie en musique.' },
+  // --- Samedi 12 décembre ---
+  { jour: 'Samedi 12 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.', vedette: true },
+  { jour: 'Samedi 12 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Samedi 12 décembre', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30', detail: 'Création de marque-places.' },
+  { jour: 'Samedi 12 décembre', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.' },
 
-  // Dimanche 13 : ouvert !
-  { jour: 'Dimanche 13 décembre', heure: '10h30', titre: 'Les histoires du Père Noël', lieu: 'Coin lecture, espace animation', horaires: '30 minutes' },
-  { jour: 'Dimanche 13 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Dimanche 13 décembre', heure: '15h30', titre: 'L’atelier cirque des enfants', lieu: 'Place centrale', horaires: '15h30 à 17h' },
+  // --- Lundi 14 décembre ---
+  { jour: 'Lundi 14 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Lundi 14 décembre', heure: '15h', titre: 'Le concours de dessin de Noël', horaires: '15h à 16h', detail: 'Résultats à 16h.' },
+  { jour: 'Lundi 14 décembre', titre: 'Contes et histoires de Noël', horaires: 'Plusieurs sessions dans la journée' },
 
-  // Lundi 14
-  { jour: 'Lundi 14 décembre', heure: '10h30', titre: 'Le lutin sculpteur de ballons', lieu: 'En déambulation dans les allées', horaires: '10h30 à 12h30' },
-  { jour: 'Lundi 14 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Lundi 14 décembre', heure: '16h', titre: 'L’atelier gourmandises', lieu: 'Espace animation', horaires: '16h à 17h30' },
+  // --- Mardi 15 décembre ---
+  { jour: 'Mardi 15 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Mardi 15 décembre', heure: '15h', titre: 'La déambulation jonglage de Chakti', horaires: '15h à 16h' },
 
-  // Mardi 15
-  { jour: 'Mardi 15 décembre', heure: '10h30', titre: 'L’atelier des petits chefs', lieu: 'Espace animation', horaires: '10h30 à 12h', detail: 'Les enfants décorent leurs sablés de Noël et repartent avec. Gratuit, dès 4 ans.' },
-  { jour: 'Mardi 15 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Mardi 15 décembre', heure: '16h30', titre: 'La chorale de Noël', lieu: 'Allée principale', horaires: '30 minutes de chants' },
+  // --- Mercredi 16 décembre ---
+  { jour: 'Mercredi 16 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.' },
+  { jour: 'Mercredi 16 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Mercredi 16 décembre', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30', detail: 'Création d’étiquettes cadeaux.' },
+  { jour: 'Mercredi 16 décembre', heure: '19h', titre: 'Chakti, l’animation enflammée', horaires: '19h à 20h', vedette: true },
 
-  // Mercredi 16
-  { jour: 'Mercredi 16 décembre', heure: '10h', titre: 'L’atelier des enfants', lieu: 'Espace animation', horaires: '10h à 12h', detail: 'Boules à décorer, cartes de vœux et couronnes. Gratuit, dès 3 ans.' },
-  { jour: 'Mercredi 16 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Mercredi 16 décembre', heure: '15h30', titre: 'L’atelier cirque des enfants', lieu: 'Place centrale', horaires: '15h30 à 17h' },
-  { jour: 'Mercredi 16 décembre', heure: '17h30', titre: 'Les histoires du Père Noël', lieu: 'Coin lecture, espace animation', horaires: '30 minutes' },
+  // --- Jeudi 17 décembre ---
+  { jour: 'Jeudi 17 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Jeudi 17 décembre', heure: '15h', titre: 'Le concours de dessin de Noël', horaires: '15h à 16h', detail: 'Résultats à 16h.' },
+  { jour: 'Jeudi 17 décembre', heure: '16h', titre: 'Contes et histoires de Noël', horaires: 'Sessions à 16h' },
 
-  // Jeudi 17
-  { jour: 'Jeudi 17 décembre', heure: '10h30', titre: 'Le maquillage des enfants', lieu: 'Espace animation', horaires: '10h30 à 12h30' },
-  { jour: 'Jeudi 17 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Jeudi 17 décembre', heure: '16h', titre: 'L’atelier gourmandises', lieu: 'Espace animation', horaires: '16h à 17h30' },
+  // --- Vendredi 18 décembre ---
+  { jour: 'Vendredi 18 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Vendredi 18 décembre', heure: '19h', titre: 'Chakti, le spectacle lumineux', horaires: '19h à 20h', vedette: true },
 
-  // Vendredi 18
-  { jour: 'Vendredi 18 décembre', heure: '10h30', titre: 'Le lutin sculpteur de ballons', lieu: 'En déambulation dans les allées', horaires: '10h30 à 12h30' },
-  { jour: 'Vendredi 18 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Vendredi 18 décembre', heure: '16h30', titre: 'Le spectacle du chapiteau', lieu: 'Place centrale', horaires: '45 minutes' },
-  { jour: 'Vendredi 18 décembre', heure: '18h', titre: 'Le cracheur de feu', lieu: 'Parvis de la galerie', horaires: 'À la tombée de la nuit' },
+  // --- Samedi 19 décembre ---
+  { jour: 'Samedi 19 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.', vedette: true },
+  { jour: 'Samedi 19 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Samedi 19 décembre', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30', detail: 'Création de marque-places.' },
+  { jour: 'Samedi 19 décembre', heure: '15h', titre: 'La déambulation jonglage de Chakti', horaires: '15h à 16h' },
+  { jour: 'Samedi 19 décembre', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.' },
 
-  // Samedi 19
-  { jour: 'Samedi 19 décembre', heure: '10h', titre: 'L’atelier des petits chefs', lieu: 'Espace animation', horaires: '10h à 12h' },
-  { jour: 'Samedi 19 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Samedi 19 décembre', heure: '15h', titre: 'La brigade du Père Noël', lieu: 'En déambulation dans les allées', horaires: '15h à 18h', detail: 'Le Père Noël, la Mère Noël et leurs lutins remontent la galerie en musique.' },
-  { jour: 'Samedi 19 décembre', heure: '18h', titre: 'La parade lumineuse', lieu: 'Toutes les allées', horaires: '30 minutes' },
+  // --- Dimanche 20 décembre ---
+  { jour: 'Dimanche 20 décembre', heure: 'Matin', titre: 'Le riz chauffé, petit-déjeuner créole', detail: 'Le petit-déjeuner lontan du dimanche de la Fèt Kaf.' },
+  { jour: 'Dimanche 20 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Dimanche 20 décembre', heure: '14h', titre: 'Le concert de Kaloubadya', horaires: '14h à 16h', detail: 'Le grand rendez-vous de la Fèt Kaf, en plein cœur de la galerie.', vedette: true },
 
-  // Dimanche 20 : la Fèt Kaf, la grande journée
-  { jour: 'Dimanche 20 décembre', heure: '10h30', titre: 'L’atelier cirque des enfants', lieu: 'Place centrale', horaires: '10h30 à 12h' },
-  { jour: 'Dimanche 20 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 16h' },
-  { jour: 'Dimanche 20 décembre', heure: '16h', titre: 'Le concert de Kaloubadya', lieu: 'Place centrale', horaires: 'Concert d’une heure', detail: 'Pour la Fèt Kaf, Kaloubadya fait chanter et danser toute la galerie. Le rendez-vous du 20 décembre.', vedette: true },
-  { jour: 'Dimanche 20 décembre', heure: '17h30', titre: 'Le kabar du 20 décembre', lieu: 'Parvis de la galerie', horaires: 'Jusqu’à 18h30', detail: 'Percussions et danse pour clore la journée de la liberté.' },
+  // --- Lundi 21 décembre ---
+  { jour: 'Lundi 21 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.', vedette: true },
+  { jour: 'Lundi 21 décembre', heure: '10h', titre: 'L’atelier parent-enfant', horaires: '10h à 18h', detail: 'Création d’étiquettes cadeaux.' },
+  { jour: 'Lundi 21 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
 
-  // Lundi 21 : la dernière ligne droite commence
-  { jour: 'Lundi 21 décembre', heure: '10h30', titre: 'Le lutin sculpteur de ballons', lieu: 'En déambulation dans les allées', horaires: '10h30 à 12h30' },
-  { jour: 'Lundi 21 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Lundi 21 décembre', heure: '16h', titre: 'L’atelier gourmandises', lieu: 'Espace animation', horaires: '16h à 17h30' },
+  // --- Mardi 22 décembre ---
+  { jour: 'Mardi 22 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.' },
+  { jour: 'Mardi 22 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Mardi 22 décembre', heure: '17h30', titre: 'L’animation micro en nocturne', horaires: '17h30 à 21h' },
+  { jour: 'Mardi 22 décembre', heure: '19h', titre: 'Le spectacle de feu', horaires: '19h à 20h', vedette: true },
 
-  // Mardi 22
-  { jour: 'Mardi 22 décembre', heure: '10h30', titre: 'L’atelier des enfants', lieu: 'Espace animation', horaires: '10h30 à 12h' },
-  { jour: 'Mardi 22 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Mardi 22 décembre', heure: '16h30', titre: 'La chorale de Noël', lieu: 'Allée principale', horaires: '30 minutes de chants' },
-  { jour: 'Mardi 22 décembre', heure: '17h30', titre: 'Les histoires du Père Noël', lieu: 'Coin lecture, espace animation', horaires: '30 minutes' },
+  // --- Mercredi 23 décembre ---
+  { jour: 'Mercredi 23 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.' },
+  { jour: 'Mercredi 23 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
+  { jour: 'Mercredi 23 décembre', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30' },
+  { jour: 'Mercredi 23 décembre', heure: '17h30', titre: 'L’animation micro en nocturne', horaires: '17h30 à 21h' },
+  { jour: 'Mercredi 23 décembre', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.' },
+  { jour: 'Mercredi 23 décembre', heure: '19h', titre: 'Chakti, le spectacle lumineux', horaires: '19h à 20h', vedette: true },
 
-  // Mercredi 23
-  { jour: 'Mercredi 23 décembre', heure: '10h30', titre: 'L’atelier des petits chefs', lieu: 'Espace animation', horaires: '10h30 à 12h' },
-  { jour: 'Mercredi 23 décembre', heure: '14h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '14h à 17h', vedette: true },
-  { jour: 'Mercredi 23 décembre', heure: '15h30', titre: 'Le maquillage des enfants', lieu: 'Espace animation', horaires: '15h30 à 17h30' },
-  { jour: 'Mercredi 23 décembre', heure: '18h', titre: 'Le cracheur de feu', lieu: 'Parvis de la galerie', horaires: 'À la tombée de la nuit' },
-
-  // Jeudi 24 : le réveillon
-  { jour: 'Jeudi 24 décembre', heure: '10h', titre: 'La photo avec le Père Noël', lieu: 'Le trône, place centrale', horaires: '10h à 12h30, dernière séance avant sa tournée', vedette: true },
-  { jour: 'Jeudi 24 décembre', heure: '11h', titre: 'La chorale de Noël', lieu: 'Allée principale', horaires: '30 minutes de chants' },
-  { jour: 'Jeudi 24 décembre', heure: '14h30', titre: 'La brigade du Père Noël', lieu: 'En déambulation dans les allées', horaires: '14h30 à 16h30', detail: 'Dernier tour de galerie avant le grand départ, distribution de papillotes.' },
-  { jour: 'Jeudi 24 décembre', heure: '16h30', titre: 'Le départ du Père Noël', lieu: 'Parvis de la galerie', horaires: 'Le dernier au revoir', detail: 'Tout le monde dehors pour saluer le Père Noël avant sa grande nuit.' }
+  // --- Jeudi 24 décembre ---
+  { jour: 'Jeudi 24 décembre', heure: '7h', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '7h à 14h30', detail: 'Dernier jour pour poster ta lettre au Père Noël. Gratuit.' },
+  { jour: 'Jeudi 24 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.', vedette: true },
+  { jour: 'Jeudi 24 décembre', heure: '7h', titre: 'Le petit-déjeuner des lutins', horaires: '7h à 11h' },
 ];
 
 
