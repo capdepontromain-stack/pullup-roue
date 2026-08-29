@@ -528,8 +528,8 @@ const QUESTIONS = [
     titre: 'Ton samedi idéal, c’est plutôt…',
     soustitre: 'Dernière question, et ensuite on joue.',
     options: [
-      { v: 'enfants', l: 'En famille, avec les enfants', ic: 'famille', photo: 'img/photos/quiz/samedi-famille.jpg', rayons: ['enfants'],     aussi: { frequence: 'famille' } },
-      { v: 'mode',    l: 'Flâner entre amis',            ic: 'amis',    photo: 'img/photos/quiz/samedi-amis.jpg',    rayons: ['mode'] },
+      { v: 'enfants', l: 'En famille, avec les enfants', ic: 'famille', photo: 'img/photos/quiz/samedi-famille-v2.jpg', rayons: ['enfants'],     aussi: { frequence: 'famille' } },
+      { v: 'mode',    l: 'Flâner entre amis',            ic: 'amis',    photo: 'img/photos/quiz/samedi-amis-v2.jpg',    rayons: ['mode'] },
       { v: 'sport',   l: 'Dehors, à bouger',              ic: 'dehors',  photo: 'img/photos/quiz/samedi-dehors.jpg',  rayons: ['sport'] },
       { v: 'maison',  l: 'Au calme, à la maison',         ic: 'maison',  photo: 'img/photos/quiz/samedi-maison.jpg',  rayons: ['maison'] }
     ]
