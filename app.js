@@ -459,7 +459,7 @@ const COULEURS_SEGMENTS = ['#C9962E', '#F1ECE2', '#5A554B', '#E3B85A', '#8A8378'
 // 02  « Ton âge ? »                           -> age_tranche
 //        ATTENTION : -18 force le consentement aux offres à « non ».
 //        C'est la protection des mineurs, elle ne bouge jamais.
-// 03  « On t'offre 100 € à dépenser » (multi) -> envie1 + univers
+// 03  « On t'offre 200 € à dépenser » (multi) -> envie1 + univers
 //        LA question de ciblage : chaque réponse porte ses rayons
 //        (mode, beaute, bijoux+hightech, gourmandise), consolidés
 //        dans univers (voir consoliderCiblage).
@@ -503,11 +503,11 @@ const QUESTIONS = [
   },
   {
     // LA question qui vaut de l'or pour les commerçants. V2 : un seul
-    // écran de 100 € (le second, « il t'en reste 50 € », a été retiré
+    // écran (200 € depuis le 29/08/2026, décision Romain ; le second, « il t'en reste 50 € », a été retiré
     // pour raccourcir le début). La première case cochée reste la
     // priorité du joueur (voir premierRayonCoche).
     id: 'envie1', type: 'multi',
-    titre: 'On t’offre 100 € à dépenser dans la galerie.',
+    titre: 'On t’offre 200 € à dépenser dans la galerie.',
     soustitre: 'Tu files où en premier ? Plusieurs réponses possibles.',
     // LES PHOTOS DES RÉPONSES (28/08/2026, Romain : « plutôt que des
     // petits dessins, autant avoir des vraies images ») : chaque rayon
@@ -590,7 +590,7 @@ function consoliderCiblage() {
     });
   });
   // LA PRIORITÉ DU JOUEUR (26/08/2026, soirée).
-  // Les 100 € tiennent maintenant sur deux écrans à cases à cocher.
+  // Les euros offerts tiennent maintenant sur un écran à cases à cocher.
   // La priorité, c'est la PREMIÈRE case cochée du premier écran (dans
   // l'ordre affiché, pas dans l'ordre des doigts), et à défaut celle du
   // second. Elle décide de la première offre qu'on enverra au joueur.
