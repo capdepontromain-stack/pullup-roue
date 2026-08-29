@@ -37,8 +37,8 @@ const PROGRAMME_DEMO = [
   { jour: 'aujourdhui', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.', vedette: true },
   { jour: 'aujourdhui', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
   { jour: 'aujourdhui', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30', detail: 'Création d’étiquettes cadeaux.' },
-  { jour: 'aujourdhui', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.' },
-  { jour: 'aujourdhui', heure: '19h', titre: 'Chakti, l’animation enflammée', horaires: '19h à 20h' },
+  { jour: 'aujourdhui', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.', vedette: true },
+  { jour: 'aujourdhui', heure: '19h', titre: 'Chakti, l’animation enflammée', horaires: '19h à 20h', vedette: true },
 
   // LE VRAI PROGRAMME DE DÉCEMBRE 2026, donné par Romain le 29/08/2026
   // (export de son outil de planification, fichier
@@ -48,44 +48,44 @@ const PROGRAMME_DEMO = [
   // d'origine en contient, ils ne concernent que Pull Up.
 
   // --- Mercredi 9 décembre ---
-  { jour: 'Mercredi 9 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Avec distribution de bonbons.' },
+  { jour: 'Mercredi 9 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Avec distribution de bonbons.', vedette: true },
   { jour: 'Mercredi 9 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
   { jour: 'Mercredi 9 décembre', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30', detail: 'Création d’étiquettes cadeaux.' },
   { jour: 'Mercredi 9 décembre', heure: '19h', titre: 'Chakti, l’animation enflammée', horaires: '19h à 20h', vedette: true },
 
   // --- Jeudi 10 décembre ---
   { jour: 'Jeudi 10 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
-  { jour: 'Jeudi 10 décembre', heure: '17h', titre: 'La chorale en déambulation, à quatre voix', horaires: '17h à 18h' },
+  { jour: 'Jeudi 10 décembre', heure: '17h', titre: 'La chorale en déambulation, à quatre voix', horaires: '17h à 18h', vedette: true },
 
   // --- Vendredi 11 décembre ---
   { jour: 'Vendredi 11 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
-  { jour: 'Vendredi 11 décembre', heure: '15h', titre: 'La déambulation jonglage de Chakti', horaires: '15h à 16h' },
+  { jour: 'Vendredi 11 décembre', heure: '15h', titre: 'La déambulation jonglage de Chakti', horaires: '15h à 16h', vedette: true },
 
   // --- Samedi 12 décembre ---
   { jour: 'Samedi 12 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.', vedette: true },
   { jour: 'Samedi 12 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
   { jour: 'Samedi 12 décembre', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30', detail: 'Création de marque-places.' },
-  { jour: 'Samedi 12 décembre', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.' },
+  { jour: 'Samedi 12 décembre', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.', vedette: true },
 
   // --- Lundi 14 décembre ---
   { jour: 'Lundi 14 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
-  { jour: 'Lundi 14 décembre', heure: '15h', titre: 'Le concours de dessin de Noël', horaires: '15h à 16h', detail: 'Résultats à 16h.' },
-  { jour: 'Lundi 14 décembre', titre: 'Contes et histoires de Noël', horaires: 'Plusieurs sessions dans la journée' },
+  { jour: 'Lundi 14 décembre', heure: '15h', titre: 'Le concours de dessin de Noël', horaires: '15h à 16h', detail: 'Résultats à 16h.', vedette: true },
+  { jour: 'Lundi 14 décembre', titre: 'Contes et histoires de Noël', horaires: 'Plusieurs sessions dans la journée', vedette: true },
 
   // --- Mardi 15 décembre ---
   { jour: 'Mardi 15 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
-  { jour: 'Mardi 15 décembre', heure: '15h', titre: 'La déambulation jonglage de Chakti', horaires: '15h à 16h' },
+  { jour: 'Mardi 15 décembre', heure: '15h', titre: 'La déambulation jonglage de Chakti', horaires: '15h à 16h', vedette: true },
 
   // --- Mercredi 16 décembre ---
-  { jour: 'Mercredi 16 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.' },
+  { jour: 'Mercredi 16 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.', vedette: true },
   { jour: 'Mercredi 16 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
   { jour: 'Mercredi 16 décembre', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30', detail: 'Création d’étiquettes cadeaux.' },
   { jour: 'Mercredi 16 décembre', heure: '19h', titre: 'Chakti, l’animation enflammée', horaires: '19h à 20h', vedette: true },
 
   // --- Jeudi 17 décembre ---
   { jour: 'Jeudi 17 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
-  { jour: 'Jeudi 17 décembre', heure: '15h', titre: 'Le concours de dessin de Noël', horaires: '15h à 16h', detail: 'Résultats à 16h.' },
-  { jour: 'Jeudi 17 décembre', heure: '16h', titre: 'Contes et histoires de Noël', horaires: 'Sessions à 16h' },
+  { jour: 'Jeudi 17 décembre', heure: '15h', titre: 'Le concours de dessin de Noël', horaires: '15h à 16h', detail: 'Résultats à 16h.', vedette: true },
+  { jour: 'Jeudi 17 décembre', heure: '16h', titre: 'Contes et histoires de Noël', horaires: 'Sessions à 16h', vedette: true },
 
   // --- Vendredi 18 décembre ---
   { jour: 'Vendredi 18 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
@@ -95,8 +95,8 @@ const PROGRAMME_DEMO = [
   { jour: 'Samedi 19 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.', vedette: true },
   { jour: 'Samedi 19 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
   { jour: 'Samedi 19 décembre', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30', detail: 'Création de marque-places.' },
-  { jour: 'Samedi 19 décembre', heure: '15h', titre: 'La déambulation jonglage de Chakti', horaires: '15h à 16h' },
-  { jour: 'Samedi 19 décembre', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.' },
+  { jour: 'Samedi 19 décembre', heure: '15h', titre: 'La déambulation jonglage de Chakti', horaires: '15h à 16h', vedette: true },
+  { jour: 'Samedi 19 décembre', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.', vedette: true },
 
   // --- Dimanche 20 décembre ---
   { jour: 'Dimanche 20 décembre', heure: 'Matin', titre: 'Le riz chauffé, petit-déjeuner créole', detail: 'Le petit-déjeuner lontan du dimanche de la Fèt Kaf.' },
@@ -109,17 +109,17 @@ const PROGRAMME_DEMO = [
   { jour: 'Lundi 21 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
 
   // --- Mardi 22 décembre ---
-  { jour: 'Mardi 22 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.' },
+  { jour: 'Mardi 22 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.', vedette: true },
   { jour: 'Mardi 22 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
   { jour: 'Mardi 22 décembre', heure: '17h30', titre: 'L’animation micro en nocturne', horaires: '17h30 à 21h' },
   { jour: 'Mardi 22 décembre', heure: '19h', titre: 'Le spectacle de feu', horaires: '19h à 20h', vedette: true },
 
   // --- Mercredi 23 décembre ---
-  { jour: 'Mercredi 23 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.' },
+  { jour: 'Mercredi 23 décembre', heure: '7h', titre: 'Le Père Noël est dans la galerie', horaires: '7h à 14h30', detail: 'Viens à sa rencontre.', vedette: true },
   { jour: 'Mercredi 23 décembre', heure: '10h30', titre: 'L’espace du lutin et la lettre au Père Noël', horaires: '10h30 à 17h30', detail: 'Écris ta lettre au Père Noël avec l’aide du lutin. Gratuit.' },
   { jour: 'Mercredi 23 décembre', heure: '14h', titre: 'L’atelier déco parent-enfant', horaires: '14h à 17h30' },
   { jour: 'Mercredi 23 décembre', heure: '17h30', titre: 'L’animation micro en nocturne', horaires: '17h30 à 21h' },
-  { jour: 'Mercredi 23 décembre', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.' },
+  { jour: 'Mercredi 23 décembre', heure: '18h', titre: 'La chorale de Noël', horaires: '18h à 19h', detail: 'Vingt chanteurs dans la galerie.', vedette: true },
   { jour: 'Mercredi 23 décembre', heure: '19h', titre: 'Chakti, le spectacle lumineux', horaires: '19h à 20h', vedette: true },
 
   // --- Jeudi 24 décembre ---
