@@ -325,10 +325,11 @@ function appliquerOperation() {
   // grattaient un ticket au nom de Cap Sacré-Cœur.
   const ticketMention = document.getElementById('ticket-mention');
   if (ticketMention) {
-    // Sous le chapiteau, ce n'est plus un ticket mais un billet
-    // d'entrée : le mot fait partie du décor.
-    const mot = 'Ticket';
-    ticketMention.textContent = OPERATION.lieu ? mot + ' · ' + OPERATION.lieu : mot + ' surprise';
+    // Le billet ne dit plus « Ticket » (30/08/2026, Romain : « pas
+    // besoin de dire que c'est un ticket, s'il l'est ») : il porte
+    // seulement le nom de la galerie, comme un vrai billet imprimé.
+    ticketMention.textContent = OPERATION.lieu || '';
+    ticketMention.hidden = !OPERATION.lieu;
     const titreGrattage = document.getElementById('grattage-titre');
     if (titreGrattage) {
       // Le ticket ne donne plus une place sous le chapiteau : il dit
@@ -1508,67 +1509,55 @@ function preparerGrattage() {
     ctx.fillRect(Math.random() * L, Math.random() * H, 1.5, 1.5);
   }
 
-  // L'ENTRÉE DU CIRQUE (30/08/2026, Romain : « le ticket au début,
-  // une entrée de cirque »). Le voile doré s'habille en billet de
-  // spectacle : bandes de chapiteau rayées en haut et en bas avec
-  // leurs festons, souche perforée à gauche, fronton écrit et petit
-  // chapiteau au trait. Tout est PEINT SUR LE VOILE : ça se gratte
-  // avec lui, et le velours du résultat dessous ne change pas.
-  const bande = 22;
-  for (let x = 0, i = 0; x < L; x += 30, i++) {
-    ctx.fillStyle = i % 2 === 0 ? 'rgba(179,40,45,.88)' : 'rgba(246,241,230,.88)';
-    ctx.fillRect(x, 0, 30, bande);
-    ctx.fillStyle = i % 2 === 0 ? 'rgba(246,241,230,.88)' : 'rgba(179,40,45,.88)';
-    ctx.fillRect(x, H - bande, 30, bande);
-  }
-  ctx.fillStyle = 'rgba(179,40,45,.88)';
-  for (let x = 15; x < L; x += 30) {
-    ctx.beginPath(); ctx.arc(x, bande, 8, 0, Math.PI); ctx.fill();
-  }
-  // La souche du billet, détachable le long des pointillés
+  // LE BILLET SOBRE (30/08/2026, Romain : « pas besoin de dire que
+  // c'est un ticket de cirque, s'il l'est ; pas de dessin dessus non
+  // plus, enlève le chapiteau »). Plus de bandes rayées, plus de
+  // fronton écrit, plus de chapiteau ni d'étoile : la matière et la
+  // découpe suffisent. Un cadre gravé comme sur un billet imprimé,
+  // une souche perforée à droite, la date en travers de la souche,
+  // et la consigne. Tout est PEINT SUR LE VOILE : ça se gratte avec
+  // lui, et le velours du résultat dessous ne change pas.
+
+  // Le double filet gravé, à la manière d'un billet imprimé
+  ctx.strokeStyle = 'rgba(58,36,6,.38)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(14, 14, L - 28, H - 28);
+  ctx.strokeStyle = 'rgba(58,36,6,.16)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(21, 21, L - 42, H - 42);
+
+  // La souche, détachable le long des perforations
+  const souche = Math.round(L * 0.78);
   ctx.save();
-  ctx.setLineDash([5, 7]);
-  ctx.strokeStyle = 'rgba(40,26,4,.45)';
+  ctx.setLineDash([4, 8]);
+  ctx.strokeStyle = 'rgba(48,30,4,.5)';
   ctx.lineWidth = 2.5;
-  ctx.beginPath(); ctx.moveTo(64, bande + 14); ctx.lineTo(64, H - bande - 14); ctx.stroke();
-  ctx.restore();
-  // L'étoile de la souche
-  ctx.fillStyle = 'rgba(40,26,4,.5)';
-  ctx.save();
-  ctx.translate(32, H / 2);
-  ctx.beginPath();
-  for (let i = 0; i < 10; i++) {
-    const r = i % 2 === 0 ? 13 : 5.5;
-    const a = -Math.PI / 2 + i * Math.PI / 5;
-    ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
-  }
-  ctx.closePath(); ctx.fill();
-  ctx.restore();
-  // Le fronton du billet
-  ctx.fillStyle = 'rgba(40,26,4,.58)';
-  ctx.textAlign = 'center';
-  ctx.font = '600 17px Jost, Arial, sans-serif';
-  ctx.letterSpacing = '5px';
-  ctx.fillText('ENTRÉE DU CIRQUE', (L + 64) / 2, bande + 44);
-  // Le petit chapiteau au trait, au-dessus de la consigne
-  ctx.save();
-  ctx.translate((L + 64) / 2, H / 2 - 6);
-  ctx.strokeStyle = 'rgba(40,26,4,.55)';
-  ctx.lineWidth = 3.5;
-  ctx.lineJoin = 'round';
-  ctx.beginPath();
-  ctx.moveTo(-46, 16); ctx.lineTo(0, -28); ctx.lineTo(46, 16); ctx.closePath();
-  ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(-34, 16); ctx.lineTo(-30, 40); ctx.lineTo(30, 40); ctx.lineTo(34, 16); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(0, -28); ctx.lineTo(0, -40); ctx.lineTo(14, -36); ctx.lineTo(0, -32); ctx.stroke();
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(souche, 8); ctx.lineTo(souche, H - 8); ctx.stroke();
   ctx.restore();
 
-  // La consigne, en petites capitales : elle guide sans crier
-  ctx.fillStyle = 'rgba(40,26,4,.62)';
+  // La date, en travers de la souche : elle renseigne sans expliquer
+  ctx.save();
+  ctx.translate((souche + L) / 2 + 4, H / 2);
+  ctx.rotate(-Math.PI / 2);
   ctx.textAlign = 'center';
-  ctx.font = '600 21px Jost, Arial, sans-serif';
-  ctx.letterSpacing = '7px';
-  ctx.fillText('GRATTE ICI', (L + 64) / 2, H / 2 + 74);
+  ctx.font = '600 15px Jost, Arial, sans-serif';
+  ctx.letterSpacing = '6px';
+  ctx.fillStyle = 'rgba(255,250,235,.5)';
+  ctx.fillText('DÉCEMBRE 2026', 0, 1.5);
+  ctx.fillStyle = 'rgba(48,30,4,.55)';
+  ctx.fillText('DÉCEMBRE 2026', 0, 0);
+  ctx.restore();
+
+  // La consigne, gravée dans la dorure : elle guide sans crier.
+  // Centrée sur la partie principale du billet, à gauche de la souche.
+  ctx.textAlign = 'center';
+  ctx.font = '600 22px Jost, Arial, sans-serif';
+  ctx.letterSpacing = '8px';
+  ctx.fillStyle = 'rgba(255,250,235,.45)';
+  ctx.fillText('GRATTE ICI', souche / 2 + 4, H / 2 + 61.5);
+  ctx.fillStyle = 'rgba(40,26,4,.62)';
+  ctx.fillText('GRATTE ICI', souche / 2 + 4, H / 2 + 60);
   ctx.letterSpacing = '0px';
 
   installerGrattage(voile, ctx);
@@ -1836,7 +1825,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '30aout2026b';
+const VERSION_JEUX = '30aout2026c';
 // Tous les jeux jamais créés restent chargeables (la roue, elle, vit
 // dans app.js et n'a rien à charger) : le parcours officiel en joue
 // trois (bandit, cartes, roue depuis le 29/08/2026), et la vitrine de

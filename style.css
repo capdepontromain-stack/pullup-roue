@@ -2060,11 +2060,24 @@ body.theme-csc #offres-soustitre { color: #29343E; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 22px;
+  /* Le résultat se centre sur la partie principale du billet, à
+     gauche de la souche : même axe que le « GRATTE ICI » du voile. */
+  padding: 22px calc(22% + 12px) 22px 22px;
   text-align: center;
   background:
     radial-gradient(circle at 30% 25%, rgba(239, 195, 104, .22), transparent 60%),
     linear-gradient(160deg, #241a0e, #14100a);
+}
+/* La souche perforée continue sous le voile : une fois gratté, le
+   billet reste le même objet. */
+.ticket-fond::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  right: 22%;
+  border-left: 2.5px dashed rgba(239, 195, 104, .34);
+  pointer-events: none;
 }
 .ticket-mention {
   position: absolute;
@@ -2104,7 +2117,8 @@ body.theme-csc #offres-soustitre { color: #29343E; }
    qu'il faut gratter. Il s'efface au premier contact. */
 .doigt-consigne {
   position: absolute;
-  left: 50%;
+  /* Centré sur la partie principale du billet, à gauche de la souche */
+  left: 39%;
   top: 50%;
   width: 34px; height: 34px;
   margin: -46px 0 0 -17px;
