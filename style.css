@@ -3694,3 +3694,22 @@ body.theme-csc .case input:checked {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.6l3.4 3.4L13 5' fill='none' stroke='%23FFFFFF' stroke-width='2.6' stroke-linecap='square'/%3E%3C/svg%3E");
 }
 body.theme-csc .case input:focus-visible { box-shadow: 0 0 0 3px rgba(228, 55, 63, .3); }
+
+/* LE HALO DE LA ROUE EN THÈME CLAIR (30/08/2026, retour Romain : « un
+   bug blanc autour de la roue avant de la faire tourner »). Le halo
+   doré diffus (90 px) et l'anneau crème du thème sombre se lisent
+   comme une tache blanchâtre sur le fond clair : en thème csc, la
+   roue garde sa jante, un liseré rouge net et une ombre portée douce,
+   sans aucun halo. */
+body.theme-csc #roue-svg {
+  box-shadow:
+    0 0 0 9px #221709,
+    0 0 0 11px var(--rouge),
+    0 16px 40px rgba(23, 34, 44, .28);
+}
+body.theme-csc .roue-cadre.emballe #roue-svg {
+  box-shadow:
+    0 0 0 9px #221709,
+    0 0 0 11px var(--rouge-clair),
+    0 16px 44px rgba(23, 34, 44, .34);
+}
