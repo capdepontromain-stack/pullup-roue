@@ -1824,7 +1824,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '30aout2026f';
+const VERSION_JEUX = '30aout2026g';
 // Tous les jeux jamais créés restent chargeables (la roue, elle, vit
 // dans app.js et n'a rien à charger) : le parcours officiel en joue
 // trois (bandit, cartes, roue depuis le 29/08/2026), et la vitrine de
@@ -3696,9 +3696,10 @@ function proposerLesOffres(suite) {
 // ------------------------------------------------------
 // 26/08/2026, Romain : « il y a trop d'informations ». L'écran portait
 // l'aperçu de l'e-mail du jeudi et quatre promesses détaillées ; il
-// tient maintenant en un titre, une phrase et la question. Ce qui est
-// promis reste vrai : un seul envoi par semaine, et le refus est au
-// même endroit qu'avant.
+// tient maintenant en un titre, une phrase et la question.
+// 30/08/2026, Romain : PLUS AUCUNE PROMESSE DE FRÉQUENCE (ni « chaque
+// jeudi », ni « un par semaine ») : il veut garder la liberté d'envoyer
+// plus, sans l'annoncer non plus. Ne jamais remettre de fréquence.
 function habillerLesOffres() {
   const prenom = (reponses.prenom || '').trim();
   const titre = document.getElementById('offres-titre');
@@ -3706,8 +3707,8 @@ function habillerLesOffres() {
 
   if (titre) {
     titre.textContent = prenom
-      ? prenom + ', tes bons plans t’attendent chaque jeudi.'
-      : 'Les bons plans de la galerie, chaque jeudi.';
+      ? prenom + ', tes bons plans t’attendent.'
+      : 'Les bons plans de la galerie t’attendent.';
   }
   if (sousTitre) {
     // UNE SEULE PHRASE, COURTE (29/08/2026, Romain : « enlève "côté
@@ -3716,7 +3717,7 @@ function habillerLesOffres() {
     // la phrase est mise en valeur par le style (voir #offres-soustitre
     // dans style.css).
     sousTitre.textContent =
-      'Chaque jeudi : cadeaux, promos et nouveautés dans ta boîte mail.';
+      'Cadeaux, promos et nouveautés dans ta boîte mail.';
   }
 }
 
