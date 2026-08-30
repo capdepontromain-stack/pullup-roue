@@ -2061,8 +2061,8 @@ body.theme-csc #offres-soustitre { color: #29343E; }
   justify-content: center;
   gap: 8px;
   /* Le résultat se centre sur la partie principale du billet, à
-     gauche de la souche : même axe que le « GRATTE ICI » du voile. */
-  padding: 22px calc(22% + 12px) 22px 22px;
+     droite de la souche : même axe que le « GRATTE ICI » du voile. */
+  padding: 22px 22px 22px calc(22% + 12px);
   text-align: center;
   background:
     radial-gradient(circle at 30% 25%, rgba(239, 195, 104, .22), transparent 60%),
@@ -2075,7 +2075,7 @@ body.theme-csc #offres-soustitre { color: #29343E; }
   position: absolute;
   top: 8px;
   bottom: 8px;
-  right: 22%;
+  left: 22%;
   border-left: 2.5px dashed rgba(239, 195, 104, .34);
   pointer-events: none;
 }
@@ -2117,8 +2117,8 @@ body.theme-csc #offres-soustitre { color: #29343E; }
    qu'il faut gratter. Il s'efface au premier contact. */
 .doigt-consigne {
   position: absolute;
-  /* Centré sur la partie principale du billet, à gauche de la souche */
-  left: 39%;
+  /* Centré sur la partie principale du billet, à droite de la souche */
+  left: 61%;
   top: 50%;
   width: 34px; height: 34px;
   margin: -46px 0 0 -17px;

@@ -1469,95 +1469,138 @@ function preparerGrattage() {
   const ctx = voile.getContext('2d', { willReadFrequently: true });
   const L = voile.width, H = voile.height;
 
-  // Le voile doré à gratter
+  // LE BILLET DE CIRQUE VINTAGE (30/08/2026, d'après le modèle fourni
+  // par Romain : souche rouge à gauche avec le nom en vertical et des
+  // étoiles, corps crème à rayons de soleil, double cadre imprimé,
+  // rangée d'étoiles le long de la perforation, numéro de billet.
+  // Toujours SANS chapiteau ni dessin figuratif : consigne du même
+  // jour, « pas de dessin dessus ». Tout est PEINT SUR LE VOILE : ça
+  // se gratte avec lui, le velours du résultat dessous ne change pas.
+  const SOUCHE = 132;
+  const etoile = (x, y, r, couleur) => {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.fillStyle = couleur;
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const rr = i % 2 === 0 ? r : r * 0.42;
+      const a = -Math.PI / 2 + i * Math.PI / 5;
+      ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  };
+
+  // Le corps crème, légèrement vieilli
   const fond = ctx.createLinearGradient(0, 0, L, H);
-  fond.addColorStop(0, '#EFC368');
-  fond.addColorStop(0.45, '#C9962E');
-  fond.addColorStop(1, '#9a6f1c');
+  fond.addColorStop(0, '#F7EFDC');
+  fond.addColorStop(1, '#EBDAB6');
   ctx.globalCompositeOperation = 'source-over';
   ctx.fillStyle = fond;
   ctx.fillRect(0, 0, L, H);
 
-  // Métal brossé : de fines rayures obliques, comme sur un vrai ticket
+  // Les rayons de soleil, depuis le centre du corps
+  const cx0 = (SOUCHE + L) / 2, cy0 = H / 2;
   ctx.save();
-  ctx.lineWidth = 1;
-  for (let x = -H; x < L + H; x += 7) {
-    ctx.strokeStyle = (x % 14 === 0) ? 'rgba(255,255,255,.10)' : 'rgba(90,58,8,.10)';
+  ctx.beginPath(); ctx.rect(SOUCHE, 0, L - SOUCHE, H); ctx.clip();
+  for (let i = 0; i < 28; i += 2) {
+    const a1 = (i / 28) * Math.PI * 2, a2 = ((i + 1) / 28) * Math.PI * 2;
+    ctx.fillStyle = 'rgba(120, 78, 30, .065)';
     ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x + H, H);
-    ctx.stroke();
+    ctx.moveTo(cx0, cy0);
+    ctx.arc(cx0, cy0, 620, a1, a2);
+    ctx.closePath(); ctx.fill();
   }
   ctx.restore();
 
-  // Le reflet qui glisse en travers de la dorure
-  const reflet = ctx.createLinearGradient(L * 0.1, 0, L * 0.75, H);
-  reflet.addColorStop(0, 'rgba(255,255,255,0)');
-  reflet.addColorStop(0.42, 'rgba(255,252,240,.34)');
-  reflet.addColorStop(0.58, 'rgba(255,252,240,.14)');
-  reflet.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = reflet;
-  ctx.fillRect(0, 0, L, H);
-
-  // Grain fin : sans lui, la dorure reste une image de synthèse
-  ctx.fillStyle = 'rgba(255,255,255,.07)';
-  for (let i = 0; i < 1400; i++) {
-    ctx.fillRect(Math.random() * L, Math.random() * H, 1.5, 1.5);
-  }
-  ctx.fillStyle = 'rgba(48,30,4,.10)';
+  // Le grain du papier
+  ctx.fillStyle = 'rgba(255,255,255,.08)';
   for (let i = 0; i < 900; i++) {
     ctx.fillRect(Math.random() * L, Math.random() * H, 1.5, 1.5);
   }
+  ctx.fillStyle = 'rgba(78,52,16,.07)';
+  for (let i = 0; i < 700; i++) {
+    ctx.fillRect(Math.random() * L, Math.random() * H, 1.5, 1.5);
+  }
 
-  // LE BILLET SOBRE (30/08/2026, Romain : « pas besoin de dire que
-  // c'est un ticket de cirque, s'il l'est ; pas de dessin dessus non
-  // plus, enlève le chapiteau »). Plus de bandes rayées, plus de
-  // fronton écrit, plus de chapiteau ni d'étoile : la matière et la
-  // découpe suffisent. Un cadre gravé comme sur un billet imprimé,
-  // une souche perforée à droite, la date en travers de la souche,
-  // et la consigne. Tout est PEINT SUR LE VOILE : ça se gratte avec
-  // lui, et le velours du résultat dessous ne change pas.
-
-  // Le double filet gravé, à la manière d'un billet imprimé
-  ctx.strokeStyle = 'rgba(58,36,6,.38)';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(14, 14, L - 28, H - 28);
-  ctx.strokeStyle = 'rgba(58,36,6,.16)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(21, 21, L - 42, H - 42);
-
-  // La souche, détachable le long des perforations
-  const souche = Math.round(L * 0.78);
+  // La souche rouge, à gauche
+  const rougeSouche = ctx.createLinearGradient(0, 0, SOUCHE, H);
+  rougeSouche.addColorStop(0, '#C0392B');
+  rougeSouche.addColorStop(1, '#8E1F1F');
+  ctx.fillStyle = rougeSouche;
+  ctx.fillRect(0, 0, SOUCHE, H);
+  ctx.strokeStyle = 'rgba(246,237,216,.5)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(12, 12, SOUCHE - 24, H - 24);
+  etoile(30, 34, 9, 'rgba(246,237,216,.9)');
+  etoile(SOUCHE - 30, 34, 6, 'rgba(246,237,216,.65)');
+  etoile(30, H - 34, 6, 'rgba(246,237,216,.65)');
+  etoile(SOUCHE - 30, H - 34, 9, 'rgba(246,237,216,.9)');
+  // Le nom de la galerie en travers de la souche
   ctx.save();
-  ctx.setLineDash([4, 8]);
-  ctx.strokeStyle = 'rgba(48,30,4,.5)';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(souche, 8); ctx.lineTo(souche, H - 8); ctx.stroke();
-  ctx.restore();
-
-  // La date, en travers de la souche : elle renseigne sans expliquer
-  ctx.save();
-  ctx.translate((souche + L) / 2 + 4, H / 2);
+  ctx.translate(SOUCHE / 2 - 8, H / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.textAlign = 'center';
-  ctx.font = '600 15px Jost, Arial, sans-serif';
-  ctx.letterSpacing = '6px';
-  ctx.fillStyle = 'rgba(255,250,235,.5)';
-  ctx.fillText('DÉCEMBRE 2026', 0, 1.5);
-  ctx.fillStyle = 'rgba(48,30,4,.55)';
-  ctx.fillText('DÉCEMBRE 2026', 0, 0);
+  ctx.fillStyle = 'rgba(246,237,216,.95)';
+  ctx.font = '600 19px "Playfair Display", Georgia, serif';
+  ctx.letterSpacing = '3px';
+  const nomSouche = (typeof OPERATION !== 'undefined' && OPERATION.lieu) || 'La Hotte';
+  ctx.fillText(nomSouche.toUpperCase(), 0, 0);
   ctx.restore();
-
-  // La consigne, gravée dans la dorure : elle guide sans crier.
-  // Centrée sur la partie principale du billet, à gauche de la souche.
+  // Le numéro du billet, au bas de la souche
+  ctx.save();
+  ctx.translate(SOUCHE / 2 + 26, H / 2);
+  ctx.rotate(-Math.PI / 2);
   ctx.textAlign = 'center';
-  ctx.font = '600 22px Jost, Arial, sans-serif';
+  ctx.fillStyle = 'rgba(246,237,216,.6)';
+  ctx.font = '600 11px Jost, Arial, sans-serif';
+  ctx.letterSpacing = '3px';
+  ctx.fillText('N\u00ba 122 026', 0, 0);
+  ctx.restore();
+  ctx.letterSpacing = '0px';
+
+  // La perforation entre la souche et le corps, avec ses encoches
+  ctx.save();
+  ctx.setLineDash([3, 7]);
+  ctx.strokeStyle = 'rgba(46,32,19,.55)';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(SOUCHE, 16); ctx.lineTo(SOUCHE, H - 16); ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle = '#F7F8FA';
+  ctx.beginPath(); ctx.arc(SOUCHE, 0, 11, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(SOUCHE, H, 11, 0, Math.PI * 2); ctx.fill();
+
+  // La rangée d'étoiles rouges le long de la perforation, côté corps
+  for (let i = 0; i < 5; i++) {
+    etoile(SOUCHE + 26, 62 + i * ((H - 124) / 4), 8, 'rgba(158,32,38,.85)');
+  }
+
+  // Le double cadre imprimé du corps
+  ctx.strokeStyle = 'rgba(46,32,19,.55)';
+  ctx.lineWidth = 2.5;
+  ctx.strokeRect(SOUCHE + 46, 16, L - SOUCHE - 62, H - 32);
+  ctx.strokeStyle = 'rgba(46,32,19,.28)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(SOUCHE + 53, 23, L - SOUCHE - 76, H - 46);
+
+  // Au centre : un filet, la consigne, un filet, la date. La consigne
+  // guide sans crier, et rien n'explique ce que le billet est déjà.
+  const cxc = (SOUCHE + 46 + L - 16) / 2;
+  ctx.fillStyle = 'rgba(46,32,19,.72)';
+  ctx.fillRect(cxc - 95, H / 2 - 44, 190, 3);
+  ctx.fillRect(cxc - 95, H / 2 + 18, 190, 3);
+  ctx.textAlign = 'center';
+  ctx.font = '600 27px Jost, Arial, sans-serif';
   ctx.letterSpacing = '8px';
-  ctx.fillStyle = 'rgba(255,250,235,.45)';
-  ctx.fillText('GRATTE ICI', souche / 2 + 4, H / 2 + 61.5);
-  ctx.fillStyle = 'rgba(40,26,4,.62)';
-  ctx.fillText('GRATTE ICI', souche / 2 + 4, H / 2 + 60);
+  ctx.fillStyle = 'rgba(255,252,240,.5)';
+  ctx.fillText('GRATTE ICI', cxc + 3, H / 2 + 1.5);
+  ctx.fillStyle = 'rgba(46,32,19,.8)';
+  ctx.fillText('GRATTE ICI', cxc + 3, H / 2);
+  ctx.font = '600 13px Jost, Arial, sans-serif';
+  ctx.letterSpacing = '5px';
+  ctx.fillStyle = 'rgba(158,32,38,.85)';
+  ctx.fillText('D\u00c9CEMBRE 2026', cxc + 2, H / 2 + 52);
   ctx.letterSpacing = '0px';
 
   installerGrattage(voile, ctx);
@@ -1825,7 +1868,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '30aout2026c';
+const VERSION_JEUX = '30aout2026d';
 // Tous les jeux jamais créés restent chargeables (la roue, elle, vit
 // dans app.js et n'a rien à charger) : le parcours officiel en joue
 // trois (bandit, cartes, roue depuis le 29/08/2026), et la vitrine de
