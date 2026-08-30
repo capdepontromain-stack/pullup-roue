@@ -231,39 +231,59 @@
   const LOGO_GALERIE = `<image href="img/client/picto-csc.png" x="8" y="10"
       width="84" height="80" preserveAspectRatio="xMidYMid meet"/>`;
 
+  // LES SYMBOLES DU CIRQUE (30/08/2026, Romain : « dans le bandit
+  // manchot c'est des éléphants, clowns, sapin, chapiteau et bien sûr
+  // logo Cap Sacré-Cœur »). Les dessins de casino (cloche, cerises,
+  // trèfle, diamant, sept, fer à cheval) sont remplacés par la troupe
+  // du chapiteau, en couleurs franches, chacun avec SA silhouette :
+  // deux lots ne partagent jamais un dessin (attribution par position),
+  // et le logo de la galerie reste le symbole du jackpot.
   const SYMBOLES_MACHINE = [
-    // La cloche, or
-    `<path d="M50 16 c-16 0 -24 14 -24 30 c0 14 -6 20 -10 24 h68 c-4 -4 -10 -10 -10 -24 c0 -16 -8 -30 -24 -30 Z" fill="#EFC368" stroke="#8A6A21" stroke-width="3"/>
-     <circle cx="50" cy="14" r="5" fill="#C9962E"/>
-     <circle cx="50" cy="78" r="7" fill="#C9962E" stroke="#8A6A21" stroke-width="2"/>`,
-    // Les cerises, rouges
-    `<path d="M52 14 C40 26 34 38 32 52 M52 14 C58 28 62 40 64 50" fill="none" stroke="#1F6E4B" stroke-width="4" stroke-linecap="round"/>
-     <path d="M52 14 c8 -4 16 -4 22 2 c-8 2 -14 2 -22 -2 Z" fill="#2C8C61"/>
-     <circle cx="30" cy="62" r="14" fill="#D8383E" stroke="#8E1418" stroke-width="2.5"/>
-     <circle cx="66" cy="60" r="14" fill="#B3282D" stroke="#8E1418" stroke-width="2.5"/>
-     <ellipse cx="26" cy="57" rx="4" ry="3" fill="#FF9A8E" opacity=".8"/>`,
-    // Le trèfle, vert
-    `<circle cx="38" cy="40" r="14" fill="#2C8C61"/><circle cx="62" cy="40" r="14" fill="#2C8C61"/>
-     <circle cx="50" cy="58" r="14" fill="#1F6E4B"/>
-     <path d="M50 62 c-2 12 -6 18 -10 22 h20 c-4 -4 -8 -10 -10 -22 Z" fill="#155238"/>`,
-    // Le diamant, bleu
-    `<path d="M30 30 h40 l14 18 l-34 36 l-34 -36 z" fill="#4FA3D8" stroke="#22618E" stroke-width="3"/>
-     <path d="M30 30 L50 84 L16 48 Z" fill="#7FC3EA"/>
-     <path d="M70 30 L84 48 L50 84 Z" fill="#2F7BB0"/>`,
-    // Le sept, violet sur cocarde
-    `<circle cx="50" cy="50" r="34" fill="#F3E7D3" stroke="#6B4FA3" stroke-width="4"/>
-     <path d="M34 32 h32 l-18 40 h-12 l17 -32 h-19 z" fill="#6B4FA3"/>`,
-    // Le fer à cheval, cuivre
-    `<path d="M28 80 v-28 c0 -14 9 -26 22 -26 s22 12 22 26 v28 h-12 v-26 c0 -8 -4 -14 -10 -14 s-10 6 -10 14 v26 z" fill="#C9962E" stroke="#8A6A21" stroke-width="3"/>
-     <circle cx="33" cy="74" r="2.5" fill="#5A4415"/><circle cx="67" cy="74" r="2.5" fill="#5A4415"/>
-     <circle cx="33" cy="58" r="2.5" fill="#5A4415"/><circle cx="67" cy="58" r="2.5" fill="#5A4415"/>`,
-    // L'étoile, crème sur fond nuit
-    `<circle cx="50" cy="50" r="34" fill="#2A2118"/>
-     <path d="M50 22 l8 18 l20 2 l-15 14 l4 20 l-17 -10 l-17 10 l4 -20 l-15 -14 l20 -2 z" fill="#F3E7D3"/>`,
-    // La couronne, orange
-    `<path d="M20 66 L26 34 L40 50 L50 28 L60 50 L74 34 L80 66 z" fill="#E07B28" stroke="#9C4F12" stroke-width="3"/>
-     <path d="M20 66 h60 v10 h-60 z" fill="#C9601C"/>
-     <circle cx="50" cy="56" r="4" fill="#FFF3D4"/>`
+    // L'éléphant, gris-bleu à chapeau de fête
+    `<circle cx="46" cy="54" r="25" fill="#8DA3B9" stroke="#54687C" stroke-width="3"/>
+     <ellipse cx="33" cy="54" rx="12" ry="16" fill="#6E8296" stroke="#54687C" stroke-width="2.5"/>
+     <path d="M67 46 c11 2 15 11 13 19 c-2 7 -10 10 -15 7" fill="none" stroke="#8DA3B9" stroke-width="9" stroke-linecap="round"/>
+     <circle cx="53" cy="48" r="3.4" fill="#22303C"/>
+     <path d="M36 30 l10 -16 l10 16 z" fill="#D8383E" stroke="#8E1418" stroke-width="2.5"/>
+     <circle cx="46" cy="13" r="3.5" fill="#EFC368"/>`,
+    // Le clown, nez rouge et chapeau pointu bleu
+    `<circle cx="50" cy="56" r="23" fill="#F6E4CE" stroke="#B98F63" stroke-width="3"/>
+     <circle cx="30" cy="54" r="9" fill="#E07B28"/><circle cx="70" cy="54" r="9" fill="#E07B28"/>
+     <circle cx="42" cy="50" r="3" fill="#22303C"/><circle cx="58" cy="50" r="3" fill="#22303C"/>
+     <circle cx="50" cy="60" r="6.5" fill="#D8383E" stroke="#8E1418" stroke-width="2"/>
+     <path d="M39 70 c6 6 16 6 22 0" fill="none" stroke="#8E1418" stroke-width="3.5" stroke-linecap="round"/>
+     <path d="M38 36 l12 -20 l12 20 z" fill="#4FA3D8" stroke="#22618E" stroke-width="2.5"/>
+     <circle cx="50" cy="14" r="4" fill="#EFC368"/>`,
+    // Le chapiteau rouge
+    `<path d="M50 12 L14 52 h72 Z" fill="#D8383E"/>
+     <path d="M50 12 L32 52 h36 Z" fill="#F3E7D3"/>
+     <path d="M18 52 h64 l-6 32 h-52 z" fill="#B3282D"/>
+     <path d="M42 84 v-20 c0 -6 16 -6 16 0 v20 z" fill="#2A1104"/>
+     <path d="M50 12 v-7" stroke="#EFC368" stroke-width="3"/>
+     <path d="M50 5 l12 3 l-12 4 z" fill="#EFC368"/>`,
+    // Le sapin de Noël
+    `<path d="M50 10 L70 38 h-9 L74 60 h-11 L78 82 h-56 L37 60 h-11 L39 38 h-9 z" fill="#1F6E4B" stroke="#155238" stroke-width="3"/>
+     <rect x="44" y="82" width="12" height="9" fill="#6B4A2B"/>
+     <circle cx="44" cy="48" r="3.5" fill="#D8383E"/><circle cx="58" cy="66" r="3.5" fill="#D8383E"/>
+     <circle cx="47" cy="72" r="3.5" fill="#EFC368"/>
+     <path d="M50 2 l3 6 l6 1 l-4.5 4.5 l1 6.5 l-5.5 -3.5 l-5.5 3.5 l1 -6.5 L41 9 l6 -1 z" fill="#EFC368"/>`,
+    // La balle de jongleur, verte et crème
+    `<circle cx="50" cy="50" r="34" fill="#1F6E4B"/>
+     <path d="M50 16 a34 34 0 0 1 0 68 c12 -10 18 -21 18 -34 s-6 -24 -18 -34 z" fill="#F3E7D3"/>
+     <circle cx="50" cy="50" r="34" fill="none" stroke="#155238" stroke-width="2"/>
+     <ellipse cx="38" cy="34" rx="8" ry="5" fill="#FFFFFF" opacity=".35"/>`,
+    // Le chapeau du magicien, noir à ruban rouge
+    `<rect x="30" y="24" width="40" height="42" rx="4" fill="#2A2118"/>
+     <rect x="30" y="52" width="40" height="12" fill="#B3282D"/>
+     <path d="M16 66 h68 c0 8 -68 8 -68 0 z" fill="#3A2F22"/>
+     <path d="M34 28 c0 16 0 26 2 34" stroke="#4A3E2E" stroke-width="3" fill="none"/>`,
+    // L'étoile de la piste, or
+    `<path d="M50 10 l11 24 l26 3 l-19 18 l5 26 l-23 -13 l-23 13 l5 -26 l-19 -18 l26 -3 z" fill="#EFC368"/>
+     <path d="M50 10 l11 24 l26 3 l-19 18 l-18 -45 z" fill="#C9962E"/>`,
+    // Le tambour de parade, rouge à cordage or
+    `<ellipse cx="50" cy="36" rx="29" ry="10" fill="#F3E7D3" stroke="#B98F63" stroke-width="3"/>
+     <path d="M21 36 v28 c0 6 13 11 29 11 s29 -5 29 -11 v-28" fill="#B3282D" stroke="#8E1418" stroke-width="3"/>
+     <path d="M25 42 L38 66 L52 42 L66 66 L79 42" fill="none" stroke="#EFC368" stroke-width="3"/>`
   ];
 
   // Le nom de la galerie, pour écrire la règle du jeu. Repli neutre si

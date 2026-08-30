@@ -85,7 +85,26 @@
       <rect x="30" y="24" width="40" height="42" rx="4" fill="#2A2118"/>
       <rect x="30" y="52" width="40" height="12" fill="#B3282D"/>
       <path d="M16 66 h68 c0 8 -68 8 -68 0 z" fill="#3A2F22"/>
-      <path d="M34 28 c0 16 0 26 2 34" stroke="#4A3E2E" stroke-width="3" fill="none"/>`
+      <path d="M34 28 c0 16 0 26 2 34" stroke="#4A3E2E" stroke-width="3" fill="none"/>`,
+
+    // L'éléphant du cirque (30/08/2026, la troupe s'agrandit avec le bandit)
+    elephant: `
+      <circle cx="46" cy="54" r="25" fill="#8DA3B9" stroke="#54687C" stroke-width="3"/>
+      <ellipse cx="33" cy="54" rx="12" ry="16" fill="#6E8296" stroke="#54687C" stroke-width="2.5"/>
+      <path d="M67 46 c11 2 15 11 13 19 c-2 7 -10 10 -15 7" fill="none" stroke="#8DA3B9" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="53" cy="48" r="3.4" fill="#22303C"/>
+      <path d="M36 30 l10 -16 l10 16 z" fill="#D8383E" stroke="#8E1418" stroke-width="2.5"/>
+      <circle cx="46" cy="13" r="3.5" fill="#EFC368"/>`,
+
+    // Le clown, nez rouge et chapeau pointu
+    clown: `
+      <circle cx="50" cy="56" r="23" fill="#F6E4CE" stroke="#B98F63" stroke-width="3"/>
+      <circle cx="30" cy="54" r="9" fill="#E07B28"/><circle cx="70" cy="54" r="9" fill="#E07B28"/>
+      <circle cx="42" cy="50" r="3" fill="#22303C"/><circle cx="58" cy="50" r="3" fill="#22303C"/>
+      <circle cx="50" cy="60" r="6.5" fill="#D8383E" stroke="#8E1418" stroke-width="2"/>
+      <path d="M39 70 c6 6 16 6 22 0" fill="none" stroke="#8E1418" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M38 36 l12 -20 l12 20 z" fill="#4FA3D8" stroke="#22618E" stroke-width="2.5"/>
+      <circle cx="50" cy="14" r="4" fill="#EFC368"/>`
   };
 
   // LE LOGO DE LA GALERIE, LE TRIO À TROUVER (29/08/2026, Romain :
@@ -122,7 +141,9 @@
     chapiteau: 'le chapiteau rouge',
     etoile: 'l’étoile d’or',
     balle: 'la balle de jongleur',
-    chapeau: 'le chapeau du magicien'
+    chapeau: 'le chapeau du magicien',
+    elephant: 'l’éléphant du cirque',
+    clown: 'le clown'
   };
 
   // Le nom de la galerie, pour écrire la règle du jeu (même lecture
@@ -303,7 +324,7 @@
       // tirée « à côté » : elle est réservée au rôle de secours du
       // logo (voir LOGO_CHARGE), sinon un repli pourrait afficher
       // cinq étoiles sur la table.
-      const modeles = melanger(['chapiteau', 'balle', 'chapeau']);
+      const modeles = melanger(['chapiteau', 'balle', 'chapeau', 'elephant', 'clown']);
       const A = 'logo', B = modeles[0], C = modeles[1];
       // Le mot des consignes et des verdicts suit le dessin réel.
       const trio = LOGO_CHARGE

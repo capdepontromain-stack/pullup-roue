@@ -1508,12 +1508,67 @@ function preparerGrattage() {
     ctx.fillRect(Math.random() * L, Math.random() * H, 1.5, 1.5);
   }
 
+  // L'ENTRÉE DU CIRQUE (30/08/2026, Romain : « le ticket au début,
+  // une entrée de cirque »). Le voile doré s'habille en billet de
+  // spectacle : bandes de chapiteau rayées en haut et en bas avec
+  // leurs festons, souche perforée à gauche, fronton écrit et petit
+  // chapiteau au trait. Tout est PEINT SUR LE VOILE : ça se gratte
+  // avec lui, et le velours du résultat dessous ne change pas.
+  const bande = 22;
+  for (let x = 0, i = 0; x < L; x += 30, i++) {
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(179,40,45,.88)' : 'rgba(246,241,230,.88)';
+    ctx.fillRect(x, 0, 30, bande);
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(246,241,230,.88)' : 'rgba(179,40,45,.88)';
+    ctx.fillRect(x, H - bande, 30, bande);
+  }
+  ctx.fillStyle = 'rgba(179,40,45,.88)';
+  for (let x = 15; x < L; x += 30) {
+    ctx.beginPath(); ctx.arc(x, bande, 8, 0, Math.PI); ctx.fill();
+  }
+  // La souche du billet, détachable le long des pointillés
+  ctx.save();
+  ctx.setLineDash([5, 7]);
+  ctx.strokeStyle = 'rgba(40,26,4,.45)';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(64, bande + 14); ctx.lineTo(64, H - bande - 14); ctx.stroke();
+  ctx.restore();
+  // L'étoile de la souche
+  ctx.fillStyle = 'rgba(40,26,4,.5)';
+  ctx.save();
+  ctx.translate(32, H / 2);
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const r = i % 2 === 0 ? 13 : 5.5;
+    const a = -Math.PI / 2 + i * Math.PI / 5;
+    ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+  }
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+  // Le fronton du billet
+  ctx.fillStyle = 'rgba(40,26,4,.58)';
+  ctx.textAlign = 'center';
+  ctx.font = '600 17px Jost, Arial, sans-serif';
+  ctx.letterSpacing = '5px';
+  ctx.fillText('ENTRÉE DU CIRQUE', (L + 64) / 2, bande + 44);
+  // Le petit chapiteau au trait, au-dessus de la consigne
+  ctx.save();
+  ctx.translate((L + 64) / 2, H / 2 - 6);
+  ctx.strokeStyle = 'rgba(40,26,4,.55)';
+  ctx.lineWidth = 3.5;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  ctx.moveTo(-46, 16); ctx.lineTo(0, -28); ctx.lineTo(46, 16); ctx.closePath();
+  ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-34, 16); ctx.lineTo(-30, 40); ctx.lineTo(30, 40); ctx.lineTo(34, 16); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, -28); ctx.lineTo(0, -40); ctx.lineTo(14, -36); ctx.lineTo(0, -32); ctx.stroke();
+  ctx.restore();
+
   // La consigne, en petites capitales : elle guide sans crier
   ctx.fillStyle = 'rgba(40,26,4,.62)';
   ctx.textAlign = 'center';
   ctx.font = '600 21px Jost, Arial, sans-serif';
   ctx.letterSpacing = '7px';
-  ctx.fillText('GRATTE ICI', L / 2, H / 2 + 74);
+  ctx.fillText('GRATTE ICI', (L + 64) / 2, H / 2 + 74);
   ctx.letterSpacing = '0px';
 
   installerGrattage(voile, ctx);
@@ -1781,7 +1836,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '29aout2026n';
+const VERSION_JEUX = '30aout2026b';
 // Tous les jeux jamais créés restent chargeables (la roue, elle, vit
 // dans app.js et n'a rien à charger) : le parcours officiel en joue
 // trois (bandit, cartes, roue depuis le 29/08/2026), et la vitrine de
