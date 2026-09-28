@@ -50,7 +50,7 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=28sept2026c">
+  <link rel="stylesheet" href="style.css?v=28sept2026d">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
@@ -60,17 +60,17 @@
        sans defer, il voit les erreurs de tous les autres scripts. Si le
        jeu ne s'ouvre pas, il affiche un écran lisible avec un bouton
        « Réessayer » au lieu d'une page figée. Voir filet.js. -->
-  <script src="filet.js?v=28sept2026c"></script>
+  <script src="filet.js?v=28sept2026d"></script>
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=28sept2026c" defer></script>
-  <script src="icones-quiz.js?v=28sept2026c" defer></script>
-  <script src="contenus-demo.js?v=28sept2026c" defer></script>
+  <script src="icones.js?v=28sept2026d" defer></script>
+  <script src="icones-quiz.js?v=28sept2026d" defer></script>
+  <script src="contenus-demo.js?v=28sept2026d" defer></script>
   <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
        Il tient la liste des bons du joueur et sait la dessiner. Chargé
        avant app.js, qui l'appelle à deux endroits : quand un lot est
        gagné, et quand un bon de promotion est pris. Voir bons.js. -->
-  <script src="bons.js?v=28sept2026c" defer></script>
-  <script src="app.js?v=28sept2026c" defer></script>
+  <script src="bons.js?v=28sept2026d" defer></script>
+  <script src="app.js?v=28sept2026d" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -96,7 +96,7 @@
   <!-- Le pré-thème : synchrone et minuscule, il habille la page du bon
        thème avant la première image (voir pretheme.js). Il doit rester
        le premier élément de body. -->
-  <script src="pretheme.js?v=28sept2026c"></script>
+  <script src="pretheme.js?v=28sept2026d"></script>
 
   <div class="app">
 
@@ -126,6 +126,10 @@
       <span class="rideau-pan rideau-gauche"></span>
       <span class="rideau-pan rideau-droite"></span>
       <span class="rideau-frise"></span>
+      <!-- Le nœud du cadeau (28/09/2026) : ne sert qu'au thème Engen, où
+           le rideau devient un paquet-cadeau qui se déballe (voir
+           body.theme-engen .rideau dans style.css). Invisible ailleurs. -->
+      <span class="rideau-noeud"></span>
     </div>
 
     <!-- La guirlande d'ampoules du chapiteau : visible seulement quand
@@ -509,6 +513,10 @@
              partie interrompue. Le texte est écrit par app.js. -->
         <p class="mesbons-reprise" id="mesbons-reprise" hidden></p>
         <div id="mes-bons-liste" class="mes-bons-liste"></div>
+        <!-- La station Engen (28/09/2026) : depuis son bon, le gagnant
+             peut aller chercher les bons plans de l'anniversaire. Montré
+             seulement quand l'opération en a (voir appliquerOperation). -->
+        <button class="btn btn-discret" id="btn-mes-bons-promos" hidden>Voir les bons plans</button>
         <button class="btn btn-discret" id="btn-mes-bons-retour">Retour</button>
       </div>
     </section>

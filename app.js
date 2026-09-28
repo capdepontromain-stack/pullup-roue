@@ -211,6 +211,30 @@ const OPERATIONS_LOCALES = {
       { nom: 'Un lavage voiture',       commercant: 'La station',                poids: 9,  perdant: false },
       { nom: 'Retente demain !',        commercant: '',                          poids: 35, perdant: true }
     ],
+    // LES BONS PLANS DE L'ANNIVERSAIRE (28/09/2026, dictés par Romain :
+    // « c'est dommage qu'il n'y ait pas de bons plans à utiliser : tu as
+    // perdu, mais la station t'offre quand même des bons »). Ils sont
+    // pour tout le monde, gagnant ou perdant, pendant tout
+    // l'anniversaire. Chaque offre EST un bon, valable le jour où on le
+    // prend (règle de bons.js), et on peut le reprendre le lendemain.
+    // La base (roue_offres, opération engen-anniversaire) prend la main
+    // dès qu'elle en contient : voir CREER-OPERATION-ENGEN.sql.
+    // ⚠️ « bonbon piment » : compris ainsi à l'oral, à confirmer par
+    // Romain (il a dit « sambon »).
+    offres: [
+      { enseigne: 'La boutique de la station', univers: 'boutique',
+        titre: 'Deux samoussas offerts pour l’achat de dix',
+        detail: 'Dix samoussas achetés à la boutique, deux de plus sont offerts.',
+        bon: 'Deux samoussas offerts pour l’achat de dix' },
+      { enseigne: 'La boutique de la station', univers: 'boutique',
+        titre: 'Un bonbon piment acheté, un offert',
+        detail: 'Pour un bonbon piment acheté à la boutique, le deuxième est offert.',
+        bon: 'Un bonbon piment acheté, un offert' },
+      { enseigne: 'La station', univers: 'carburant',
+        titre: 'Un bonbon piment offert pour un plein',
+        detail: 'Pour un plein complet à la pompe, un bonbon piment t’attend à la boutique.',
+        bon: 'Un bonbon piment offert pour un plein' }
+    ],
     // Les textes qui parlaient de la galerie et de ses commerçants.
     vocabulaire: {
       au:       'à la caisse de la station',
@@ -227,11 +251,21 @@ const OPERATIONS_LOCALES = {
       montre_ecran: 'Montre cet écran à la caisse, l’équipe valide elle-même.',
       bons_plans: 'les bons plans de ta station Engen',
       perdu_texte:   'Tu as joué ta partie jusqu’au bout, {prenom}. Le tirage, lui, était fait avant que tu commences. Demain, la roue tourne à nouveau.',
-      perdu_mention: 'Merci d’avoir joué ! Reviens demain à la station pour retenter ta chance.',
-      perdu_bouton:  'Retour à l’accueil',
+      perdu_mention: 'Tu repars quand même avec les bons plans de l’anniversaire : ils sont pour tout le monde, gagnant ou pas.',
+      perdu_bouton:  'Voir les bons plans de l’anniversaire',
       offres_titre:  'Les bons plans de ta station t’attendent.',
       offres_texte:  'Promos carburant, lavage, boutique et les prochains jeux Pull Up : tout ça dans ta boîte mail.',
-      offres_relance: 'C’est gratuit, et c’est ta station qui remplit la boîte.',
+      // LA RELANCE (28/09/2026, Romain : « es-tu sûr ? car ce sont
+      // vraiment des offres sympas de la part de la station »).
+      offres_relance_titre: 'Es-tu sûr ?',
+      offres_relance: 'Ce sont de vraies offres de ta station Engen : samoussas, café, lavage, carburant. C’est gratuit, et tu te désabonnes en un clic.',
+      // LES BONS PLANS DE L'ANNIVERSAIRE (28/09/2026, Romain) : l'écran
+      // des offres, repris au vocabulaire de la station.
+      promos_titre: 'Les bons plans de l’anniversaire',
+      promos_soustitre: 'Pendant tout l’anniversaire, ta station t’offre ces bons. Ils sont pour tout le monde, que tu aies gagné ou pas.',
+      promo_fin: 'Bon du jour : à utiliser aujourd’hui à la station',
+      bons_plans_bouton: 'Voir les bons plans de l’anniversaire',
+      promos_retour_bouton: 'Retour aux bons plans',
       accueil_mention: 'Jeu gratuit, sans obligation d’achat, organisé par Pull Up Événements · Une partie par personne et par jour · Jeu et retrait des cadeaux pendant toute la durée de l’anniversaire',
       exclusion: 'Le jeu n’est pas ouvert aux personnes qui travaillent à la station ou chez Pull Up Événements, ni à leur famille.',
       offres_source: 'les offres de la station',
@@ -303,6 +337,15 @@ function mot(cle, defaut) {
   return v ? String(v) : defaut;
 }
 
+// LES BONS PLANS D'UNE OPÉRATION SANS GALERIE (28/09/2026)
+// Une station-service n'a pas d'espace découverte, mais elle peut
+// offrir des bons plans à tous ses joueurs (Engen, anniversaire) :
+// quand l'opération en écrit dans l'application, l'écran des offres
+// s'ouvre au perdant comme au gagnant, sans le reste de la galerie.
+function aDesBonsPlans() {
+  return !!(OPERATION && Array.isArray(OPERATION.offres) && OPERATION.offres.length);
+}
+
 // Les textes écrits en dur dans index.html qui nomment le commerçant :
 // réécrits une fois l'opération connue, seulement si elle a son propre
 // vocabulaire (la galerie ne change pas d'un mot).
@@ -335,6 +378,10 @@ function adapterVocabulaire() {
   ecrire('#mention-exclusion', 'exclusion');
   ecrire('#btn-offres-oui', 'offres_bouton');
   ecrire('.offres-liberte-texte', 'offres_liberte');
+  ecrire('.offres-relance-titre', 'offres_relance_titre');
+  ecrire('#ecran-promos h2', 'promos_titre');
+  ecrire('#promos-soustitre', 'promos_soustitre');
+  ecrire('#btn-mes-bons-promos', 'bons_plans_bouton');
   // bons.js dessine lui-même ses tickets : il lit ces deux mots.
   window.ROUE_MOTS = { au: mot('au', ''), chez: mot('chez', '') };
 }
@@ -357,6 +404,10 @@ function appliquerOperation() {
   // Sans espace découverte (offres du jour, programme) : la barre
   // d'onglets n'a rien à montrer, on la retire.
   document.body.classList.toggle('sans-galerie', OPERATION.sans_galerie === true);
+  // Sans galerie mais avec des bons plans (station Engen, 28/09/2026) :
+  // le portefeuille « Mes bons » ouvre une porte vers eux.
+  const versBonsPlans = document.getElementById('btn-mes-bons-promos');
+  if (versBonsPlans) versBonsPlans.hidden = !(OPERATION.sans_galerie && aDesBonsPlans());
 
   // LE THÈME EST MÉMORISÉ pour le pré-thème (voir le petit script en
   // tête de body dans index.html) : à la prochaine ouverture, la page
@@ -2139,7 +2190,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '28sept2026c';
+const VERSION_JEUX = '28sept2026d';
 // Tous les jeux jamais créés restent chargeables (la roue, elle, vit
 // dans app.js et n'a rien à charger) : le parcours officiel en joue
 // trois (bandit, cartes, roue depuis le 29/08/2026), et la vitrine de
@@ -2782,7 +2833,7 @@ function afficherResultat() {
     // règlement ne permet pas de dire le contraire.
     const suitePerdue = document.getElementById('btn-resultat-continuer');
     if (suitePerdue) suitePerdue.textContent = OPERATION.sans_galerie
-      ? mot('perdu_bouton', 'Retour à l’accueil')
+      ? mot('perdu_bouton', aDesBonsPlans() ? 'Voir les bons plans' : 'Retour à l’accueil')
       : 'Voir les offres du jour';
     const plusTardPerdu = document.getElementById('btn-resultat-plus-tard');
     if (plusTardPerdu) plusTardPerdu.hidden = true;
@@ -4092,7 +4143,7 @@ function retourAccueil() {
 document.getElementById('btn-resultat-continuer').addEventListener('click', () => {
   const gagnant = lotGagne && !lotGagne.perdant;
   if (gagnant) afficherMesBons();
-  else if (OPERATION.sans_galerie) retourAccueil();
+  else if (OPERATION.sans_galerie && !aDesBonsPlans()) retourAccueil();
   else afficherPromos();
 });
 // « Je retirerai mon cadeau plus tard » (25/09/2026 : on ne dépense
@@ -4101,7 +4152,13 @@ document.getElementById('btn-resultat-continuer').addEventListener('click', () =
 // cadeau » l'attendra sur l'écran suivant.
 const btnPlusTard = document.getElementById('btn-resultat-plus-tard');
 if (btnPlusTard) {
-  btnPlusTard.addEventListener('click', () => OPERATION.sans_galerie ? retourAccueil() : afficherDecouverte());
+  btnPlusTard.addEventListener('click', () => {
+    if (!OPERATION.sans_galerie) return afficherDecouverte();
+    // Station avec bons plans : le gagnant qui garde son cadeau pour
+    // plus tard va voir les bons plans, comme le perdant.
+    if (aDesBonsPlans()) return afficherPromos();
+    retourAccueil();
+  });
 }
 // La deuxième porte du perdant (29/08/2026, demande de Romain) : voir
 // le programme des animations de la galerie sans passer par les offres.
@@ -4109,7 +4166,17 @@ const btnProgrammePerdu = document.getElementById('btn-resultat-programme');
 if (btnProgrammePerdu) {
   btnProgrammePerdu.addEventListener('click', () => afficherProgramme());
 }
-document.getElementById('btn-promos-retour').addEventListener('click', () => afficherDecouverte());
+document.getElementById('btn-promos-retour').addEventListener('click', () => {
+  // Sans galerie (station Engen) : retour au résultat si une partie
+  // vient d'être jouée, à l'accueil sinon.
+  if (OPERATION.sans_galerie) {
+    if (lotGagne) afficherEcran('ecran-resultat', 'arriere'); else retourAccueil();
+    return;
+  }
+  afficherDecouverte();
+});
+const btnMesBonsPromos = document.getElementById('btn-mes-bons-promos');
+if (btnMesBonsPromos) btnMesBonsPromos.addEventListener('click', () => { retourDuBonPromo = 'promos'; afficherPromos(); });
 
 // Offres du moment : celles de l'opération, filtrées sur le profil du joueur
 // Le contenu qui arrive est dessiné en creux, avec un reflet qui le
@@ -4179,6 +4246,10 @@ async function afficherPromos() {
   }
   if (jeton !== jetonPromos) return;   // une demande plus récente est passée
 
+  // Rien en base : les bons plans écrits dans l'opération elle-même
+  // (station Engen, 28/09/2026 : dictés par Romain, ce ne sont pas des
+  // exemples). La base reprend la main dès qu'elle en contient.
+  if (!offres.length && aDesBonsPlans()) offres = OPERATION.offres;
   // Rien en base : les exemples, mais seulement en démonstration
   if (!offres.length && CONTENUS_DE_DEMO_AUTORISES && typeof OFFRES_DEMO !== 'undefined') offres = OFFRES_DEMO;
 
@@ -4200,7 +4271,8 @@ async function afficherPromos() {
   if (gouts.length) {
     offres = offres.slice().sort((a, b) =>
       (gouts.indexOf(a.univers) === -1 ? 1 : 0) - (gouts.indexOf(b.univers) === -1 ? 1 : 0));
-    soustitre.textContent = 'Les offres d’aujourd’hui, en commençant par ce que tu aimes.';
+    // Une opération qui a son propre sous-titre (station Engen) le garde.
+    if (!mot('promos_soustitre', '')) soustitre.textContent = 'Les offres d’aujourd’hui, en commençant par ce que tu aimes.';
   }
 
   liste.innerHTML = '';
@@ -4240,7 +4312,7 @@ async function afficherPromos() {
        </div>
        <div class="promo-titre">${echap(o.titre || '')}</div>
        <div class="promo-detail">${echap(o.detail || '')}</div>
-       <span class="promo-fin">Valable aujourd’hui seulement</span>`;
+       <span class="promo-fin">${echap(mot('promo_fin', 'Valable aujourd’hui seulement'))}</span>`;
 
     if (o.bon) {
       const btn = document.createElement('button');
@@ -4294,7 +4366,7 @@ function ouvrirBonPromo(offre) {
   document.getElementById('confirme-promo').hidden = true;
   document.getElementById('btn-promo-utiliser').disabled = false;
   const retour = document.getElementById('btn-bon-promo-retour');
-  if (retour) retour.textContent = retourDuBonPromo === 'mesbons' ? 'Retour à mes bons' : 'Retour aux promos';
+  if (retour) retour.textContent = retourDuBonPromo === 'mesbons' ? 'Retour à mes bons' : mot('promos_retour_bouton', 'Retour aux promos');
 
   // Le bon entre dans le portefeuille dès qu'il est pris : c'est là que
   // le joueur le considère comme sien.
