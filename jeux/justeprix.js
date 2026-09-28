@@ -179,6 +179,129 @@
     .jp-zone, .jp-curseur, .jp-suite { transition-duration: .01s; }
     .jp-apparait { animation: none; }
   }
+
+  /* LE TÉLÉPHONE TENU À L'HORIZONTALE (06/09/2026)
+     ----------------------------------------------
+     Le juste prix était le plus haut de tous les jeux : la vitrine,
+     la saisie, le clavier de douze touches et le bouton, empilés,
+     réclamaient près de 700 px sur un écran qui en offre 360. Le
+     joueur ne voyait jamais le clavier sans faire défiler.
+     On échange la largeur, qu'on a en trop, contre de la hauteur :
+     la vitrine devient un bandeau, la saisie et le clavier passent
+     côte à côte, le verdict se met à côté de sa jauge. Rien ne
+     change en portrait, ni dans les règles, ni dans les prix. */
+  @media (orientation: landscape) and (max-height: 520px) {
+    /* La consigne porte sa propre classe pour tenir sur une ligne
+       ICI, sans toucher aux autres jeux ni au reste de
+       l'application, qui partagent la même balise. Le titre, lui,
+       garde la taille commune à tous les jeux. */
+    .jp-soustitre { font-size: 12px; line-height: 1.4; }
+
+    .jp-plateau { gap: 9px; }
+
+    /* La vitrine devient un bandeau : l'article à gauche,
+       son nom et sa boutique à droite. */
+    .jp-vitrine {
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      text-align: left;
+      gap: 13px;
+      padding: 9px 14px;
+    }
+    .jp-vitrine svg { width: 52px; height: 52px; flex: 0 0 auto; }
+    .jp-article { font-size: 18px; }
+    .jp-boutique { font-size: 10px; letter-spacing: 1.6px; }
+
+    /* Les deux colonnes de l'étape en cours. Chaque bloc dit dans
+       quelle colonne il va ; le navigateur range les lignes tout
+       seul, ce qui marche aussi bien pour l'écran de saisie que
+       pour celui du verdict, qui n'ont pas les mêmes blocs. */
+    #jp-etape > .jp-plateau {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+      column-gap: 14px;
+      row-gap: 8px;
+    }
+    #jp-etape > .jp-plateau > * { grid-column: 1; }
+    #jp-etape > .jp-plateau > .jp-clavier,
+    #jp-etape > .jp-plateau > .jp-fourchette,
+    #jp-etape > .jp-plateau > .jp-essais,
+    #jp-etape > .jp-plateau > .jp-essai-note { grid-column: 2; }
+
+    /* Chaque bloc dit aussi SA ligne. Les deux écrans n'ont pas les
+       mêmes blocs, mais ils partagent le même squelette :
+       ligne 1 le rappel de l'essai, ligne 2 le cœur de l'écran,
+       ligne 3 le bouton, ligne 4 la note. Rien ne se marche dessus. */
+    .jp-kicker { grid-row: 1; }
+    .jp-proposer { grid-row: 3; }
+
+    /* L'écran de saisie : le clavier tient la colonne de droite
+       sur toute sa hauteur, face au montant tapé et au bouton. */
+    .jp-clavier { grid-row: 1 / span 3; gap: 6px; }
+    /* 42 px de haut sur 70 de large : c'est le plus petit qu'on
+       s'autorise pour une touche qu'un doigt doit viser en marchant
+       dans une galerie. On préfère resserrer ailleurs. */
+    .jp-touche { min-height: 42px; font-size: 17px; }
+    .jp-touche.jp-fonction { font-size: 9px; letter-spacing: 1.2px; }
+    .jp-saisie { grid-row: 2; min-height: 48px; padding: 4px 12px; }
+    .jp-saisie .jp-chiffres { font-size: 29px; }
+    .jp-saisie .jp-euro { font-size: 16px; }
+
+    /* L'écran du verdict : « Trop haut » à gauche, la zone dorée
+       et son explication à droite, les trois points d'essai en
+       haut à droite pour ne pas coûter une ligne de plus. */
+    .jp-verdict { grid-row: 2; font-size: 30px; }
+    .jp-fourchette { grid-row: 2 / span 2; padding: 10px 12px; }
+    .jp-fourchette p { font-size: 11px; line-height: 1.45; margin-top: 6px; }
+    .jp-bornes { margin-top: 6px; }
+    .jp-essais { grid-row: 1; justify-content: flex-end; padding-top: 3px; }
+    .jp-essai-note { grid-row: 4; font-size: 11px; line-height: 1.45; }
+
+    /* La révélation garde sa colonne unique : c'est le moment où le
+       joueur ne fait que lire, et le prix mérite toute la largeur.
+       (La classe jp-final est là pour ça : elle annule les deux
+       colonnes sans avoir à deviner quel écran est affiché.) */
+    #jp-etape > .jp-plateau.jp-final { display: flex; }
+    .jp-prix { font-size: 42px; }
+    .jp-ecart { font-size: 14px; }
+    .jp-mention { line-height: 1.4; }
+  }
+
+  /* ------------------------------------------------------------
+     LE TITRE PASSE SUR LE CÔTÉ : 07/09/2026
+     ------------------------------------------------------------
+     La mise en page paysage ci-dessus fonctionne, mais mesurée sur
+     740 x 360 elle finissait encore à 417 px : la dernière rangée
+     du clavier et le bouton restaient sous le pli. Il manquait
+     exactement la hauteur du titre et de sa consigne, soit 61 px,
+     posés en pleine largeur au-dessus de tout le reste.
+
+     Ils passent donc à droite, comme dans les autres jeux depuis
+     le 07/09. Rien d'autre ne bouge : la vitrine, la saisie, le
+     clavier et le verdict gardent la mise en page ci-dessus, qui
+     est bonne.
+
+     Seul le plateau du haut passe en « display: contents », jamais
+     celui de l'étape en cours, qui porte lui-même deux colonnes.
+     C'est le rôle du « > » : il ne prend que l'enfant direct. */
+  @media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+    #ecran-jeu.jeu-justeprix { max-width: none; }
+    #ecran-jeu.jeu-justeprix #jeu-zone {
+      display: grid;
+      grid-template-columns: 480px minmax(0, 1fr);
+      column-gap: 22px;
+      row-gap: 9px;
+      align-content: start;
+      text-align: left;
+    }
+    #ecran-jeu.jeu-justeprix #jeu-zone > .jp-plateau { display: contents; }
+    #ecran-jeu.jeu-justeprix #jeu-zone > h2 { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+    #ecran-jeu.jeu-justeprix #jeu-zone > .jp-soustitre { grid-column: 2; grid-row: 2; margin: 0; }
+    #ecran-jeu.jeu-justeprix #jeu-zone > .jp-plateau > .jp-vitrine { grid-column: 1; grid-row: 1; }
+    #ecran-jeu.jeu-justeprix #jeu-zone > .jp-plateau > #jp-etape { grid-column: 1; grid-row: 2 / 9; }
+  }
   `;
 
   // Icônes d'articles dessinées au trait, dans la grille 100 x 100
@@ -223,6 +346,10 @@
         .eq('operation', EVENEMENT)
         .eq('actif', true)
         .order('ordre')
+        // Garde-temps (17/09/2026) : sur un réseau qui rame sans casser,
+        // cette requête restait ouverte toute la partie. Les articles de
+        // démonstration font le jeu, la coupure ne se voit pas.
+        .abortSignal(typeof signalDelai === 'function' ? signalDelai(7000) : undefined)
         .then(function (rep) {
           if (rep && !rep.error && rep.data && rep.data.length) {
             const propres = rep.data.filter(function (a) {
@@ -305,7 +432,7 @@
 
       ctx.zone.innerHTML = `
         <h2>${ctx.secondTour ? 'Deuxième vitrine' : 'Le Juste Prix'}</h2>
-        <p class="question-soustitre">Devine le prix de l’article du jour en trois essais. La zone dorée se resserre à chaque coup.</p>
+        <p class="question-soustitre jp-soustitre">Devine le prix de l’article du jour en trois essais. La zone dorée se resserre à chaque coup.</p>
         <div class="jp-plateau" id="jp-plateau">
 
           <div class="jp-vitrine jp-apparait">
@@ -442,7 +569,7 @@
           ? 'Prix exact, au centime. Personne ne fait mieux.'
           : 'Tu y étais à <strong>' + prixLisible(meilleurEcart) + ' près</strong>.';
         etape.innerHTML = `
-          <div class="jp-plateau jp-apparait">
+          <div class="jp-plateau jp-apparait jp-final">
             <div class="jp-kicker">Le juste prix était</div>
             <p class="jp-prix" role="status">${prixLisible(prix)}</p>
             <p class="jp-ecart">${phraseEcart}</p>

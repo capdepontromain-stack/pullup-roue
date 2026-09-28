@@ -1,5 +1,5 @@
 // ============================================
-// ICÔNES DE LA ROUE — dessinées au trait fin,
+// ICÔNES DE LA ROUE : dessinées au trait fin,
 // style joaillerie. Aucune émoticône système.
 // Chaque icône est un tracé SVG dans une grille
 // de 100 x 100, coloré par la roue.

@@ -153,6 +153,59 @@
     .carte.trouvee, .memory-grille.fini .carte.gagnante { animation: none; }
     .carte.rate .carte-plateau { animation: none; }
   }
+
+  /* ------------------------------------------------------------
+     LE TÉLÉPHONE TENU EN TRAVERS : 07/09/2026
+     ------------------------------------------------------------
+     Mesuré sur 740 x 360 : la grille dépassait de 162 px,
+     donc la dernière rangée de cartes était invisible. Un memory
+     dont on ne voit pas toutes les cartes n'est plus un memory.
+     La grille passe de trois colonnes à quatre : les cartes
+     tiennent alors sur deux rangées au lieu de trois, et chacune
+     garde 78 px de côté, bien au-dessus des 44 px que réclame un
+     doigt.
+
+     La réponse est celle déjà retenue le 06/09 pour le quiz, les
+     coordonnées et la roue : ce qui est rangé en hauteur passe en
+     largeur. La scène tient la colonne de gauche, le titre, la
+     consigne, le verdict et le bouton tiennent la colonne de
+     droite. Rien n'est masqué, rien n'est réduit de force.
+
+     Le plateau passe en « display: contents » : il disparaît de la
+     mise en page sans disparaître du HTML, et ses enfants
+     deviennent les cases de la grille, aux côtés du titre et de la
+     consigne, qui vivent au-dessus de lui. Le plateau ne porte ni
+     fond ni bordure, personne ne voit la différence.
+
+     Tout est écrit derrière « #ecran-jeu.jeu-memory » : les styles
+     d'un jeu restent dans la page une fois chargés, et sans cette
+     classe la grille s'imposerait aux manches suivantes. */
+  @media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+    /* L'écran de jeu reprend la largeur de la page, comme le quiz
+       et la roue depuis le 06/09. */
+    #ecran-jeu.jeu-memory { max-width: none; }
+    #ecran-jeu.jeu-memory #jeu-zone {
+      display: grid;
+      grid-template-columns: 348px minmax(0, 1fr);
+      column-gap: 24px;
+      row-gap: 7px;
+      align-content: start;
+      text-align: left;
+    }
+    #ecran-jeu.jeu-memory .memory-plateau { display: contents; }
+    /* La colonne de droite, dans l'ordre de lecture. Le bouton
+       reste le dernier : c'est là que le pouce se pose. */
+    #ecran-jeu.jeu-memory #jeu-zone > h2 { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+    #ecran-jeu.jeu-memory #jeu-zone > .question-soustitre { grid-column: 2; grid-row: 2; margin: 0; }
+    #ecran-jeu.jeu-memory #jeu-zone .memory-grille {
+      grid-column: 1; grid-row: 1 / 9;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    #ecran-jeu.jeu-memory #jeu-zone .memory-compteur { grid-column: 2; grid-row: 3; align-self: start; }
+    #ecran-jeu.jeu-memory #jeu-zone .memory-verdict  { grid-column: 2; grid-row: 4; align-self: start; }
+    #ecran-jeu.jeu-memory #jeu-zone .memory-plateau > .btn             { grid-column: 2; grid-row: 5; align-self: start; }
+  }
   `;
 
   // Le dos des cartes : un losange doré, sobre, sans aucun pictogramme système

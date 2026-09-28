@@ -293,6 +293,71 @@
     .ct-carte.ct-gagnante .ct-plaque { animation: none; }
     .ct-verdict, .ct-points span { transition-duration: .01s; }
   }
+
+  /* LE TÉLÉPHONE TENU À L'HORIZONTALE (06/09/2026)
+     Mesuré en 740 x 360 : la table de neuf cartes réclamait 336 px de
+     haut, de 304 à 641, sur un écran qui en offre 360. Le joueur ne
+     voyait que la première rangée et devait choisir parmi neuf cartes
+     dont six lui étaient cachées.
+     En paysage la table s'étale au lieu de s'empiler : cinq colonnes
+     au lieu de trois, deux rangées au lieu de trois, et les neuf
+     cartes rentrent dans l'écran. Une carte fait 82 px de côté, bien
+     au-dessus des 44 px nécessaires au doigt.
+     Le décalage d'animation suit : il était réglé sur des rangées de
+     trois, il passe à des rangées de cinq, sinon la table respire de
+     travers. */
+  @media (orientation: landscape) and (max-height: 520px) {
+    .ct-table {
+      grid-template-columns: repeat(5, 1fr);
+      max-width: 450px;
+      gap: 9px;
+    }
+    .ct-compte { padding-bottom: 6px; }
+    .ct-carte:nth-child(3n+2) .ct-plaque,
+    .ct-carte:nth-child(3n) .ct-plaque   { animation-delay: 0s; }
+    .ct-carte:nth-child(5n+2) .ct-plaque { animation-delay: .28s; }
+    .ct-carte:nth-child(5n+4) .ct-plaque { animation-delay: .56s; }
+  }
+
+  /* ------------------------------------------------------------
+     LA TABLE PASSE SUR LE CÔTÉ : 07/09/2026
+     ------------------------------------------------------------
+     La table en cinq colonnes ci-dessus est la bonne réponse, et
+     elle tient : 185 px de haut pour les neuf cartes. Le problème
+     était ailleurs. Remesuré ce matin sur 740 x 360 : au-dessus
+     d'elle s'empilaient le titre, la consigne, le compte des
+     cartes et le rappel des essais, soit 118 px, et au-dessous la
+     réserve de hauteur du verdict, 100 px de plus. La deuxième
+     rangée de cartes retombait à 436 px sur un écran de 360, donc
+     quatre cartes sur neuf restaient hors de vue.
+
+     La table prend donc la colonne de gauche, et tout ce qui se
+     lit passe à droite, comme dans les autres jeux depuis le
+     07/09. La réserve du verdict passe de 100 à 66 px : elle
+     existe pour que la table ne saute pas sous le doigt quand le
+     verdict s'écrit, et la table ne bouge plus du tout puisqu'elle
+     n'est plus au-dessus de lui.
+
+     Ce jeu est la deuxième manche du parcours réel : il est vu par
+     tous les joueurs, pas seulement en démonstration. */
+  @media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+    #ecran-jeu.jeu-cartes { max-width: none; }
+    #ecran-jeu.jeu-cartes #jeu-zone {
+      display: grid;
+      grid-template-columns: 450px minmax(0, 1fr);
+      column-gap: 24px;
+      row-gap: 6px;
+      align-content: start;
+      text-align: left;
+    }
+    #ecran-jeu.jeu-cartes #jeu-zone > .ct-plateau { display: contents; }
+    #ecran-jeu.jeu-cartes #jeu-zone > h2 { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+    #ecran-jeu.jeu-cartes #jeu-zone > .question-soustitre { grid-column: 2; grid-row: 2; margin: 0; }
+    #ecran-jeu.jeu-cartes #jeu-zone .ct-table   { grid-column: 1; grid-row: 1 / 9; }
+    #ecran-jeu.jeu-cartes #jeu-zone .ct-compte  { grid-column: 2; grid-row: 3; align-self: start; padding-bottom: 0; }
+    #ecran-jeu.jeu-cartes #jeu-zone .ct-reste   { grid-column: 2; grid-row: 4; align-self: start; }
+    #ecran-jeu.jeu-cartes #jeu-zone .ct-verdict { grid-column: 2; grid-row: 5; align-self: start; min-height: 66px; }
+  }
   `;
 
   function melanger(liste) {

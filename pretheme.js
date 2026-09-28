@@ -14,8 +14,14 @@
     var slug = new URLSearchParams(location.search).get('e') || 'test';
     var theme = localStorage.getItem('roue_theme_' + slug);
     if (!theme && slug === 'cap-sacre-coeur') theme = 'csc';
+    // La station Engen (25/09/2026) : thème clair bleu, connu d'avance
+    // lui aussi, pour que la première ouverture n'ait pas de flash sombre.
+    if (!theme && slug === 'engen-anniversaire') theme = 'engen';
     if (theme && theme !== 'or' && /^[a-z-]{1,20}$/.test(theme)) {
       document.body.classList.add('theme-' + theme);
+      // Le thème Engen est bâti sur la base claire de Cap Sacré-Cœur :
+      // il porte les deux classes (voir appliquerOperation dans app.js).
+      if (theme === 'engen') document.body.classList.add('theme-csc');
     }
   } catch (e) { /* navigation privée : app.js habillera la page */ }
 })();

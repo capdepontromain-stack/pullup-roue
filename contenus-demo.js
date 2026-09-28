@@ -138,63 +138,76 @@ const OFFRES_DEMO = [
   // les deux découvertes beauté (Nocibé, Avril) : sans obligation
   // d'achat, assumées comme générateurs de trafic en boutique.
   {
-    enseigne: 'L’igloo', univers: 'gourmandise',
+    enseigne: 'Le glacier de la galerie', univers: 'gourmandise',
     titre: 'Une boisson offerte pour l’achat de deux glaces',
     detail: 'Sur présentation de ce bon, deux glaces achetées et la boisson est offerte.',
     bon: 'Une boisson offerte pour l’achat de deux glaces'
   },
   {
-    enseigne: 'Jina', univers: 'mode',
+    enseigne: 'La boutique de mode femme', univers: 'mode',
     titre: '10 % sur toute la boutique',
     detail: 'Sur présentation de ce bon, 10 % de remise sur tout, même les nouveautés.',
     bon: '10 % sur toute la boutique'
   },
   {
-    enseigne: 'Taïlu', univers: 'gourmandise',
+    enseigne: 'Le comptoir à samoussas', univers: 'gourmandise',
     titre: 'Le sixième samoussa offert',
     detail: 'Cinq samoussas achetés, le sixième est offert, toutes les variétés.',
     bon: 'Le sixième samoussa offert'
   },
   {
-    enseigne: 'Madame Cookie', univers: 'gourmandise',
+    enseigne: 'La boutique à cookies', univers: 'gourmandise',
     titre: 'Un cookie offert dès trois achetés',
     detail: 'Trois cookies achetés, le quatrième est offert, à choisir dans toute la vitrine.',
     bon: 'Un cookie offert dès trois achetés'
   },
   {
-    enseigne: 'Nocibé', univers: 'beaute',
+    enseigne: 'La parfumerie', univers: 'beaute',
     titre: 'Un maquillage flash offert',
     detail: 'Dix minutes avec une conseillère, sans rendez-vous et sans obligation d’achat.',
     bon: 'Un maquillage flash offert'
   },
   {
-    enseigne: 'Avril', univers: 'beaute',
+    enseigne: 'L’institut beauté', univers: 'beaute',
     titre: 'Un bilan peau offert',
     detail: 'Un diagnostic complet et un échantillon adapté à ta peau.',
     bon: 'Un bilan peau offert'
   },
   {
-    enseigne: "My Crep's", univers: 'gourmandise',
+    enseigne: 'La crêperie de la galerie', univers: 'gourmandise',
     titre: 'La crêpe au sucre offerte dès 25 € d’achat',
     detail: 'Pour toute commande de 25 € ou plus, la crêpe au sucre est offerte.',
     bon: 'La crêpe au sucre offerte dès 25 € d’achat'
   },
   {
-    enseigne: 'LGM', univers: 'gourmandise',
+    enseigne: 'Le salon de glaces', univers: 'gourmandise',
     titre: 'La troisième glace offerte pour l’achat de deux',
     detail: 'Deux glaces achetées, la troisième est offerte, en cornet ou en pot.',
     bon: 'La troisième glace offerte pour l’achat de deux'
   }
 ];
 
-// ATTENTION : ces offres sont des EXEMPLES de démonstration. Elles
-// citent de VRAIES enseignes de Cap Sacré-Cœur, dictées par Romain le
-// 27/08/2026 avec les conditions qu'il a données : c'est SA décision,
-// qui fait exception à la règle générale « jamais d'enseigne réelle
-// sans engagement signé » (toujours valable pour tout ce que Romain
-// n'a pas dicté lui-même, et pour les NOUVEAUTÉS ci-dessous, restées
-// génériques). Ces exemples sont remplacés automatiquement par les
-// vraies offres dès que les commerçants les saisissent en base.
+// ATTENTION : ces offres sont des EXEMPLES de démonstration, en noms
+// génériques. Règle rétablie le 06/09/2026 au contrôle juridique :
+// aucune enseigne réelle côté joueur sans un accord écrit de la
+// boutique sur l'offre ET sur sa formulation. Une promotion annoncée
+// au nom d'un commerçant qui ne l'a pas validée est une pratique
+// commerciale trompeuse (article L121-2 du code de la consommation),
+// et le visiteur s'en plaint à la galerie, pas à nous. Ces exemples
+// sont remplacés automatiquement par les vraies offres dès que les
+// commerçants les saisissent en base.
+//
+// CE QUI A CHANGÉ, ET POURQUOI, POUR QUE ROMAIN PUISSE TRANCHER.
+// Le 27/08/2026, Romain avait dicté lui-même huit vraies enseignes de
+// Cap Sacré-Cœur avec leurs conditions : c'était SA décision, prise
+// quand le jeu était une démonstration montrée à un client. Depuis, le
+// jeu est en ligne et s'ouvre au QR code : les mêmes noms deviennent
+// des promotions annoncées publiquement au nom de commerçants qui ne
+// les ont pas validées, et ces commerçants sont les locataires de la
+// foncière à qui l'opération est vendue. Les huit noms sont donc
+// repassés en générique. Pour revenir en arrière, il faut l'accord
+// écrit des huit boutiques ; l'ancienne version est conservée dans
+// sauvegardes/contenus-demo-avant-06sept2026.js.
 
 
 // ============================================

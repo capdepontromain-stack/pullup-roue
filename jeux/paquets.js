@@ -147,6 +147,34 @@
     .paquet.choisi .paquet-dedans { animation-duration: .01s !important; animation-delay: 0s !important; }
     .paquet.choisi .paquet-dedans { opacity: 1; }
   }
+
+  /* LE TÉLÉPHONE TENU EN TRAVERS (27/09/2026)
+     Couché, la page mesurait 418 px pour 360 px d'écran : les
+     trois paquets tenaient, mais le nom du lot, écrit sous eux,
+     s'affichait 10 px trop bas et disparaissait pendant la seule
+     seconde et demie où il est à l'écran. Le joueur voyait son
+     paquet s'ouvrir sans lire ce qu'il y avait dedans.
+
+     Les paquets à gauche, le nom du lot à droite, à hauteur des
+     yeux, comme dans les onze autres jeux depuis le 06/09. */
+  @media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+    #ecran-jeu.jeu-paquets { max-width: none; }
+    #ecran-jeu.jeu-paquets #jeu-zone {
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      column-gap: 24px;
+      row-gap: 7px;
+      align-content: start;
+      text-align: left;
+    }
+    /* Le plateau s'efface comme boîte : la grille des paquets et
+       le nom du lot entrent directement dans la grille ci-dessus. */
+    #ecran-jeu.jeu-paquets .paquets-plateau { display: contents; }
+    #ecran-jeu.jeu-paquets #jeu-zone > h2 { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+    #ecran-jeu.jeu-paquets #jeu-zone > .question-soustitre { grid-column: 2; grid-row: 2; margin: 0; }
+    #ecran-jeu.jeu-paquets #jeu-zone .paquets    { grid-column: 1; grid-row: 1 / 9; align-self: center; max-width: 340px; }
+    #ecran-jeu.jeu-paquets #jeu-zone .paquet-lot { grid-column: 2; grid-row: 3; align-self: start; }
+  }
   `;
 
   // Le paquet fermé, dessiné au trait : couvercle, nœud, corps, ruban.

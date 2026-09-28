@@ -242,6 +242,45 @@
     .pg-machine.pg-gagne .pg-ligne { animation: none; }
     .pg-fenetre::after, .pg-verdict, .pg-points span { transition-duration: .01s; }
   }
+
+  /* ------------------------------------------------------------
+     LE TÉLÉPHONE TENU EN TRAVERS : 07/09/2026
+     ------------------------------------------------------------
+     Mesuré sur 740 x 360 : le plateau finissait à 629 px et le
+     bouton à 643, presque le double de la hauteur de l'écran. Le
+     joueur voyait le compteur d'essais et le haut de la machine,
+     jamais le bouton qui lance la partie.
+
+     Même réponse que pour les autres jeux depuis le 06/09 : la
+     machine tient la colonne de gauche, tout ce qui se lit et se
+     touche tient la colonne de droite. La réserve de hauteur du
+     verdict passe de 112 à 62 px : elle existe pour que le bouton
+     ne saute pas sous le doigt quand le verdict s'écrit, et dans
+     une colonne deux fois moins large le texte tient sur deux
+     lignes de plus, mais la place réservée reste suffisante.
+
+     Tout est écrit derrière « #ecran-jeu.jeu-pingouin » : les
+     styles d'un jeu restent dans la page une fois chargés, et sans
+     cette classe la grille s'imposerait aux manches suivantes. */
+  @media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+    #ecran-jeu.jeu-pingouin { max-width: none; }
+    #ecran-jeu.jeu-pingouin #jeu-zone {
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr);
+      column-gap: 24px;
+      row-gap: 6px;
+      align-content: start;
+      text-align: left;
+    }
+    #ecran-jeu.jeu-pingouin .pg-plateau { display: contents; }
+    #ecran-jeu.jeu-pingouin #jeu-zone > h2 { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+    #ecran-jeu.jeu-pingouin #jeu-zone > .question-soustitre { grid-column: 2; grid-row: 2; margin: 0; }
+    #ecran-jeu.jeu-pingouin #jeu-zone .pg-machine { grid-column: 1; grid-row: 1 / 9; }
+    #ecran-jeu.jeu-pingouin #jeu-zone .pg-compte  { grid-column: 2; grid-row: 3; align-self: start; }
+    #ecran-jeu.jeu-pingouin #jeu-zone .pg-reste   { grid-column: 2; grid-row: 4; align-self: start; }
+    #ecran-jeu.jeu-pingouin #jeu-zone .pg-verdict { grid-column: 2; grid-row: 5; align-self: start; min-height: 62px; }
+    #ecran-jeu.jeu-pingouin #jeu-zone .pg-plateau > .btn { grid-column: 2; grid-row: 6; align-self: start; }
+  }
   `;
 
   // Les cases d'une bande, rangées en trois familles :

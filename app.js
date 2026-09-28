@@ -136,8 +136,17 @@ const OPERATIONS_LOCALES = {
   'cap-sacre-coeur': {
     nom: 'La Hotte des Commerçants',
     lieu: 'Cap Sacré-Cœur',
+    // LA FIN DU JEU (28/09/2026, contrôle juridique). Elle n'était
+    // écrite NULLE PART, ni ici ni en base : le jeu ne se fermait
+    // jamais, et un QR code resté collé dans la galerie aurait encore
+    // collecté des coordonnées et annoncé des gains en janvier 2027.
+    // Cette date est tranchée depuis le 6 septembre 2026 et écrite aux
+    // articles 2 et 5 du règlement. La base reprend la main dès que la
+    // ligne de SQL est collée (voir CREER-TABLES-ROUE.sql).
+    // La date de DÉBUT, elle, n'est pas tranchée : rien n'est écrit.
+    date_fin: '2026-12-24',
     emoji: '🎁',
-    accroche: 'Quelques questions, quatre numéros sur la piste, et peut-être un cadeau offert par tes commerçants.',
+    accroche: 'Quatre questions, trois manches, et peut-être un cadeau offert par tes commerçants.',
     // L'UNIVERS DE DÉCEMBRE 2026 EST LE CIRQUE (Romain, 26/08/2026) :
     // Cap Sacré-Cœur décore sa galerie sur ce thème, le jeu suit. Le
     // Père Noël reste de la partie, en Monsieur Loyal.
@@ -150,7 +159,7 @@ const OPERATIONS_LOCALES = {
     // Les bons GAGNÉS AU JEU valent jusqu'au 24 décembre (Romain,
     // 28/08/2026). Les bons des offres du jour, eux, ne valent que le
     // jour même : c'est bons.js qui les fait expirer.
-    validite_bons: '24 décembre',
+    validite_bons: '24 décembre 2026 inclus',
     texte_tirage: '',
     // LES LOTS D'EXEMPLE, DICTÉS PAR ROMAIN LE 27/08/2026. Ce sont de
     // vraies enseignes de la galerie, données par lui pour la version
@@ -167,8 +176,168 @@ const OPERATIONS_LOCALES = {
       { nom: 'Une glace offerte',       commercant: 'LGM',            poids: 12, perdant: false },
       { nom: 'Retente demain !',        commercant: '',               poids: 28, perdant: true }
     ]
+  },
+
+  // LA STATION ENGEN (25/09/2026, vendu par Romain : une station qui
+  // fête son anniversaire, et qui ne veut QUE la roue).
+  // Ce que ça change par rapport à la galerie : un seul jeu (la roue,
+  // sans ticket à gratter), pas d'espace découverte (ni offres du jour
+  // ni programme d'animations : une station n'en a pas), le mot
+  // « commerçant » remplacé par « la caisse », les questions du quiz
+  // tournées vers la voiture et la station, et l'habillage bleu Engen
+  // (voir body.theme-engen dans style.css). Les colonnes de la base
+  // (roue_participations) ne bougent pas : les réponses tombent dans
+  // les mêmes colonnes, seules les valeurs changent.
+  // Le nom de la station, les lots exacts et la date sont à confirmer
+  // par Romain : voir CREER-OPERATION-ENGEN.sql.
+  'engen-anniversaire': {
+    nom: 'Le Grand Jeu Anniversaire',
+    lieu: 'Station Engen',
+    emoji: '⛽',
+    accroche: 'Quatre questions, un tour de roue, et peut-être un cadeau offert par ta station Engen.',
+    theme: 'engen',
+    logo: 'img/client/logo-engen.svg',
+    jeu: 'roue',
+    // Un joueur sur dix gagne (Romain, 25/09/2026), l'opération dure un mois.
+    taux_gagnants: 10,
+    sans_ticket: true,
+    sans_galerie: true,
+    validite_bons: '',
+    texte_tirage: '',
+    lots: [
+      { nom: 'Un samoussa offert',      commercant: 'La boutique de la station', poids: 20, perdant: false },
+      { nom: 'Un café offert',          commercant: 'La boutique de la station', poids: 18, perdant: false },
+      { nom: 'Un sapin désodorisant',   commercant: 'La station',                poids: 18, perdant: false },
+      { nom: 'Un lavage voiture',       commercant: 'La station',                poids: 9,  perdant: false },
+      { nom: 'Retente demain !',        commercant: '',                          poids: 35, perdant: true }
+    ],
+    // Les textes qui parlaient de la galerie et de ses commerçants.
+    vocabulaire: {
+      au:       'à la caisse de la station',
+      chez:     'à la caisse',
+      chez_bouton: 'Je suis à la caisse',
+      passe:    'Passe ton téléphone à l’équipe de la station',
+      reserve:  'Ce bouton est réservé à l’équipe de la station.',
+      reserve_long: 'Ce bouton est réservé à l’équipe de la station. Une fois validé, le bon ne peut plus servir.',
+      merci:    'Un petit mot pour l’équipe de la station ?',
+      retire_etiquette: 'À retirer à la station',
+      retire_detail:    'Présente ton bon à la caisse, c’est l’équipe qui le valide.',
+      mesbons:  'Présente ton code à la caisse. Un bon ne sert qu’une fois.',
+      montre:   'Montre-le à la caisse pour le récupérer.',
+      montre_ecran: 'Montre cet écran à la caisse, l’équipe valide elle-même.',
+      bons_plans: 'les bons plans de ta station Engen',
+      perdu_texte:   'Tu as joué ta partie jusqu’au bout, {prenom}. Le tirage, lui, était fait avant que tu commences. Demain, la roue tourne à nouveau.',
+      perdu_mention: 'Merci d’avoir joué ! Reviens demain à la station pour retenter ta chance.',
+      perdu_bouton:  'Retour à l’accueil',
+      offres_titre:  'Les bons plans de ta station t’attendent.',
+      offres_texte:  'Promos carburant, lavage, boutique et les prochains jeux Pull Up : tout ça dans ta boîte mail.',
+      offres_relance: 'C’est gratuit, et c’est ta station qui remplit la boîte.',
+      accueil_mention: 'Jeu gratuit, sans obligation d’achat, organisé par Pull Up Événements · Une partie par personne et par jour · Jeu et retrait des cadeaux pendant toute la durée de l’anniversaire',
+      exclusion: 'Le jeu n’est pas ouvert aux personnes qui travaillent à la station ou chez Pull Up Événements, ni à leur famille.',
+      offres_source: 'les offres de la station',
+      offres_bouton: 'Oui, je veux recevoir les bons plans de ma station Engen',
+      offres_liberte: 'C’est Pull Up Événements qui t’écrit : les bons plans de ta station Engen, et les prochains jeux qu’on organise à La Réunion.'
+    },
+    // Le quiz de la station : mêmes écrans, mêmes colonnes en base
+    // (prenom + genre, age_tranche, envie1 + univers, samedi + univers
+    // + enfants + frequence), seules les propositions changent.
+    questions: [
+      {
+        id: 'prenom', type: 'mixte',
+        titre: 'On t’appelle comment ?',
+        soustitre: 'Ton prénom, ou ton surnom au volant.',
+        placeholder: 'Prénom ou pseudo',
+        second: 'genre',
+        options: [
+          { v: 'homme', l: 'Un homme', ic: 'homme' },
+          { v: 'femme', l: 'Une femme', ic: 'femme' },
+          { v: 'autre', l: 'Je garde le mystère', ic: 'mystere' }
+        ]
+      },
+      {
+        id: 'age_tranche', type: 'choix',
+        titre: 'Ton âge ?',
+        soustitre: 'Promis, on ne le dira à personne.',
+        options: [
+          { v: '-18',   l: 'Moins de 18 ans' },
+          { v: '18-25', l: '18 à 25 ans' },
+          { v: '26-35', l: '26 à 35 ans' },
+          { v: '36-50', l: '36 à 50 ans' },
+          { v: '51-65', l: '51 à 65 ans' },
+          { v: '65+',   l: 'Plus de 65 ans' }
+        ]
+      },
+      {
+        id: 'envie1', type: 'multi',
+        titre: 'Imagine 100 € offerts à la station.',
+        soustitre: 'Tu en fais quoi en premier ? Plusieurs réponses possibles.',
+        options: [
+          { v: 'carburant', l: 'Le plein, direct',              ic: 'dehors',     rayons: ['carburant'] },
+          { v: 'lavage',    l: 'Un lavage, ma voiture brille',  ic: 'paillettes', rayons: ['lavage'] },
+          { v: 'boutique',  l: 'Café, samoussas, la boutique',  ic: 'amis',       rayons: ['boutique'] },
+          { v: 'entretien', l: 'Huile, pneus, accessoires',     ic: 'hightech',   rayons: ['entretien'] }
+        ]
+      },
+      {
+        id: 'samedi', type: 'multi',
+        titre: 'Tu passes à la station plutôt…',
+        soustitre: 'Dernière question, et ensuite la roue.',
+        options: [
+          { v: 'enfants', l: 'En famille, tout le monde à bord',    ic: 'famille', rayons: ['enfants'],   aussi: { frequence: 'famille' } },
+          { v: 'travail', l: 'Sur la route du travail',             ic: 'moi',     rayons: ['quotidien'], aussi: { frequence: 'quotidien' } },
+          { v: 'sport',   l: 'Avant une balade ou un pique-nique', ic: 'dehors',  rayons: ['loisirs'],   aussi: { frequence: 'weekend' } },
+          { v: 'maison',  l: 'Vite fait, quand le voyant s’allume', ic: 'maison',  rayons: ['depannage'] }
+        ]
+      }
+    ]
   }
 };
+
+// LE MOT DU LIEU (25/09/2026)
+// Les textes de l'application parlent de « la galerie » et de « ses
+// commerçants ». Une station-service parle de « la caisse » et de « son
+// équipe ». Chaque texte concerné passe par ici : sans vocabulaire
+// dans l'opération, il garde son mot d'origine.
+function mot(cle, defaut) {
+  const v = OPERATION && OPERATION.vocabulaire && OPERATION.vocabulaire[cle];
+  return v ? String(v) : defaut;
+}
+
+// Les textes écrits en dur dans index.html qui nomment le commerçant :
+// réécrits une fois l'opération connue, seulement si elle a son propre
+// vocabulaire (la galerie ne change pas d'un mot).
+function adapterVocabulaire() {
+  if (!OPERATION.vocabulaire) return;
+  const ecrire = (selecteur, cle) => {
+    const valeur = mot(cle, '');
+    if (!valeur) return;
+    document.querySelectorAll(selecteur).forEach(el => { el.textContent = valeur; });
+  };
+  ecrire('#btn-utiliser', 'chez_bouton');
+  ecrire('#btn-promo-utiliser', 'chez_bouton');
+  ecrire('#ecran-resultat .confirme-mot-cle, #ecran-promo-bon .confirme-mot-cle, .confirme-mot-cle', 'passe');
+  ecrire('#ecran-resultat .confirme-note', 'reserve_long');
+  document.querySelectorAll('.confirme-note').forEach(el => {
+    if (!el.closest('#ecran-resultat') && mot('reserve', '')) el.textContent = mot('reserve', '');
+  });
+  ecrire('.remerciement-texte', 'merci');
+  ecrire('#carte-mesbons .carte-etiquette', 'retire_etiquette');
+  ecrire('#carte-mesbons .carte-detail', 'retire_detail');
+  ecrire('#mesbons-soustitre', 'mesbons');
+  ecrire('#offres-titre', 'offres_titre');
+  ecrire('#offres-soustitre', 'offres_texte');
+  ecrire('.offres-relance-texte', 'offres_relance');
+  // Les textes qui parlaient de la galerie sur l'accueil, les
+  // coordonnées et l'écran des bons plans (28/09/2026, relecture du
+  // parcours Engen : « galerie » et « commerçants » y apparaissaient
+  // encore quatre fois).
+  ecrire('.mention-accueil-texte', 'accueil_mention');
+  ecrire('#mention-exclusion', 'exclusion');
+  ecrire('#btn-offres-oui', 'offres_bouton');
+  ecrire('.offres-liberte-texte', 'offres_liberte');
+  // bons.js dessine lui-même ses tickets : il lit ces deux mots.
+  window.ROUE_MOTS = { au: mot('au', ''), chez: mot('chez', '') };
+}
 
 function appliquerOperation() {
   document.body.classList.toggle('theme-noel', OPERATION.theme === 'noel');
@@ -179,7 +348,15 @@ function appliquerOperation() {
   // rouge du centre, cartes blanches arrondies, la façade du centre en
   // tête. Calqué sur capsacrecoeur.re, à la demande de la galerie
   // (« le design doit se baser sur notre site »).
-  document.body.classList.toggle('theme-csc', OPERATION.theme === 'csc');
+  document.body.classList.toggle('theme-csc', OPERATION.theme === 'csc' || OPERATION.theme === 'engen');
+  // LE THÈME ENGEN (25/09/2026) : bâti SUR la base claire de Cap
+  // Sacré-Cœur (les deux classes sont posées), il ne fait que repeindre
+  // en bleu Engen et changer la police. Voir body.theme-engen dans
+  // style.css, bloc généré à partir des règles theme-csc.
+  document.body.classList.toggle('theme-engen', OPERATION.theme === 'engen');
+  // Sans espace découverte (offres du jour, programme) : la barre
+  // d'onglets n'a rien à montrer, on la retire.
+  document.body.classList.toggle('sans-galerie', OPERATION.sans_galerie === true);
 
   // LE THÈME EST MÉMORISÉ pour le pré-thème (voir le petit script en
   // tête de body dans index.html) : à la prochaine ouverture, la page
@@ -208,7 +385,7 @@ function appliquerOperation() {
   // leur médaillon.
   const medaillon = document.getElementById('accueil-medaillon');
   if (medaillon) {
-    const avecMedaillon = OPERATION.theme !== 'csc';
+    const avecMedaillon = OPERATION.theme !== 'csc' && OPERATION.theme !== 'engen';
     medaillon.hidden = !avecMedaillon;
     medaillon.classList.toggle('hero-photo', avecMedaillon);
     medaillon.classList.toggle('medaillon-pere-noel', avecMedaillon);
@@ -266,11 +443,28 @@ function appliquerOperation() {
   // Le nombre de questions est annoncé dès l'accueil, et il est calculé
   // depuis la liste elle-même : il ne pourra jamais mentir, même si on
   // ajoute ou retire une question un jour.
+  // 17/09/2026 : la phrase de campagne du sous-titre annonce désormais
+  // elle-même les quatre questions. Répéter « Quatre questions rapides »
+  // juste en dessous ferait bégayer l'accueil. Le garde-fou est
+  // conservé, il change seulement de rôle : cette ligne vérifie que le
+  // sous-titre dit le vrai nombre, et elle ne s'affiche que s'il se
+  // trompe (une question ajoutée ou retirée un jour, et l'accueil se
+  // corrige tout seul plutôt que de mentir).
   const compte = document.getElementById('accueil-compte');
   if (compte) {
     const n = QUESTIONS.length;
-    compte.textContent = enLettres(n).charAt(0).toUpperCase() + enLettres(n).slice(1) +
-      ' questions rapides';
+    const lettres = enLettres(n);
+    const sousTitre = document.querySelector('#ecran-accueil .sous-titre');
+    const dejaAnnonce = sousTitre &&
+      new RegExp('^\\s*' + lettres + '\\s+questions\\b', 'i').test(sousTitre.textContent || '');
+    if (dejaAnnonce) {
+      compte.hidden = true;
+      compte.textContent = '';
+    } else {
+      compte.hidden = false;
+      compte.textContent = lettres.charAt(0).toUpperCase() + lettres.slice(1) +
+        ' questions rapides';
+    }
   }
 
   // LE BON EN POCHE, RAPPELÉ DÈS L'ACCUEIL (28/08/2026)
@@ -351,6 +545,7 @@ function appliquerOperation() {
   }
 
   document.title = OPERATION.nom + ' : tente ta chance';
+  adapterVocabulaire();
 }
 
 // Ampoules de fête foraine autour de la roue (une seule fois)
@@ -416,6 +611,16 @@ function operationOuverte() {
   return etatOperation() === 'ouverte';
 }
 
+// Y a-t-il encore un jour de jeu après aujourd'hui ? (28/09/2026,
+// contrôle juridique). Plusieurs phrases du jeu invitent à revenir
+// « demain ». Le 24 décembre au soir, il n'y a pas de demain : le jeu
+// est clos et la galerie est fermée le 25. Sans date de fin en base,
+// on répond oui, comme avant.
+function ilYAUnDemain() {
+  if (!OPERATION.date_fin) return true;
+  return dateDuJourReunion() < OPERATION.date_fin;
+}
+
 // --------------------------------------------
 // LOTS PAR DÉFAUT (remplacés par la table
 // roue_lots de Supabase quand elle existe)
@@ -471,7 +676,7 @@ const COULEURS_SEGMENTS = ['#C9962E', '#F1ECE2', '#5A554B', '#E3B85A', '#8A8378'
 // remplissaient (« Tes amis disent que tu es plutôt… », « Un cadeau
 // pour qui ? ») ont été retirées avec la V2. Rien ne casse : elles
 // partent vides, le schéma n'a pas bougé.
-const QUESTIONS = [
+let QUESTIONS = [
   {
     // V2 (28/08/2026, retour Cap Sacré-Cœur : « condenser les
     // questions du début ») : le prénom et le genre partagent le
@@ -508,7 +713,7 @@ const QUESTIONS = [
     // pour raccourcir le début). La première case cochée reste la
     // priorité du joueur (voir premierRayonCoche).
     id: 'envie1', type: 'multi',
-    titre: 'On t’offre 200 € à dépenser dans la galerie.',
+    titre: 'Imagine 200 € à dépenser dans la galerie.',
     soustitre: 'Tu files où en premier ? Plusieurs réponses possibles.',
     // LES PHOTOS DES RÉPONSES (28/08/2026, Romain : « plutôt que des
     // petits dessins, autant avoir des vraies images ») : chaque rayon
@@ -536,6 +741,13 @@ const QUESTIONS = [
     ]
   }
 ];
+// LE QUIZ DE L'OPÉRATION (25/09/2026) : une opération peut apporter ses
+// propres questions (la station Engen parle de voiture, pas de rayons
+// de galerie). Même structure, mêmes identifiants de colonnes : seuls
+// les mots changent. Posé ici, avant tout usage de QUESTIONS.
+if (OPERATIONS_LOCALES[EVENEMENT] && Array.isArray(OPERATIONS_LOCALES[EVENEMENT].questions)) {
+  QUESTIONS = OPERATIONS_LOCALES[EVENEMENT].questions;
+}
 
 
 // LES COLONNES LIÉES D'UNE QUESTION À CHOIX MULTIPLE
@@ -625,6 +837,11 @@ let lotGagne = null;
 let codeLot = null;
 // L'horloge « seconde qui défile » des écrans de validation d'un bon.
 let horlogeValidation = null;
+// Combien de cadeaux ont été rendus au chargement parce qu'une partie
+// s'était arrêtée en cours de route (voir devoilerTout, en bas du
+// fichier). Sert à expliquer au joueur, une seule fois, d'où sort le
+// bon qu'il trouve dans « Mes cadeaux » sans l'avoir vu arriver.
+let bonsRendusApresCoupure = 0;
 
 // --------------------------------------------
 // NAVIGATION ENTRE ÉCRANS
@@ -677,6 +894,12 @@ function compteRebours() {
 
 function afficherQuestion() {
   avanceQuizEnCours = false;
+  // Le joueur descend pour atteindre le bouton, puis la question
+  // suivante s'affiche : sans cette remontée, elle arrivait déjà
+  // coupée en deux, numéro tranché et en-tête hors de l'écran.
+  // Le changement de question ne change pas d'écran, donc personne
+  // ne remontait à sa place (constaté au banc le 27/09/2026).
+  if (window.scrollY > 0) window.scrollTo(0, 0);
   const q = QUESTIONS[questionActuelle];
   document.getElementById('barre-progression').style.width =
     Math.round(((questionActuelle + 1) / QUESTIONS.length) * 100) + '%';
@@ -706,6 +929,15 @@ function afficherQuestion() {
     const input = document.getElementById('question-texte-input');
     input.value = reponses[q.id] || '';
     input.placeholder = q.placeholder || '';
+    // Le clavier du téléphone aide déjà : capitale automatique sur le
+    // prénom, correcteur orthographique écarté (il souligne les
+    // prénoms créoles), longueur bornée pour qu'une phrase entière ne
+    // vienne pas se ranger dans la colonne du prénom.
+    const champPrenom = q.id === 'prenom';
+    input.setAttribute('autocapitalize', champPrenom ? 'words' : 'off');
+    input.setAttribute('spellcheck', 'false');
+    if (champPrenom) input.setAttribute('maxlength', '40');
+    else input.removeAttribute('maxlength');
     input.focus();
     // LE TYPE MIXTE (V2, 28/08/2026) : sous le champ du prénom, les
     // puces d'un second champ (le genre). Le clic sélectionne sans
@@ -892,9 +1124,47 @@ function adapterCoordonneesMineur() {
   const texte = document.getElementById('mention-donnees-texte');
   if (texte) {
     texte.textContent = mineur
-      ? 'Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot, rien d’autre. Tu ne recevras aucune offre par e-mail : c’est réservé aux joueurs majeurs. Données supprimées au plus tard un an après l’opération, jamais vendues.'
-      : 'Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Juste après, on te demandera si tu veux aussi recevoir les bons plans des commerçants : ce choix ne changera rien à ta partie ni à ton lot, et tu pourras en changer quand tu veux. Données conservées un an après l’opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.';
+      ? 'Tu as moins de 18 ans : en validant, tu confirmes qu’un parent ou ton représentant légal t’autorise à jouer. Tes réponses et tes coordonnées sont utilisées par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot, rien d’autre. Tu ne recevras aucune offre par e-mail : c’est réservé aux joueurs majeurs. Données supprimées au plus tard un an après l’opération, et ton téléphone au plus tard trois mois après la fin du jeu. Jamais vendues.'
+      : 'Tes réponses et tes coordonnées sont utilisées par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Tes réponses servent aussi à choisir, parmi ' + mot('offres_source', 'les offres des commerçants') + ', celles qui correspondent à tes goûts : elles ne changent rien à ta partie ni à ton lot. Juste après, on te demandera si tu veux aussi recevoir ' + mot('bons_plans', 'les bons plans des commerçants') + ' : ce choix ne changera rien non plus, et tu pourras en changer quand tu veux. Données conservées un an après l’opération, ou trois ans après ton dernier contact avec nous si tu acceptes de recevoir les offres ; ton téléphone, lui, est supprimé au plus tard trois mois après la fin du jeu. Jamais vendues.';
   }
+}
+
+// LE PRÉNOM ARRIVE RANGÉ (26/09/2026)
+// -----------------------------------
+// Sur un téléphone, le prénom est tapé à toute vitesse : « jean »,
+// « MARIE » (clavier resté verrouillé), « jean  luc » avec deux
+// espaces. Il partait en base tel quel, et il revenait tel quel dans
+// les phrases du jeu (« Bravo MARIE, tu as gagné ») puis dans le mail
+// de gain. Même travail que pour l'adresse e-mail : on range sans
+// rien demander au joueur, et sans jamais défigurer un prénom.
+//
+// Trois règles, dans cet ordre :
+//   1. les espaces sont nettoyés (insécables, doublons, bords) ;
+//   2. le rangement se fait SEGMENT PAR SEGMENT (espace, trait
+//      d'union, apostrophe), parce qu'un prénom composé mélange
+//      souvent un morceau crié et un morceau normal : le clavier du
+//      téléphone verrouille la majuscule sur le premier mot et la
+//      relâche ensuite (« MARIE anne » -> « Marie Anne ») ;
+//   3. un segment dont la casse est déjà soignée n'est PAS touché :
+//      « Jean-Luc », « McKenzie », « Éva », « n’Guyen » repartent
+//      intacts, et « jean-luc » devient « Jean-Luc ».
+// Volontairement sans expression Unicode moderne (\p{L}) : les vieux
+// Safari refusent d'analyser le fichier entier à cause d'une seule
+// expression trop récente, et le jeu ne s'ouvrirait plus du tout.
+function rangerPrenom(brut) {
+  let t = String(brut == null ? '' : brut)
+    .replace(/[  \s]+/g, ' ')
+    .trim();
+  if (!t) return '';
+  return t.replace(/[^\s\-'’]+/g, (mot) => {
+    const enMajuscules = mot === mot.toLocaleUpperCase('fr');
+    const enMinuscules = mot === mot.toLocaleLowerCase('fr');
+    // Casse mixte dans le segment : le joueur l'a écrit lui-même
+    // (« McKenzie », « DiCaprio »), on n'y touche pas.
+    if (!enMajuscules && !enMinuscules) return mot;
+    const bas = mot.toLocaleLowerCase('fr');
+    return bas.charAt(0).toLocaleUpperCase('fr') + bas.slice(1);
+  });
 }
 
 document.getElementById('btn-texte-suivant').addEventListener('click', () => {
@@ -917,7 +1187,9 @@ document.getElementById('btn-texte-suivant').addEventListener('click', () => {
     }
     return;
   }
-  reponses[q.id] = val;
+  // Le prénom est la seule réponse libre qui ressort ensuite partout :
+  // à l'écran, sur le bon, dans le mail de gain et dans la base.
+  reponses[q.id] = q.id === 'prenom' ? rangerPrenom(val) : val;
   questionSuivante();
 });
 document.getElementById('btn-multi-suivant').addEventListener('click', () => {
@@ -1072,8 +1344,38 @@ function genererCode() {
 function appliquerLotServeur(reponse) {
   let lot = LOTS.filter(l => l.nom === reponse.lot)[0];
   if (!lot) {
-    // Filet : un lot ajouté en base pendant la partie. On l'ajoute à la
-    // liste pour que l'animation puisse quand même le désigner.
+    // UN LOT QUI N'EST PAS SUR LA ROUE (24/09/2026, trouvé en jouant)
+    // --------------------------------------------------------------
+    // Une partie de test sur la version d'essai a gagné « Coupe chez le
+    // coiffeur de la galerie », un lot que la roue n'affichait pas et qui
+    // n'est dans la dotation d'aucune galerie : il vient de la table
+    // roue_lots, restée sur les lots de la première maquette. Le garde-fou
+    // du 1er septembre protégeait l'AFFICHAGE de la roue (chargerLots),
+    // pas le TIRAGE, qui passe par la fonction serveur roue_jouer et
+    // revient ici. La démonstration commerciale pouvait donc offrir au
+    // client un lot qui n'existe pas, chez un commerçant qui n'a rien
+    // signé. Tant qu'ALIGNER-LES-LOTS.sql n'est pas passé, cela vaut
+    // aussi pour une vraie galerie : c'est le blocage numéro un du projet.
+    //
+    // Sur la version d'essai, la règle du 27/08 s'applique : l'habillage
+    // local fait foi. On refuse donc le lot du serveur et on garde celui
+    // que la page a tiré, qui est bien sur la roue.
+    // Le code du bon, lui, reste celui du serveur : c'est la clé de la
+    // ligne réellement écrite en base, et c'est avec elle que le bon se
+    // valide au comptoir. Seul le lot change.
+    if (PARTIES_ILLIMITEES) {
+      console.warn('Lot du serveur refusé sur la version d’essai : « ' +
+        reponse.lot + ' » n’est pas dans la dotation affichée. Lancer ' +
+        'ALIGNER-LES-LOTS.sql dans Supabase. En attendant, le lot tiré ' +
+        'par la page fait foi.');
+      codeLot = reponse.code;
+      return;
+    }
+    // En vraie galerie, c'est la base qui commande : on n'invente rien,
+    // mais le problème ne doit pas passer inaperçu.
+    console.warn('Lot inconnu de la page : « ' + reponse.lot + ' ». Il ' +
+      'n’est pas sur la roue, donc la dotation de la base et celle de ' +
+      'l’application ne disent pas la même chose. Vérifier roue_lots.');
     lot = {
       nom: reponse.lot,
       emoji: reponse.emoji || '🎁',
@@ -1420,7 +1722,7 @@ document.addEventListener('visibilitychange', () => {
 const MOTS_TICKET_PERDU = [
   'Le ticket dit non… mais la partie ne fait que commencer.',
   'Rien sous le doigt. Tout reste à jouer.',
-  'Perdu pour le ticket. La suite se joue sur la piste.',
+  'Rien pour le ticket. Tout se joue dans les manches qui suivent.',
   'Ce ticket-là ne donne rien. Les jeux, eux, t’attendent.'
 ];
 
@@ -1431,7 +1733,14 @@ function motAuHasard(liste) {
 function contenuDuBillet() {
   return {
     gagnant: false,
-    texte: 'Perdu…',
+    // « Perdu… » a été retiré le 01/09/2026. Le mot est banni par la
+    // charte éditoriale, et il tombait au pire endroit : le ticket perd
+    // TOUJOURS, donc tous les joueurs sans exception lisaient « Perdu »
+    // en gros au milieu du parcours, avant même d'avoir joué la moindre
+    // manche. Certains s'arrêtaient là en croyant la partie finie.
+    // « Pas ici. » dit exactement la même chose, ne ferme aucune porte,
+    // et va avec les quatre phrases de relance ci-dessus.
+    texte: 'Pas ici.',
     detail: motAuHasard(MOTS_TICKET_PERDU)
   };
 }
@@ -1459,7 +1768,7 @@ function preparerGrattage() {
   suiteTicket.hidden = true;
   suiteTicket.disabled = false;   // réarmé après le verrou anti double-tap
   document.getElementById('grattage-consigne').textContent =
-    'Gratte pour voir ce qu’il y a dessous.';
+    'Gratte avec ton doigt. Le billet ouvre la partie, il ne donne pas de cadeau : tout se joue sur les manches qui suivent.';
 
   const voile = document.getElementById('ticket-voile');
   voile.classList.remove('efface');
@@ -1616,7 +1925,7 @@ function installerGrattage(voile, ctx) {
       // Le ticket perd toujours : la consigne relance vers les manches.
       const combien = listeDesManches().length;
       document.getElementById('grattage-consigne').textContent =
-        combien > 1 ? combien + ' manches pour te rattraper.'
+        combien > 1 ? combien + ' manches, et la dernière dit tout.'
                     : 'À toi de jouer.';
     };
     majSuite();
@@ -1795,6 +2104,12 @@ function listeDesManches() {
     const liste = brut.split(',').map(s => s.trim()).filter(Boolean);
     if (liste.length) return liste;
   }
+  // UN SEUL JEU (25/09/2026, station Engen : « juste la roue »). Une
+  // valeur seule était ignorée (ancienne configuration où la colonne
+  // valait 'roue' par défaut pour tout le monde). Elle ne compte
+  // désormais que si l'opération le demande noir sur blanc : sans_ticket
+  // ou sans_galerie posés à la main, c'est un parcours court voulu.
+  if (brut && brut.toLowerCase() === 'roue' && (OPERATION.sans_ticket || OPERATION.sans_galerie)) return ['roue'];
   return MANCHES_DEFAUT.slice();
 }
 
@@ -1824,7 +2139,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '30aout2026g';
+const VERSION_JEUX = '28sept2026c';
 // Tous les jeux jamais créés restent chargeables (la roue, elle, vit
 // dans app.js et n'a rien à charger) : le parcours officiel en joue
 // trois (bandit, cartes, roue depuis le 29/08/2026), et la vitrine de
@@ -1960,6 +2275,23 @@ function finDeManche() {
   afficherResultat();
 }
 
+// L'ÉCRAN DE JEU DIT QUEL JEU IL PORTE (07/09/2026)
+// --------------------------------------------------
+// Les styles d'un jeu ne sont jamais retirés du head : une fois
+// chargés, ils restent là pour toute la partie. Un jeu qui écrirait
+// « #jeu-zone { display: grid } » pour se ranger en paysage
+// imposerait donc sa grille aux manches suivantes, qui n'en veulent
+// pas. Chaque jeu écrit maintenant ses règles derrière
+// « #ecran-jeu.jeu-canon », et cette classe ne vit que le temps de
+// sa manche. C'est la même idée que `body.sur-accueil`, posée par
+// afficherEcran, et cela évite `:has()`, absent des vieux téléphones.
+function marquerEcranDuJeu(id) {
+  const ecran = document.getElementById('ecran-jeu');
+  if (!ecran) return;
+  ecran.className = ecran.className.replace(/\bjeu-[a-z0-9-]+/g, '').trim();
+  if (id) ecran.classList.add('jeu-' + id);
+}
+
 function lancerManche() {
   jeuActuel = jeuPourNom(MANCHES[mancheActuelle]);
   const ctx = contexteJeu(mancheSecondTour);
@@ -1967,6 +2299,7 @@ function lancerManche() {
   if (jeuActuel === JEU_ROUE) { jeuActuel.preparer(ctx); return; }
 
   poserStylesJeu(jeuActuel);
+  marquerEcranDuJeu(jeuActuel.id);
   try {
     ctx.zone.innerHTML = '';
     jeuActuel.preparer(ctx);
@@ -2056,8 +2389,18 @@ function dessinerRoue() {
   // Sous le chapiteau, la roue prend les couleurs de la piste : une case
   // dorée, une case velours rouge. Ailleurs, elle garde l'or et le brun.
   const circus = document.body.classList.contains('theme-circus');
+  // Chez Engen (25/09/2026), la roue alterne le bleu de la marque et le
+  // blanc : plus d'or, plus de brun, et les textes suivent (plus bas).
+  const engen = document.body.classList.contains('theme-engen');
   const defs = document.createElementNS(NS, 'defs');
-  defs.innerHTML = circus
+  defs.innerHTML = engen
+    ? `<radialGradient id="seg-sombre" cx="50%" cy="50%" r="75%">
+         <stop offset="0%" stop-color="#1241A6"/><stop offset="100%" stop-color="#002C90"/>
+       </radialGradient>
+       <radialGradient id="seg-or" cx="50%" cy="50%" r="75%">
+         <stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#DEEAF8"/>
+       </radialGradient>`
+    : circus
     ? `<radialGradient id="seg-sombre" cx="50%" cy="50%" r="75%">
          <stop offset="0%" stop-color="#8E1A1E"/><stop offset="100%" stop-color="#57090C"/>
        </radialGradient>
@@ -2082,7 +2425,7 @@ function dessinerRoue() {
     const part = document.createElementNS(NS, 'path');
     part.setAttribute('d', `M${cx},${cy} L${x0},${y0} A${r},${r} 0 0 1 ${x1},${y1} Z`);
     part.setAttribute('fill', pair ? 'url(#seg-or)' : 'url(#seg-sombre)');
-    part.setAttribute('stroke', '#0f0b05');
+    part.setAttribute('stroke', engen ? '#FFFFFF' : '#0f0b05');
     part.setAttribute('stroke-width', '1.6');
     part.setAttribute('data-segment', i);
     svg.appendChild(part);
@@ -2097,7 +2440,7 @@ function dessinerRoue() {
     groupe.setAttribute('transform',
       `translate(${ix} ${iy}) rotate(${i * angle + angle / 2}) scale(${echelle}) translate(-50 -50)`);
     groupe.setAttribute('fill', 'none');
-    groupe.setAttribute('stroke', pair ? '#2a1d08' : '#EFC368');
+    groupe.setAttribute('stroke', engen ? (pair ? '#002C90' : '#FFFFFF') : (pair ? '#2a1d08' : '#EFC368'));
     groupe.setAttribute('stroke-width', '4.5');
     groupe.setAttribute('stroke-linecap', 'round');
     groupe.setAttribute('stroke-linejoin', 'round');
@@ -2121,7 +2464,7 @@ function dessinerRoue() {
     texte.setAttribute('font-size', n > 10 ? '9.4' : '11.5');
     texte.setAttribute('font-weight', '600');
     texte.setAttribute('letter-spacing', '.2');
-    texte.setAttribute('fill', pair ? '#241804' : '#F2D9A2');
+    texte.setAttribute('fill', engen ? (pair ? '#002C90' : '#FFFFFF') : (pair ? '#241804' : '#F2D9A2'));
     texte.textContent = libelleRoue(lot);
     svg.appendChild(texte);
   });
@@ -2130,7 +2473,7 @@ function dessinerRoue() {
   const anneau = document.createElementNS(NS, 'circle');
   anneau.setAttribute('cx', cx); anneau.setAttribute('cy', cy); anneau.setAttribute('r', 40);
   anneau.setAttribute('fill', 'none');
-  anneau.setAttribute('stroke', 'rgba(239,195,104,.35)');
+  anneau.setAttribute('stroke', engen ? 'rgba(255,255,255,.55)' : 'rgba(239,195,104,.35)');
   anneau.setAttribute('stroke-width', '1.2');
   svg.appendChild(anneau);
 }
@@ -2314,9 +2657,20 @@ const MESSAGES_GAGNE = [
   { titre: 'Bravo {prenom}, tu as gagné.', texte: '<strong>{lot}</strong>' }
 ];
 
-const MESSAGES_PERDU = [
-  { titre: 'Pas de cadeau aujourd’hui.', texte: 'Le rideau retombe pour cette fois. Reviens demain, {prenom}, la piste rouvre chaque matin.' }
-];
+// Le message est CALCULÉ à l'affichage et non figé au chargement
+// (28/09/2026, contrôle juridique) : sa dernière phrase dépend de
+// ilYAUnDemain(), qui a besoin de la date de fin venue de la base.
+// Deux promesses ont sauté au passage : un réapprovisionnement de nuit
+// qui n'existe pas (article 5 : le jeu ne tient pas le compte des
+// stocks), et un « demain » qui n'existe plus le 24 décembre au soir.
+function messagesPerdu() {
+  return [{
+    titre: 'Pas de cadeau aujourd’hui.',
+    texte: 'Tu as joué ta partie jusqu’au bout, {prenom}, et tout le monde a eu la même chance : le tirage se fait avant la partie.'
+      + (ilYAUnDemain() ? ' Tu peux retenter demain, une fois par jour.'
+                        : ' C’était le dernier jour du jeu : merci d’être venu jouer.')
+  }];
+}
 
 function messageAleatoire(liste) {
   const m = liste[Math.floor(Math.random() * liste.length)];
@@ -2410,7 +2764,12 @@ function afficherResultat() {
   // joueurs sur quatre : il porte à lui seul l'image de l'opération
   // en galerie, il n'a pas le droit d'être une porte fermée.
   if (lotGagne.perdant) {
-    const msg = messageAleatoire(MESSAGES_PERDU);
+    // Le texte du perdant parle de « la piste » du cirque : une station
+    // (Engen) apporte le sien par son vocabulaire, {prenom} compris.
+    const perduTexte = mot('perdu_texte', '');
+    const msg = messageAleatoire(perduTexte
+      ? [{ titre: messagesPerdu()[0].titre, texte: perduTexte }]
+      : messagesPerdu());
     emoji.innerHTML = medaillonIcone(ICONES.etoile);
     titre.innerHTML = msg.titre;
     texte.innerHTML = msg.texte;
@@ -2422,15 +2781,19 @@ function afficherResultat() {
     // « offerts », jamais « gagnés » : il vient de perdre, et le
     // règlement ne permet pas de dire le contraire.
     const suitePerdue = document.getElementById('btn-resultat-continuer');
-    if (suitePerdue) suitePerdue.textContent = 'Profiter de mes bons de réduction';
+    if (suitePerdue) suitePerdue.textContent = OPERATION.sans_galerie
+      ? mot('perdu_bouton', 'Retour à l’accueil')
+      : 'Voir les offres du jour';
     const plusTardPerdu = document.getElementById('btn-resultat-plus-tard');
     if (plusTardPerdu) plusTardPerdu.hidden = true;
     // La deuxième porte : le programme des animations (29/08/2026,
     // Romain). Elle n'apparaît qu'au perdant : le gagnant, lui, file
     // vers son bon.
     const programmePerdu = document.getElementById('btn-resultat-programme');
-    if (programmePerdu) programmePerdu.hidden = false;
-    mention.textContent = 'Ce n’est pas fini : la galerie t’offre quand même des bons de réduction chez tes commerçants.';
+    if (programmePerdu) programmePerdu.hidden = !!OPERATION.sans_galerie;
+    mention.textContent = OPERATION.sans_galerie
+      ? mot('perdu_mention', 'Merci d’avoir joué ! Reviens demain pour retenter ta chance.')
+      : 'Va voir les offres du jour de tes commerçants : elles sont pour tout le monde.';
     mention.hidden = false;
     vibrer(120);
   } else {
@@ -2475,7 +2838,7 @@ function afficherResultat() {
     mention.textContent = (validite
       ? 'Ton bon est valable jusqu’au ' + validite + '.'
       : 'Ton bon est valable pendant toute la durée de l’opération.') +
-      ' Il ne se perd pas : tu le retrouveras à tout moment dans « Obtenir mon cadeau ».';
+      ' Il ne se perd pas : le bouton « Obtenir mon cadeau » te le ramène à tout moment.';
     const plusTard = document.getElementById('btn-resultat-plus-tard');
     if (plusTard) plusTard.hidden = false;
 
@@ -2488,8 +2851,14 @@ function afficherResultat() {
         lot: lotGagne.nom,
         commercant: lotGagne.commercant || '',
         source: 'jeu',
+        detail: reponses.age_tranche === '-18'
+          ? 'Joueur de moins de 18 ans : remise en présence d’un parent.'
+          : '',
         validite: validite
       });
+      // Le bon a été rangé en attente dès le tirage (voir lancerLaPartie) :
+      // c'est ici, et seulement ici, que le joueur a le droit de le voir.
+      window.PullUpBons.devoiler(codeLot);
       rafraichirOngletBons();
     }
 
@@ -2524,7 +2893,14 @@ function afficherResultat() {
 // on n'écrit pas « Chez La boulangerie de la galerie ». Dans ce cas, le
 // nom se suffit à lui-même.
 function nommerCommercant(nom) {
-  const propre = String(nom || '').trim();
+  // LE FILET PASSE ICI AUSSI (06/09/2026). Il était posé sur les offres
+  // et sur la liste des lots, mais pas sur les deux écrans qui nomment
+  // le commerçant au joueur : celui du gagnant et le portefeuille de
+  // bons. Une partie gagnante jouée ce soir affichait donc toujours le
+  // vrai nom de la boutique. Le filtre est remonté dans cette fonction,
+  // qui est le passage obligé des deux écrans : une seule ligne, et
+  // plus aucune enseigne réelle ne peut atteindre l'écran.
+  const propre = commercantPresentable(String(nom || '').trim());
   if (!propre) return '';
   // L'espace après l'article est obligatoire : sans lui, une enseigne
   // comme « Lego » serait prise pour un nom commençant par « le » et
@@ -2554,12 +2930,35 @@ function ecrireCode(element, code) {
 
 // Révèle un bloc en le faisant entrer, au lieu de le faire surgir.
 // Réutilisable partout : confirmation, bon validé, message d'erreur.
+//
+// IL FAIT AUSSI DÉFILER JUSQU'AU BLOC (15/09/2026). Défaut relevé par la
+// relecture du jour : en téléphone tenu en travers, le bloc de
+// vérification du numéro naissait à 316 px sur un écran haut de 360. Le
+// joueur voyait sa partie ne pas partir, sans jamais voir la question
+// posée juste sous le pli. Le bloc de l'adresse e-mail et le message
+// d'erreur avaient exactement le même défaut. On ne défile que si le
+// bloc dépasse vraiment, et sans animation pour qui demande moins de
+// mouvement dans ses réglages.
 function reveler(element) {
   if (!element) return;
   element.classList.remove('apparait');
   void element.offsetWidth;
   element.hidden = false;
   element.classList.add('apparait');
+  requestAnimationFrame(() => {
+    try {
+      const cadre = element.getBoundingClientRect();
+      const hauteur = window.innerHeight || document.documentElement.clientHeight;
+      if (cadre.bottom <= hauteur - 8 && cadre.top >= 0) return;
+      const doux = !window.matchMedia ||
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      element.scrollIntoView({
+        behavior: doux ? 'smooth' : 'auto',
+        block: 'nearest',
+        inline: 'nearest'
+      });
+    } catch (e) { /* un navigateur qui ne sait pas défiler ne doit rien casser */ }
+  });
 }
 
 // L'ONDE AU TOUCHER (26/08/2026)
@@ -2712,13 +3111,134 @@ document.getElementById('btn-suggestion-non').addEventListener('click', () => {
 });
 
 // --------------------------------------------
+// LE NUMÉRO DE TÉLÉPHONE, RANGÉ AU MÊME FORMAT (15/09/2026)
+// --------------------------------------------
+// Le champ est facultatif et libre : la base recevait aussi bien
+// « 0692123456 » que « +262 692 12 34 56 », « 06.92.12.34.56 » ou un
+// numéro accompagné d'un mot. Deux lignes du même joueur ne se
+// ressemblaient donc pas, et aucune liste d'envoi ne pouvait s'en
+// servir telle quelle. Tout est rangé au même format avant l'envoi :
+// dix chiffres collés pour un numéro réunionnais, mahorais ou
+// métropolitain (0692123456), la forme internationale +indicatif pour
+// le reste. Rien n'est jamais refusé : une saisie non reconnue part
+// telle quelle, simplement débarrassée de ses espaces en trop, et le
+// joueur est seulement prévenu.
+function nettoyerTelephone(valeur) {
+  const brut = String(valeur || '').trim().replace(/\s+/g, ' ');
+  if (!brut) return '';
+
+  const annonceInternational = /^(\+|00)/.test(brut);
+  let chiffres = brut.replace(/\D+/g, '');
+  if (!chiffres) return brut;                 // « pas de portable » : on garde tel quel
+  if (annonceInternational) chiffres = chiffres.replace(/^00/, '');
+
+  // Indicatifs qui redeviennent un numéro français à dix chiffres.
+  if (annonceInternational) {
+    for (const indicatif of ['262', '33', '590', '594', '596']) {
+      if (chiffres.indexOf(indicatif) === 0) {
+        const reste = chiffres.slice(indicatif.length);
+        if (reste.length === 9) return '0' + reste;
+        if (reste.length === 10 && reste.charAt(0) === '0') return reste;
+      }
+    }
+    if (chiffres.length >= 8 && chiffres.length <= 15) return '+' + chiffres;
+    return brut;
+  }
+
+  // Sans indicatif annoncé : un numéro français est déjà à dix chiffres.
+  if (/^0\d{9}$/.test(chiffres)) return chiffres;
+  // 262692123456 tapé sans le +, cas fréquent des carnets d'adresses.
+  if (/^262\d{9}$/.test(chiffres)) return '0' + chiffres.slice(3);
+  return brut;
+}
+
+// Un numéro « complet » : dix chiffres commençant par 0, ou une forme
+// internationale plausible. Tout le reste déclenche la vérification
+// amicale, jamais un refus. On ne devine jamais un chiffre manquant :
+// c'est au joueur de dire si son numéro est bon.
+function telephoneIncomplet(range) {
+  if (!range) return false;                   // champ vide : facultatif, on n'embête personne
+  if (range.charAt(0) === '+') {
+    const n = range.slice(1);
+    return !/^\d{8,15}$/.test(n);
+  }
+  return !/^0\d{9}$/.test(range);
+}
+
+let telephoneConfirme = false;
+
+function masquerAlerteTel() {
+  const bloc = document.getElementById('alerte-tel');
+  if (bloc) bloc.hidden = true;
+}
+
+document.getElementById('input-tel').addEventListener('input', () => {
+  telephoneConfirme = false;
+  masquerAlerteTel();
+});
+
+document.getElementById('btn-tel-corriger').addEventListener('click', () => {
+  masquerAlerteTel();
+  const champ = document.getElementById('input-tel');
+  champ.focus();
+  // Curseur en fin de saisie : le joueur ajoute le chiffre qui manque
+  // sans avoir à viser dans le champ.
+  try { champ.setSelectionRange(champ.value.length, champ.value.length); } catch (e) {}
+});
+
+document.getElementById('btn-tel-garder').addEventListener('click', () => {
+  telephoneConfirme = true;
+  masquerAlerteTel();
+  validerCoordonnees();
+});
+
+// --------------------------------------------
+// LA TOUCHE « ENTRÉE » DU CLAVIER (28/09/2026)
+// --------------------------------------------
+// Sur un téléphone, la touche en bas à droite du clavier ne faisait
+// rien sur cet écran : le joueur devait refermer son clavier puis
+// viser le champ suivant du doigt. Elle affiche maintenant « Suivant »
+// sous l'e-mail et « OK » sous le téléphone (enterkeyhint dans
+// index.html), et elle fait ce qu'elle annonce. Elle ne valide jamais
+// la participation : la case du règlement se coche à la main, donc
+// « OK » referme le clavier et amène la case à l'écran.
+function toucheEntree(e) {
+  return e.key === 'Enter' && !e.isComposing && e.keyCode !== 229;
+}
+
+document.getElementById('input-email').addEventListener('keydown', e => {
+  if (!toucheEntree(e)) return;
+  e.preventDefault();
+  document.getElementById('input-tel').focus();
+});
+
+document.getElementById('input-tel').addEventListener('keydown', e => {
+  if (!toucheEntree(e)) return;
+  e.preventDefault();
+  e.target.blur();
+  const caseReglement = document.querySelector('#ecran-coordonnees .case');
+  if (!caseReglement) return;
+  // Le clavier met un instant à se refermer : on attend qu'il ait
+  // rendu la hauteur de l'écran avant de faire venir la case.
+  setTimeout(() => {
+    // Défilement direct, pas « en douceur » : l'animation se fige sur
+    // certains navigateurs (onglet en arrière-plan, vieux Android) et
+    // la case restait alors sous le bord de l'écran.
+    try { caseReglement.scrollIntoView({ block: 'nearest' }); }
+    catch (err) { caseReglement.scrollIntoView(false); }
+  }, 250);
+});
+
+// --------------------------------------------
 // COORDONNÉES + VALIDATION
 // --------------------------------------------
 async function validerCoordonnees() {
   const champEmail = document.getElementById('input-email');
   const email = nettoyerEmail(champEmail.value);
   if (email !== champEmail.value) champEmail.value = email;
-  const tel = document.getElementById('input-tel').value.trim();
+  const champTel = document.getElementById('input-tel');
+  const tel = nettoyerTelephone(champTel.value);
+  if (tel !== champTel.value) champTel.value = tel;
   const reglement = document.getElementById('check-reglement').checked;
   const erreur = document.getElementById('erreur-coordonnees');
   erreur.hidden = true;
@@ -2729,7 +3249,7 @@ async function validerCoordonnees() {
     return;
   }
   if (!reglement) {
-    erreur.textContent = 'Il faut cocher la case du règlement pour participer.';
+    erreur.textContent = 'Pour jouer, il faut cocher la case du règlement.';
     reveler(erreur);
     return;
   }
@@ -2744,6 +3264,17 @@ async function validerCoordonnees() {
     }
   }
   masquerSuggestion();
+
+  // Numéro qui a l'air incomplet : on prévient une seule fois, après
+  // l'adresse e-mail pour ne jamais afficher deux vérifications en même
+  // temps. Le champ étant facultatif, cette alerte ne refuse rien : le
+  // joueur corrige, ou répond que son numéro est bon et la partie part.
+  if (!telephoneConfirme && telephoneIncomplet(tel)) {
+    document.getElementById('alerte-tel-valeur').textContent = tel;
+    reveler(document.getElementById('alerte-tel'));
+    return;
+  }
+  masquerAlerteTel();
 
   reponses.email = email;
   reponses.telephone = tel || null;
@@ -2818,16 +3349,65 @@ async function lancerLaPartie() {
     // se déroule avec le lot tiré par la page, elle n'est simplement
     // pas réenregistrée.
     afficherEcran('ecran-deja-joue');
+    // Le dernier jour du jeu, il n'y a pas de demain (28/09/2026).
+    const demain = document.getElementById('deja-joue-demain');
+    if (demain) {
+      demain.innerHTML = ilYAUnDemain()
+        ? 'Reviens demain pour rejouer&nbsp;!'
+        : 'C’était le dernier jour du jeu&nbsp;: merci d’avoir joué&nbsp;!';
+    }
     const bloc = document.getElementById('deja-joue-essai');
     if (bloc) bloc.hidden = !PARTIES_ILLIMITEES;
     // Le gagnant du jour qui recharge sa page atterrit ici : son bon
     // est toujours dans le téléphone, on lui rouvre le chemin. Jamais
     // sur la version d'essai : chaque partie de démo repart vierge.
     const versBons = document.getElementById('btn-deja-joue-bons');
-    if (versBons) versBons.hidden = PARTIES_ILLIMITEES || !(window.PullUpBons && window.PullUpBons.combienValables() > 0);
+    const aUnBon = !!(window.PullUpBons && window.PullUpBons.combienValables() > 0);
+    if (versBons) versBons.hidden = PARTIES_ILLIMITEES || !aUnBon;
+    // Le recours ne s'adresse qu'au joueur qui n'a RIEN dans son
+    // téléphone : celui dont la page s'est relancée avant la fin des
+    // manches, et dont le lot est pourtant déjà tiré et enregistré.
+    // Celui qui a son bon n'a pas besoin de nous écrire.
+    const recours = document.getElementById('deja-joue-recours');
+    if (recours) recours.hidden = PARTIES_ILLIMITEES || aUnBon;
     return;
   }
 
+  // LE BON EST RANGÉ MAINTENANT, PAS À LA FIN (24/09/2026)
+  // Le lot est tiré et écrit en base dès cet instant, avant la première
+  // manche : c'est ce qui permet au verrou « une partie par jour » de
+  // tenir. Jusqu'ici, le bon n'entrait dans le téléphone qu'à l'écran du
+  // résultat. Un joueur dont la page se relançait entre les deux (batterie,
+  // 4G, onglet fermé) retombait sur « Pas si vite », avec un portefeuille
+  // vide : s'il avait gagné, il ne l'a jamais su. Le bon est donc rangé ici,
+  // mais EN ATTENTE, c'est-à-dire invisible partout tant que les manches ne
+  // sont pas finies : le suspense est intact, et plus personne ne perd un
+  // cadeau en rechargeant sa page.
+  if (lotGagne && !lotGagne.perdant && codeLot && window.PullUpBons) {
+    window.PullUpBons.ajouter({
+      code: codeLot,
+      lot: lotGagne.nom,
+      commercant: lotGagne.commercant || '',
+      source: 'jeu',
+      // LA RÈGLE DU MINEUR VOYAGE AVEC LE BON (28/09/2026, contrôle
+      // juridique). L'article 5 impose la remise en présence d'un parent.
+      // La phrase existait, mais seulement sur l'écran de résultat, que le
+      // joueur quitte aussitôt : le commerçant, lui, ne voit que ce bon.
+      // C'EST ICI qu'il faut l'écrire : ajouter() ignore un code déjà
+      // connu, donc le second appel (écran de résultat) arrive trop tard.
+      detail: reponses.age_tranche === '-18'
+        ? 'Joueur de moins de 18 ans : remise en présence d’un parent.'
+        : '',
+      validite: (OPERATION.validite_bons || '').trim(),
+      attente: true
+    });
+  }
+
+  // SANS TICKET (25/09/2026, station Engen : « juste la roue ») : on
+  // saute le billet à gratter et la première manche démarre tout de
+  // suite. Le bonus du billet a déjà été tiré (preparerBonus), il ne
+  // change rien ici : le billet perd toujours.
+  if (OPERATION.sans_ticket) { lancerJeu(false); return; }
   preparerGrattage();
   afficherEcran('ecran-grattage');
 }
@@ -2868,33 +3448,85 @@ async function chargerOperation() {
     appliquerOperation();
     creerFlocons();
   }
+  const lue = await lireOperation();
+  appliquerOperation();
+  creerFlocons();
+  if (!operationOuverte()) afficherEcranFerme();
+  // Le réseau de la galerie a fait faux bond : on retente une fois,
+  // discrètement, pendant que le joueur lit l'accueil (voir ci-dessous).
+  if (!lue) programmerSecondeLecture();
+}
+
+// La lecture elle-même, isolée pour pouvoir être rejouée. Elle répond
+// vrai si la base a parlé, faux si la requête a échoué ou a été coupée
+// par le garde-temps.
+async function lireOperation() {
   try {
+    // GARDE-TEMPS AJOUTÉ LE 17/09/2026. C'était la seule requête du
+    // démarrage sans délai maximum : sur un réseau qui rame sans
+    // casser, elle restait pendante, et avec elle tout ce qui attend sa
+    // réponse, à commencer par le joueur qui revient chercher son bon
+    // depuis le lien de son e-mail (retrouverDepuisLien, au démarrage).
     const { data, error } = await sb
       .from('roue_operations')
       .select('*')
       .eq('slug', EVENEMENT)
+      .abortSignal(signalDelai(7000))
       .maybeSingle();
-    if (!error && data) {
-      OPERATION = { ...OPERATION, ...data };
-      // CE QUI EST GRAPHIQUE RESTE DÉCIDÉ ICI (26/08/2026).
-      // La table roue_operations n'a pas de colonne logo, et sa colonne
-      // theme porte encore l'ancien univers (« noel ») : si on la
-      // laissait gagner, le thème du cirque tomberait dès que la base
-      // répond. Le nom, le lieu, les dates et l'ouverture, eux,
-      // continuent de venir de la base.
-      const local = OPERATIONS_LOCALES[EVENEMENT];
-      if (local) {
-        ['theme', 'logo', 'accroche'].forEach(cle => {
-          if (local[cle]) OPERATION[cle] = local[cle];
-        });
-      }
+    if (error) {
+      console.warn('Opération non lue :', error.message || error);
+      return false;
     }
+    if (!data) return true;   // la base a répondu : ce slug n'existe pas
+    OPERATION = { ...OPERATION, ...data };
+    // CE QUI EST GRAPHIQUE RESTE DÉCIDÉ ICI (26/08/2026).
+    // La table roue_operations n'a pas de colonne logo, et sa colonne
+    // theme porte encore l'ancien univers (« noel ») : si on la
+    // laissait gagner, le thème du cirque tomberait dès que la base
+    // répond. Le nom, le lieu, les dates et l'ouverture, eux,
+    // continuent de venir de la base.
+    const local = OPERATIONS_LOCALES[EVENEMENT];
+    if (local) {
+      ['theme', 'logo', 'accroche'].forEach(cle => {
+        if (local[cle]) OPERATION[cle] = local[cle];
+      });
+      // FILET SUR LES DATES (28/09/2026, contrôle juridique). La base
+      // écrase tout, y compris avec du vide : une colonne date_fin
+      // restée vide effaçait la date écrite plus haut, et le jeu
+      // redevenait un jeu qui ne se ferme jamais. On ne reprend la
+      // valeur locale que si la base n'en donne aucune.
+      ['date_debut', 'date_fin'].forEach(cle => {
+        if (!OPERATION[cle] && local[cle]) OPERATION[cle] = local[cle];
+      });
+    }
+    return true;
   } catch (e) {
     console.warn('Habillage par défaut utilisé :', e);
+    return false;
   }
-  appliquerOperation();
-  creerFlocons();
-  if (!operationOuverte()) afficherEcranFerme();
+}
+
+// LA SECONDE CHANCE DE LA BASE (17/09/2026)
+// ------------------------------------------
+// Une galerie sans habillage écrit dans l'application (toutes celles
+// qui viendront après Cap Sacré-Cœur) affiche, tant que la base n'a pas
+// répondu, le titre générique du jeu au lieu du sien. Une seule
+// nouvelle tentative, quatre secondes plus tard, suffit à rattraper la
+// coupure de quelques secondes qui est le cas courant en galerie.
+//
+// DEUX PRÉCAUTIONS, parce que cette réponse arrive en retard :
+//   - elle ne repeint l'écran que si le joueur est encore sur
+//     l'accueil : personne ne doit voir son écran changer en pleine
+//     partie ;
+//   - elle ne peut fermer le jeu que depuis l'accueil, jamais sortir
+//     un joueur déjà lancé.
+function programmerSecondeLecture() {
+  setTimeout(async () => {
+    if (!(await lireOperation())) return;
+    if (!document.body.classList.contains('sur-accueil')) return;
+    appliquerOperation();
+    if (!operationOuverte()) afficherEcranFerme();
+  }, 4000);
 }
 
 // L'écran fermé dit la vérité de chaque situation : un jeu pas encore
@@ -2908,10 +3540,25 @@ function afficherEcranFerme() {
   if (titre && texte) {
     if (etat === 'avant') {
       titre.textContent = 'Encore un peu de patience !';
-      texte.innerHTML = 'Le jeu ouvre le <strong>' + echap(dateEnLettres(OPERATION.date_debut)) + '</strong>.<br>Reviens à ce moment-là !';
+      texte.innerHTML = 'Le jeu ouvre le <strong>' + echap(dateEnLettres(OPERATION.date_debut)) + '</strong>.<br>Reviens ce jour-là : ensuite, tu peux jouer une fois par jour.';
     } else if (etat === 'apres') {
-      titre.textContent = 'L’opération est terminée';
-      texte.textContent = 'Merci à tous les joueurs ! Si la date limite de ton bon n’est pas passée, tu peux encore l’utiliser en boutique.';
+      titre.textContent = 'Le jeu est terminé';
+      // Le seul écran que verra un visiteur de janvier, sur un QR code
+      // resté collé dans la galerie : il doit nommer l'organisateur et
+      // donner le règlement, comme n'importe quel support public (règle
+      // des mentions obligatoires du 25/09/2026). Il ne promet aucun
+      // retour et ne parle d'aucun tirage : l'article 4 dit qu'il n'y a
+      // pas de tirage de fin d'opération.
+      // L'année compte ici, et seulement ici : celui qui lit cet écran
+      // est en janvier de l'année suivante.
+      const finLisible = OPERATION.date_fin
+        ? dateEnLettres(OPERATION.date_fin) + ' ' + String(OPERATION.date_fin).slice(0, 4)
+        : '';
+      texte.innerHTML = 'Merci à tous les joueurs&nbsp;! ' +
+        (finLisible ? 'Le jeu s’est achevé le <strong>' + echap(finLisible) + '</strong>. ' : '') +
+        'Il n’est plus possible de jouer, et les bons gagnés pendant l’opération ne peuvent plus être présentés en boutique.' +
+        '<br>Jeu organisé par Pull Up Événements · ' +
+        '<a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">Règlement</a>';
     }
     // 'pause' : le texte par défaut du HTML convient.
   }
@@ -2946,6 +3593,14 @@ function dateEnLettres(iso) {
 //
 // À RETIRER le jour où CORRIGER-AVANT-LA-DEMO.sql aura été lancé (elle
 // ne fera alors plus rien, puisque les noms seront déjà génériques).
+// AJOUT DU 06/09/2026, et il vient d'un test, pas d'une relecture : une
+// partie gagnante jouée ce soir affichait « Chez Taïlu » sur l'écran du
+// gagnant. Les OFFRES avaient bien été repassées en noms génériques
+// dans contenus-demo.js, mais les LOTS viennent de la base, où les huit
+// enseignes dictées le 27/08 sont toujours écrites. Le filet ne les
+// connaissait pas : il ne couvrait que les six noms de la démo d'août.
+// Les voici. Tant que la base n'est pas corrigée, aucune de ces
+// enseignes n'atteint l'écran du joueur.
 const COMMERCANTS_A_NEUTRALISER = {
   'carrefour':     'Le supermarché de la galerie',
   'celio':         'La boutique de mode homme',
@@ -2953,7 +3608,21 @@ const COMMERCANTS_A_NEUTRALISER = {
   'saint algue':   'Le salon de coiffure',
   'brioche dorée': 'La boulangerie de la galerie',
   'brioche doree': 'La boulangerie de la galerie',
-  'yves rocher':   'L’institut beauté'
+  'yves rocher':   'L’institut beauté',
+  // Les huit du 27/08/2026 (les clés s'écrivent sans accent : la
+  // comparaison les retire, voir cleEnseigne juste en dessous).
+  'l’igloo':       'Le glacier de la galerie',
+  "l'igloo":       'Le glacier de la galerie',
+  'igloo':         'Le glacier de la galerie',
+  'jina':          'La boutique de mode femme',
+  'tailu':         'Le comptoir à samoussas',
+  'madame cookie': 'La boutique à cookies',
+  'nocibe':        'La parfumerie',
+  'avril':         'L’institut beauté',
+  'my crep’s':     'La crêperie de la galerie',
+  "my crep's":     'La crêperie de la galerie',
+  'my creps':      'La crêperie de la galerie',
+  'lgm':           'Le salon de glaces'
 };
 
 // La comparaison ignore la casse, les accents et les espaces en trop :
@@ -3006,8 +3675,38 @@ async function chargerLots() {
       .select('nom, emoji, poids, perdant, commercant')
       .eq('actif', true)
       .eq('operation', EVENEMENT)
-      .order('ordre');
+      .order('ordre')
+      .abortSignal(signalDelai(7000));
     if (!error && data && data.length >= 2) {
+      // LA BASE NE REPREND LA MAIN QUE SI ELLE EST À JOUR (01/09/2026)
+      // ----------------------------------------------------------------
+      // Vérifié ce matin en interrogeant Supabase : la table roue_lots
+      // porte TOUJOURS les lots de démonstration de la première maquette
+      // (Carrefour, Celio, Big Fernand, Saint Algue, Brioche Dorée, Yves
+      // Rocher), plus un lot « Photo dans la Hotte géante » que Romain a
+      // depuis déclaré inexistant. Aucun de ces commerçants n'a signé.
+      //
+      // Sur la version d'essai, cela ne se voit pas : les lots locaux
+      // priment (voir juste au-dessus). Mais le jour où le jeu passera
+      // sur son vrai domaine, la base reprendra la main et le jeu se
+      // mettrait à distribuer des bons chez des enseignes qui n'ont rien
+      // signé, avec des lots qui n'existent pas. Le filet des noms
+      // génériques masquerait les enseignes, pas le problème : le joueur
+      // se présenterait chez « le supermarché de la galerie » avec un bon
+      // que personne n'honorerait.
+      //
+      // Tant qu'une seule de ces enseignes traîne dans la réponse, on
+      // considère la base périmée et on garde les lots locaux, qui sont
+      // ceux que Romain a dictés. Le message ci-dessous dit quoi faire.
+      // À RETIRER une fois ALIGNER-LES-LOTS.sql exécuté : la condition ne
+      // se déclenchera alors plus jamais.
+      const perimee = data.some(l => COMMERCANTS_A_NEUTRALISER[cleEnseigne(l.commercant)]);
+      if (perimee) {
+        console.warn('Lots de la base ignorés : ils portent encore des enseignes ' +
+          'de la maquette, qui n’ont rien signé. Lancer ALIGNER-LES-LOTS.sql ' +
+          'dans Supabase. En attendant, les lots de l’application font foi.');
+        return;
+      }
       LOTS = data.map(l => ({
         nom: l.nom,
         emoji: l.emoji || '🎁',
@@ -3050,6 +3749,7 @@ function lancerLaVitrine() {
   codeLot = genererCode();
   reponses.prenom = reponses.prenom || '';
   preparerBonus();
+  if (OPERATION.sans_ticket) { lancerJeu(false); return; }
   preparerGrattage();
   afficherEcran('ecran-grattage');
   chargerFichiersJeu();          // les jeux se téléchargent pendant le grattage
@@ -3281,7 +3981,7 @@ window.roueAfficherBonRetrouve = function (bon) {
   // « Mes bons » dix secondes après le gain (tour n°6, 29/08/2026) ;
   // la phrase neutre est juste dans les deux cas.
   document.getElementById('resultat-texte').textContent =
-    (bon.prenom ? bon.prenom + ', ton' : 'Ton') + ' cadeau t’attend. Montre-le au commerçant pour le récupérer.';
+    (bon.prenom ? bon.prenom + ', ton' : 'Ton') + ' cadeau t’attend. ' + mot('montre', 'Montre-le au commerçant pour le récupérer.');
 
   const bandeau = document.getElementById('resultat-commercant');
   if (bon.commercant) {
@@ -3293,7 +3993,7 @@ window.roueAfficherBonRetrouve = function (bon) {
 
   document.getElementById('resultat-code').textContent = bon.code;
   document.getElementById('resultat-code-info').textContent =
-    'Montre cet écran au commerçant, il valide lui-même.';
+    mot('montre_ecran', 'Montre cet écran au commerçant, il valide lui-même.');
   document.getElementById('resultat-code-bloc').hidden = false;
   document.getElementById('bon-valide').hidden = true;
   document.getElementById('confirme-utilisation').hidden = true;
@@ -3326,11 +4026,12 @@ document.getElementById('btn-garder-bon').addEventListener('click', () => {
 // Le joueur peut remercier son commerçant d'un geste
 document.getElementById('btn-merci').addEventListener('click', async (e) => {
   const btn = e.currentTarget;
-  btn.textContent = 'Merci envoyé';
+  btn.textContent = 'Merci transmis';
   btn.classList.add('envoye');
   vibrer(30);
   try {
-    await sb.rpc('roue_dire_merci', { p_code: codeLot });
+    await sb.rpc('roue_dire_merci', { p_code: codeLot })
+      .abortSignal(signalDelai(6000));
   } catch (err) {
     console.warn('Merci non remonté :', err);
   }
@@ -3352,7 +4053,13 @@ document.getElementById('btn-rejouer-bonus').addEventListener('click', async (e)
   // le lot de la première partie en base : le joueur ne repart qu'avec
   // un seul bon, celui qu'il voit à l'écran.
   try {
-    const { data, error } = await sb.rpc('roue_rejouer', { p_code: codePrecedent });
+    // GARDE-TEMPS AJOUTÉ LE 17/09/2026 : c'est la requête qui bloquait
+    // le plus fort. Le bouton du second tour se désactive le temps de
+    // l'appel ; sans délai maximum, un réseau qui rame le laissait
+    // éteint pour toujours, et le joueur restait devant un écran mort
+    // alors que son lot de secours était déjà tiré.
+    const { data, error } = await sb.rpc('roue_rejouer', { p_code: codePrecedent })
+      .abortSignal(signalDelai(8000));
     if (!error && data && data.statut === 'ok') appliquerLotServeur(data);
   } catch (err) {
     console.warn('Second tour non remonté :', err && err.message);
@@ -3376,16 +4083,25 @@ document.getElementById('btn-rejouer-bonus').addEventListener('click', async (e)
 // (29/08/2026) : après le résultat, on file droit au but. Le perdant
 // part directement sur les offres du jour : son bouton promet des
 // bons de réduction, on les lui montre sans écran intermédiaire.
+// RETOUR À L'ACCUEIL (25/09/2026) : sans espace découverte, la sortie
+// du jeu est l'accueil. On recharge la page plutôt que d'empiler les
+// écrans : l'accueil repart propre, avec le rappel du bon en poche.
+function retourAccueil() {
+  location.href = location.pathname + '?e=' + encodeURIComponent(EVENEMENT);
+}
 document.getElementById('btn-resultat-continuer').addEventListener('click', () => {
   const gagnant = lotGagne && !lotGagne.perdant;
-  if (gagnant) afficherMesBons(); else afficherPromos();
+  if (gagnant) afficherMesBons();
+  else if (OPERATION.sans_galerie) retourAccueil();
+  else afficherPromos();
 });
-// « Je dépenserai mon cadeau plus tard » : le gagnant part vers la
+// « Je retirerai mon cadeau plus tard » (25/09/2026 : on ne dépense
+// pas un cadeau, on le retire chez le commerçant) : le gagnant part vers la
 // galerie, son bon reste dans la poche et la carte « Obtenir mon
 // cadeau » l'attendra sur l'écran suivant.
 const btnPlusTard = document.getElementById('btn-resultat-plus-tard');
 if (btnPlusTard) {
-  btnPlusTard.addEventListener('click', () => afficherDecouverte());
+  btnPlusTard.addEventListener('click', () => OPERATION.sans_galerie ? retourAccueil() : afficherDecouverte());
 }
 // La deuxième porte du perdant (29/08/2026, demande de Romain) : voir
 // le programme des animations de la galerie sans passer par les offres.
@@ -3416,6 +4132,22 @@ function squelettes(nombre) {
 // du joueur (et de rejouer les animations d'entrée). Avec le
 // garde-temps signalDelai, une base qui rame retombe en 8 secondes sur
 // les contenus de secours : plus jamais de squelette éternel.
+// LE REPLI SUR LES EXEMPLES : SEULEMENT EN DÉMONSTRATION (17/09/2026)
+// ------------------------------------------------------------------
+// Les trois écrans de contenu (offres, nouveautés, programme) se
+// rabattaient sur les exemples de `contenus-demo.js` dès que la base
+// ne renvoyait rien, y compris en vraie exploitation. Deux façons
+// d'arriver là : la base n'est pas encore remplie, ou la requête part
+// en erreur (le 17/09, `roue_offres` refusait la requête, faute des
+// colonnes `actif` et `ordre`, et l'erreur était avalée en silence).
+// Dans les deux cas, un visiteur de la galerie voyait des offres
+// inventées pour la démonstration, avec des remises chiffrées que
+// personne n'a validées, et qu'aucun commerçant n'honorerait.
+// Depuis aujourd'hui, les exemples ne sortent qu'en démonstration
+// (sur le Mac) ou sur la version d'essai en ligne. En exploitation,
+// l'écran dit honnêtement que le contenu arrive bientôt.
+const CONTENUS_DE_DEMO_AUTORISES = PARTIES_ILLIMITEES;
+
 let jetonPromos = 0;
 let jetonProgramme = 0;
 let jetonNouveautes = 0;
@@ -3437,14 +4169,18 @@ async function afficherPromos() {
       .eq('actif', true)
       .order('ordre')
       .abortSignal(signalDelai(8000));
+    // L'erreur n'était nulle part : une colonne manquante en base
+    // faisait retomber l'écran sur les exemples sans que personne le
+    // sache. Elle s'écrit maintenant dans la console (17/09/2026).
+    if (error) console.warn('Offres : la base a refusé la requête.', error.message || error);
     if (!error && data && data.length) offres = data;
   } catch (e) {
     console.warn('Offres indisponibles :', e);
   }
   if (jeton !== jetonPromos) return;   // une demande plus récente est passée
 
-  // Rien en base : on montre les exemples de démonstration
-  if (!offres.length && typeof OFFRES_DEMO !== 'undefined') offres = OFFRES_DEMO;
+  // Rien en base : les exemples, mais seulement en démonstration
+  if (!offres.length && CONTENUS_DE_DEMO_AUTORISES && typeof OFFRES_DEMO !== 'undefined') offres = OFFRES_DEMO;
 
   // V2 (28/08/2026) : les offres sont CELLES DU JOUR. Une colonne
   // « jour » dans la base (facultative) permet de programmer la
@@ -3454,7 +4190,8 @@ async function afficherPromos() {
   offres = neutraliserEnseignes(offres);
 
   if (!offres.length) {
-    liste.innerHTML = '<p class="promo-vide">Les bons plans arrivent très bientôt.<br>Reviens jouer demain pour les découvrir.</p>';
+    liste.innerHTML = '<p class="promo-vide">Pas de bon plan affiché aujourd’hui.' +
+      (ilYAUnDemain() ? '<br>Reviens jouer demain : les commerçants en proposent souvent.' : '') + '</p>';
     return;
   }
 
@@ -3463,7 +4200,7 @@ async function afficherPromos() {
   if (gouts.length) {
     offres = offres.slice().sort((a, b) =>
       (gouts.indexOf(a.univers) === -1 ? 1 : 0) - (gouts.indexOf(b.univers) === -1 ? 1 : 0));
-    soustitre.textContent = 'Toutes les offres de la galerie, en commençant par ce que tu aimes.';
+    soustitre.textContent = 'Les offres d’aujourd’hui, en commençant par ce que tu aimes.';
   }
 
   liste.innerHTML = '';
@@ -3708,7 +4445,7 @@ function habillerLesOffres() {
   if (titre) {
     titre.textContent = prenom
       ? prenom + ', tes bons plans t’attendent.'
-      : 'Les bons plans de la galerie t’attendent.';
+      : mot('offres_titre', 'Les bons plans de la galerie t’attendent.');
   }
   if (sousTitre) {
     // UNE SEULE PHRASE, COURTE (29/08/2026, Romain : « enlève "côté
@@ -3716,8 +4453,8 @@ function habillerLesOffres() {
     // plus en avant »). La personnalisation par rayon est retirée ;
     // la phrase est mise en valeur par le style (voir #offres-soustitre
     // dans style.css).
-    sousTitre.textContent =
-      'Cadeaux, promos et nouveautés dans ta boîte mail.';
+    sousTitre.textContent = mot('offres_texte',
+      'Bons de réduction, promos et nouveautés des commerçants de la galerie, les prochains jeux Pull Up : tout ça dans ta boîte mail.');
   }
 }
 
@@ -3884,7 +4621,28 @@ function afficherMesBons() {
   if (soustitre) {
     soustitre.textContent = valables > 1
       ? 'Présente le code du bon que tu utilises. Un bon ne sert qu’une fois.'
-      : 'Présente ton code au commerçant. Un bon ne sert qu’une fois.';
+      : mot('mesbons', 'Présente ton code au commerçant. Un bon ne sert qu’une fois.');
+  }
+
+  // LA PARTIE COUPÉE S'EXPLIQUE (25/09/2026)
+  // Depuis le 24/09, le lot tiré est rangé dans le téléphone dès le
+  // début de la partie, et rendu au joueur si celle-ci s'arrête en
+  // cours de route (batterie, 4G, onglet fermé). Il retrouve donc ici
+  // un cadeau qu'il n'a jamais vu arriver, sans savoir d'où il sort :
+  // devant le commerçant, un bon qu'on ne s'explique pas est un bon
+  // qu'on n'ose pas présenter. Le mot n'est dit qu'une fois, et
+  // seulement à celui que ça concerne.
+  const reprise = document.getElementById('mesbons-reprise');
+  if (reprise) {
+    if (bonsRendusApresCoupure > 0) {
+      reprise.textContent = bonsRendusApresCoupure > 1
+        ? 'Ta partie s’est arrêtée en cours de route. Tes cadeaux étaient déjà tirés : les voici.'
+        : 'Ta partie s’est arrêtée en cours de route. Ton cadeau était déjà tiré : le voici.';
+      reprise.hidden = false;
+      bonsRendusApresCoupure = 0;
+    } else {
+      reprise.hidden = true;
+    }
   }
 
   window.PullUpBons.rendre(liste, function (bon) {
@@ -3964,14 +4722,15 @@ async function afficherNouveautes() {
       .eq('actif', true)
       .order('ordre')
       .abortSignal(signalDelai(8000));
+    if (error) console.warn('Nouveautés : la base a refusé la requête.', error.message || error);
     if (!error && data && data.length) articles = data;
   } catch (e) {
     console.warn('Nouveautés indisponibles :', e);
   }
   if (jeton !== jetonNouveautes) return;
 
-  // Rien en base : on montre les exemples de démonstration
-  if (!articles.length && typeof NOUVEAUTES_DEMO !== 'undefined') articles = NOUVEAUTES_DEMO;
+  // Rien en base : les exemples, mais seulement en démonstration
+  if (!articles.length && CONTENUS_DE_DEMO_AUTORISES && typeof NOUVEAUTES_DEMO !== 'undefined') articles = NOUVEAUTES_DEMO;
   articles = neutraliserEnseignes(articles);
 
   if (!articles.length) {
@@ -4019,7 +4778,15 @@ if (btnDejaJoueBons) btnDejaJoueBons.addEventListener('click', function () { aff
 // une fois l'opération finie (promesse du règlement).
 const btnFermeBons = document.getElementById('btn-ferme-bons');
 if (btnFermeBons) btnFermeBons.addEventListener('click', function () { afficherMesBons(); });
-document.getElementById('btn-mes-bons-retour').addEventListener('click', function () { afficherDecouverte(); });
+document.getElementById('btn-mes-bons-retour').addEventListener('click', function () {
+  // Sans galerie (station Engen) : retour à l'écran d'où l'on vient, le
+  // résultat si une partie vient d'être jouée, l'accueil sinon.
+  if (OPERATION.sans_galerie) {
+    if (lotGagne) afficherEcran('ecran-resultat', 'arriere'); else retourAccueil();
+    return;
+  }
+  afficherDecouverte();
+});
 document.getElementById('carte-promos').addEventListener('click', function () { afficherPromos(); });
 // V2 : la carte des nouveautés n'existe plus dans la page ; on ne
 // l'écoute que si elle revient un jour.
@@ -4034,6 +4801,13 @@ document.getElementById('btn-nouveautes-retour').addEventListener('click', funct
 });
 
 installerOnglets();
+// UNE PARTIE INTERROMPUE REND SON CADEAU (24/09/2026)
+// Un bon « en attente » qui survit à un chargement de page ne peut venir
+// que d'une partie coupée en plein milieu : une partie qui va au bout
+// dévoile le sien sur l'écran du résultat, avant de quitter la page. On
+// le rend donc à son propriétaire, qui le retrouve dans « Mes cadeaux »
+// au lieu de repartir les mains vides avec un « tu as déjà joué ».
+if (window.PullUpBons && window.PullUpBons.devoilerTout) bonsRendusApresCoupure = window.PullUpBons.devoilerTout() || 0;
 // L'onglet « Mes bons » est caché tant qu'il n'y a rien dedans. Au
 // chargement, il peut déjà y avoir un bon : celui d'hier, resté dans le
 // téléphone et encore valable.
@@ -4111,12 +4885,13 @@ async function afficherProgramme(mode) {
       .eq('actif', true)
       .order('ordre')
       .abortSignal(signalDelai(8000));
+    if (error) console.warn('Programme : la base a refusé la requête.', error.message || error);
     if (!error && data && data.length) evenements = data;
   } catch (e) {
     console.warn('Programme indisponible :', e);
   }
   if (jeton !== jetonProgramme) return;   // ex. : jour demandé après le mois
-  if (!evenements.length && typeof PROGRAMME_DEMO !== 'undefined') evenements = PROGRAMME_DEMO;
+  if (!evenements.length && CONTENUS_DE_DEMO_AUTORISES && typeof PROGRAMME_DEMO !== 'undefined') evenements = PROGRAMME_DEMO;
 
   // V2 (28/08/2026) : une visite = une journée. On ne montre que les
   // rendez-vous d'AUJOURD'HUI (et les permanents), et un bouton ouvre
@@ -4302,3 +5077,12 @@ chargerOperation().then(() => {
 });
 chargerLots();
 renvoyerAttente();
+
+// LE FILET DE SECOURS (20/09/2026)
+// La dernière ligne du fichier : si elle s'exécute, c'est que tout
+// app.js a été lu et installé. Le filet range alors son garde-temps et
+// n'affichera plus l'écran « Le jeu n'arrive pas à s'ouvrir ». Une
+// erreur survenue après ce point donne un simple bandeau, la partie
+// continue. Voir filet.js.
+if (window.PullUpFilet) window.PullUpFilet.demarre();
+

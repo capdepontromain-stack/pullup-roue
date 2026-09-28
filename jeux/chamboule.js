@@ -192,6 +192,51 @@
     .chb-boite { transition-duration: .01ms; }
     .chb-balle.lancee, .chb-impact.bang { animation-duration: .01ms; }
   }
+
+  /* ------------------------------------------------------------
+     LE TÉLÉPHONE TENU EN TRAVERS : 07/09/2026
+     ------------------------------------------------------------
+     Mesuré sur 740 x 360 : six boîtes sur sept étaient
+     hors de l'écran, et le bouton avec elles. Le joueur voyait le
+     haut d'un stand vide et n'avait rien à viser.
+
+     La réponse est celle déjà retenue le 06/09 pour le quiz, les
+     coordonnées et la roue : ce qui est rangé en hauteur passe en
+     largeur. La scène tient la colonne de gauche, le titre, la
+     consigne, le verdict et le bouton tiennent la colonne de
+     droite. Rien n'est masqué, rien n'est réduit de force.
+
+     Le plateau passe en « display: contents » : il disparaît de la
+     mise en page sans disparaître du HTML, et ses enfants
+     deviennent les cases de la grille, aux côtés du titre et de la
+     consigne, qui vivent au-dessus de lui. Le plateau ne porte ni
+     fond ni bordure, personne ne voit la différence.
+
+     Tout est écrit derrière « #ecran-jeu.jeu-chamboule » : les styles
+     d'un jeu restent dans la page une fois chargés, et sans cette
+     classe la grille s'imposerait aux manches suivantes. */
+  @media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+    /* L'écran de jeu reprend la largeur de la page, comme le quiz
+       et la roue depuis le 06/09. */
+    #ecran-jeu.jeu-chamboule { max-width: none; }
+    #ecran-jeu.jeu-chamboule #jeu-zone {
+      display: grid;
+      grid-template-columns: 348px minmax(0, 1fr);
+      column-gap: 24px;
+      row-gap: 7px;
+      align-content: start;
+      text-align: left;
+    }
+    #ecran-jeu.jeu-chamboule .chb-plateau { display: contents; }
+    /* La colonne de droite, dans l'ordre de lecture. Le bouton
+       reste le dernier : c'est là que le pouce se pose. */
+    #ecran-jeu.jeu-chamboule #jeu-zone > h2 { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+    #ecran-jeu.jeu-chamboule #jeu-zone > .question-soustitre { grid-column: 2; grid-row: 2; margin: 0; }
+    #ecran-jeu.jeu-chamboule #jeu-zone .chb-stand   { grid-column: 1; grid-row: 1 / 9; height: 250px; }
+    #ecran-jeu.jeu-chamboule #jeu-zone .chb-compte  { grid-column: 2; grid-row: 3; align-self: start; }
+    #ecran-jeu.jeu-chamboule #jeu-zone .chb-verdict { grid-column: 2; grid-row: 4; align-self: start; }
+    #ecran-jeu.jeu-chamboule #jeu-zone .chb-plateau > .btn         { grid-column: 2; grid-row: 5; align-self: start; }
+  }
   `;
 
   // Chaque boîte tombe de sa place : une chute identique pour les six

@@ -317,6 +317,62 @@
   @media (prefers-reduced-motion: reduce) {
     .cnn-canon.recule, .cnn-souffle.part, .cnn-filet.rebond { animation-duration: .01ms; }
   }
+
+  /* ------------------------------------------------------------
+     LE TÉLÉPHONE TENU EN TRAVERS : 07/09/2026
+     ------------------------------------------------------------
+     Mesuré sur 740 x 360 : le bouton « Mettre le feu »
+     tombait à 542 px sur un écran qui en fait 360. Le joueur
+     voyait le titre, la consigne et le haut du chapiteau, puis
+     plus rien : il devait deviner qu'il fallait faire défiler
+     pour trouver le seul bouton du jeu.
+
+     La réponse est celle déjà retenue le 06/09 pour le quiz, les
+     coordonnées et la roue : ce qui est rangé en hauteur passe en
+     largeur. La scène tient la colonne de gauche, le titre, la
+     consigne, le verdict et le bouton tiennent la colonne de
+     droite. Rien n'est masqué, rien n'est réduit de force.
+
+     Le plateau passe en « display: contents » : il disparaît de la
+     mise en page sans disparaître du HTML, et ses enfants
+     deviennent les cases de la grille, aux côtés du titre et de la
+     consigne, qui vivent au-dessus de lui. Le plateau ne porte ni
+     fond ni bordure, personne ne voit la différence.
+
+     Tout est écrit derrière « #ecran-jeu.jeu-canon » : les styles
+     d'un jeu restent dans la page une fois chargés, et sans cette
+     classe la grille s'imposerait aux manches suivantes. */
+  @media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+    /* L'écran de jeu reprend la largeur de la page, comme le quiz
+       et la roue depuis le 06/09. */
+    #ecran-jeu.jeu-canon { max-width: none; }
+    #ecran-jeu.jeu-canon #jeu-zone {
+      display: grid;
+      grid-template-columns: 348px minmax(0, 1fr);
+      column-gap: 24px;
+      row-gap: 7px;
+      align-content: start;
+      text-align: left;
+    }
+    #ecran-jeu.jeu-canon .cnn-plateau { display: contents; }
+    /* La colonne de droite, dans l'ordre de lecture. Le bouton
+       reste le dernier : c'est là que le pouce se pose. */
+    #ecran-jeu.jeu-canon #jeu-zone > h2 { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+    #ecran-jeu.jeu-canon #jeu-zone > .question-soustitre { grid-column: 2; grid-row: 2; margin: 0; }
+    /* Le canon est le seul jeu à empiler trois blocs sous sa piste
+       (la jauge de poudre et ses étiquettes vont avec elle). La
+       piste couvre donc les deux premières lignes, en face du titre
+       et de la consigne, et la jauge retrouve le verdict et le
+       bouton sur les deux dernières. Sans cela, la ligne du titre
+       serait haute de 196 px pour un titre de 44, et le bouton
+       repartait à 449 px. */
+    #ecran-jeu.jeu-canon #jeu-zone .cnn-piste      { grid-column: 1; grid-row: 1 / 3; height: 158px; }
+    #ecran-jeu.jeu-canon #jeu-zone .cnn-jauge      { grid-column: 1; grid-row: 3; align-self: center; }
+    #ecran-jeu.jeu-canon #jeu-zone .cnn-etiquettes { grid-column: 1; grid-row: 4; align-self: start; }
+    #ecran-jeu.jeu-canon #jeu-zone .cnn-kicker     { grid-column: 2; grid-row: 2; align-self: end; }
+    #ecran-jeu.jeu-canon #jeu-zone .cnn-verdict    { grid-column: 2; grid-row: 3; align-self: center; min-height: 30px; }
+    #ecran-jeu.jeu-canon #jeu-zone .cnn-plateau > .btn { grid-column: 2; grid-row: 4; align-self: start; padding-top: 11px; padding-bottom: 11px; }
+  }
   `;
 
   window.PullUpJeux = window.PullUpJeux || {};

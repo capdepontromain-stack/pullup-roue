@@ -201,6 +201,35 @@
     .ch-place, .ch-chapeau, .ch-etincelle { animation: none !important; }
     .ch-chapeau, .ch-dessous { transition-duration: .01s !important; }
   }
+
+  /* LE TÉLÉPHONE TENU EN TRAVERS (27/09/2026)
+     Debout, le numéro tient : titre, trois chapeaux, verdict.
+     Couché, la page mesurait 517 px pour 360 px d'écran, et la
+     phrase du magicien (« Le lapin était ici », « Juste un nuage
+     d'étoiles ») tombait 17 px sous la ligne de flottaison : le
+     joueur voyait un chapeau se soulever sans jamais lire ce que
+     cela voulait dire.
+
+     Même mise en page que les onze autres jeux depuis le 06/09 :
+     la piste à gauche, les mots à droite, rien à faire défiler.
+     Tout est écrit derrière « #ecran-jeu.jeu-chapeau » : les
+     styles d'un jeu restent dans la page une fois chargés, et
+     sans cette classe la grille s'imposerait aux manches
+     suivantes. */
+  @media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+    #ecran-jeu.jeu-chapeau { max-width: none; }
+    #ecran-jeu.jeu-chapeau #jeu-zone {
+      display: grid;
+      grid-template-columns: 348px minmax(0, 1fr);
+      column-gap: 24px;
+      row-gap: 7px;
+      align-content: start;
+      text-align: left;
+    }
+    #ecran-jeu.jeu-chapeau #jeu-zone > .jeu-tete   { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+    #ecran-jeu.jeu-chapeau #jeu-zone > .ch-piste   { grid-column: 1; grid-row: 1 / 9; margin: 0; align-self: center; max-width: 348px; }
+    #ecran-jeu.jeu-chapeau #jeu-zone > .ch-verdict { grid-column: 2; grid-row: 2; align-self: start; }
+  }
   `;
 
   function melanger(liste) {

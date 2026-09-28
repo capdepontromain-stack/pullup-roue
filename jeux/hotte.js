@@ -241,6 +241,55 @@
   @media (prefers-reduced-motion: reduce) {
     .htt-flocon, .htt-consigne { animation: none; }
   }
+
+  /* ------------------------------------------------------------
+     LE TÉLÉPHONE TENU EN TRAVERS : 07/09/2026
+     ------------------------------------------------------------
+     Mesuré sur 740 x 360 : la scène finissait à 584 px,
+     donc le sol et la hotte elle-même étaient sous le pli, dans un
+     jeu qui se joue en faisant glisser le doigt sur cette scène.
+     La scène garde toute sa largeur et ne perd que du ciel : elle
+     convertit la position du doigt avec sa propre largeur mesurée
+     à l'écran, donc la rétrécir en largeur ne décalerait rien,
+     mais autant ne pas y toucher.
+
+     La réponse est celle déjà retenue le 06/09 pour le quiz, les
+     coordonnées et la roue : ce qui est rangé en hauteur passe en
+     largeur. La scène tient la colonne de gauche, le titre, la
+     consigne, le verdict et le bouton tiennent la colonne de
+     droite. Rien n'est masqué, rien n'est réduit de force.
+
+     Le plateau passe en « display: contents » : il disparaît de la
+     mise en page sans disparaître du HTML, et ses enfants
+     deviennent les cases de la grille, aux côtés du titre et de la
+     consigne, qui vivent au-dessus de lui. Le plateau ne porte ni
+     fond ni bordure, personne ne voit la différence.
+
+     Tout est écrit derrière « #ecran-jeu.jeu-hotte » : les styles
+     d'un jeu restent dans la page une fois chargés, et sans cette
+     classe la grille s'imposerait aux manches suivantes. */
+  @media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+    /* L'écran de jeu reprend la largeur de la page, comme le quiz
+       et la roue depuis le 06/09. */
+    #ecran-jeu.jeu-hotte { max-width: none; }
+    #ecran-jeu.jeu-hotte #jeu-zone {
+      display: grid;
+      grid-template-columns: 348px minmax(0, 1fr);
+      column-gap: 24px;
+      row-gap: 7px;
+      align-content: start;
+      text-align: left;
+    }
+    #ecran-jeu.jeu-hotte .htt-plateau { display: contents; }
+    /* La colonne de droite, dans l'ordre de lecture. Le bouton
+       reste le dernier : c'est là que le pouce se pose. */
+    #ecran-jeu.jeu-hotte #jeu-zone > h2 { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+    #ecran-jeu.jeu-hotte #jeu-zone > .question-soustitre { grid-column: 2; grid-row: 2; margin: 0; }
+    #ecran-jeu.jeu-hotte #jeu-zone .htt-scene   { grid-column: 1; grid-row: 1 / 9; height: 262px; }
+    #ecran-jeu.jeu-hotte #jeu-zone .htt-compte  { grid-column: 2; grid-row: 3; align-self: start; }
+    #ecran-jeu.jeu-hotte #jeu-zone .htt-verdict { grid-column: 2; grid-row: 4; align-self: start; }
+    #ecran-jeu.jeu-hotte #jeu-zone .htt-plateau > .btn         { grid-column: 2; grid-row: 5; align-self: start; }
+  }
   `;
 
   window.PullUpJeux = window.PullUpJeux || {};

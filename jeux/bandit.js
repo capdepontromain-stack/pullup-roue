@@ -20,10 +20,21 @@
   .bandit-plateau { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px; }
 
   .bandit-machine {
-    --case: 60px;
+    /* La hauteur d'un symbole. Elle est posée par le fichier (en
+       « --case-demandee », sur la machine elle-même), et le CSS garde
+       la main pour la réduire quand l'écran manque de hauteur : c'est
+       ce qui permet au bloc « paysage », en bas de ce fichier, de
+       resserrer la machine sans que le JS ait à le savoir. Le
+       défilement, lui, mesure la case affichée au moment du lancement,
+       donc les symboles s'arrêtent toujours pile sur la ligne. */
+    --case: var(--case-demandee, 60px);
+    /* Le bord du coffret. La ligne de gain s'y adosse pour se caler
+       sur la case du milieu : les deux valeurs doivent rester égales,
+       d'où la variable. */
+    --bord: 13px;
     width: 100%;
     max-width: 340px;
-    padding: 13px;
+    padding: var(--bord);
     border-radius: 22px;
     background: linear-gradient(163deg, #2e2415 0%, #171108 46%, #241b0f 100%);
     border: 1.5px solid rgba(201,150,46,.55);
@@ -110,8 +121,19 @@
   /* La ligne de gain : deux repères dorés et un liseré au milieu */
   .bandit-ligne {
     position: absolute; z-index: 3; pointer-events: none;
-    left: 13px; right: 13px;
-    top: calc(13px + var(--case));
+    left: var(--bord); right: var(--bord);
+    /* LA LIGNE DE GAIN SE CALE PAR LE BAS (06/09/2026). Elle était
+       posée par le haut, à « bord + une case » : ce compte oubliait le
+       fronton « Tente ta chance », haut de 35 px avec sa marge, si
+       bien que les deux filets dorés et leurs triangles tombaient à
+       cheval entre la première rangée et celle du milieu. Or les
+       rouleaux s'arrêtent, eux, sur la case du MILIEU : le jeu
+       montrait sa ligne gagnante 35 px trop haut, dans les deux
+       orientations. Vue du bas, la mesure ne dépend plus de ce qui est
+       posé au-dessus des rouleaux : le bord, puis la case du bas, et
+       on tombe exactement sur celle du milieu. */
+    top: auto;
+    bottom: calc(var(--bord) + var(--case));
     height: var(--case);
     border-top: 1px solid rgba(239,195,104,.45);
     border-bottom: 1px solid rgba(239,195,104,.45);
@@ -203,6 +225,45 @@
     .bandit-bande { transition-duration: .01s !important; filter: none !important; }
     .bandit-levier:not(.joue) .bandit-boule { animation: none; }
     .bandit-machine.gagne .bandit-ligne { animation: none; }
+  }
+
+  /* ------------------------------------------------------------
+     LE TÉLÉPHONE TENU À L'HORIZONTALE (06/09/2026)
+     ------------------------------------------------------------
+     Mesuré dans un écran de 740 x 360 : la machine et son levier,
+     empilés, réclamaient 515 px de hauteur pour 444 px de largeur
+     utilisée sur les 740 disponibles. Le joueur voyait la machine,
+     mais devait faire défiler pour trouver le levier, c'est-à-dire
+     le seul geste du jeu.
+
+     On échange donc de la largeur, qu'on a en trop, contre de la
+     hauteur, qui manque : la machine à gauche, le levier à droite,
+     le verdict sous les deux. La case des symboles se resserre à
+     42 px (le défilement mesure la case affichée, donc les rouleaux
+     s'arrêtent toujours pile sur la ligne de gain). Rien ne change
+     en portrait. */
+  @media (orientation: landscape) and (max-height: 520px) {
+    .bandit-plateau {
+      display: grid;
+      grid-template-columns: auto auto;
+      justify-content: center;
+      align-items: center;
+      column-gap: 18px;
+      row-gap: 4px;
+    }
+    .bandit-machine {
+      --case: 42px;
+      --bord: 10px;
+      grid-column: 1; grid-row: 1;
+      max-width: 290px;
+    }
+    .bandit-fronton { font-size: 11px; padding: 3px 0 5px; margin-bottom: 8px; }
+    .bandit-levier { grid-column: 2; grid-row: 1; }
+    .bandit-levier svg { width: 104px; }
+    .bandit-consigne { font-size: 12px; }
+    /* Le verdict garde toute la largeur sous les deux colonnes :
+       « Ligne gagnante » ne doit jamais se couper en trois lignes. */
+    .bandit-verdict { grid-column: 1 / -1; grid-row: 2; font-size: 18px; }
   }
   `;
 
@@ -364,7 +425,7 @@
         <h2>Le bandit manchot</h2>
         <p class="question-soustitre">Trois logos ${ctx.echap(nomGalerie())} alignés sur la ligne, c’est gagné.</p>
         <div class="bandit-plateau">
-          <div class="bandit-machine" id="bandit-machine" style="--case:${CASE}px">
+          <div class="bandit-machine" id="bandit-machine" style="--case-demandee:${CASE}px">
             <span class="bandit-fronton">Tente ta chance</span>
             <div class="bandit-rouleaux">
               ${[0, 1, 2].map(i => `
@@ -462,10 +523,21 @@
 
         const durees = ctx.sobre ? [200, 320, 440] : [2500, 3400, 4300];
 
+        // LE PAS RÉEL DE LA BANDE (06/09/2026). On ne se fie plus à la
+        // constante : on mesure la case telle qu'elle est affichée à
+        // l'instant du tirage. En paysage, le CSS la resserre ; un
+        // téléphone tourné entre l'ouverture et le tirage change donc
+        // la hauteur d'un symbole, et un calcul basé sur 60 px ferait
+        // arrêter les rouleaux entre deux cases. La mesure retombe
+        // toujours juste, quelle que soit l'orientation.
+        const premiere = machine.querySelector('.bandit-case');
+        const mesure = premiere ? premiere.getBoundingClientRect().height : 0;
+        const pas = mesure > 4 ? mesure : CASE;
+
         bandes.forEach((el, i) => {
           // On s'arrête loin dans la bande : le rouleau a le temps de défiler.
           const place = (BOUCLES - 2) * n + places[i];
-          const arrivee = -(place - 1) * CASE;   // -1 : la ligne de gain est la case du milieu
+          const arrivee = -(place - 1) * pas;   // -1 : la ligne de gain est la case du milieu
 
           el.classList.add('file');
           // Le style de départ doit être posé avant la transition
@@ -500,7 +572,7 @@
           : (restantes > 0
               ? 'Deux sur trois. La machine passe la main : il reste ' +
                 (restantes === 1 ? 'une manche.' : restantes + ' manches.')
-              : 'Deux sur trois. La machine s’est arrêtée là.');
+              : 'Deux sur trois. La machine s’est arrêtée là. Ton lot était tiré avant le premier tour de rouleau : rien à te reprocher.');
         verdict.classList.add('montre');
         ctx.vibrer(gagne ? [70, 50, 130] : 90);
       }

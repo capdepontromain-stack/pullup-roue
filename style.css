@@ -650,7 +650,15 @@ h1 {
   border-top: 1px solid var(--filet);
   padding-top: var(--e4);
   margin-top: var(--e3);
-  color: rgba(188, 178, 161, .82);
+  /* 01/09/2026 : la couleur était écrite en dur, rgba(188, 178, 161, .82),
+     c'est-à-dire le beige du thème doré. Sur le fond clair du thème Cap
+     Sacré-Cœur, ce beige délavé donnait 1,9:1 de contraste : la mention
+     obligatoire, celle qui protège juridiquement l'opération, était la
+     seule chose illisible de l'écran. Un sélecteur d'identifiant battait
+     toutes les règles de thème, le défaut avait donc survécu au passage
+     en V2. La variable rend le beige au thème sombre et le gris ardoise
+     au thème clair (5,2:1). */
+  color: var(--gris);
   font-size: 12px;
   line-height: 1.62;
   max-width: none;
@@ -971,6 +979,18 @@ h1 {
 /* --- Coordonnées --- */
 .champ { display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; font-weight: 600; letter-spacing: .4px; color: var(--creme); }
 .champ em { color: var(--gris); font-style: normal; font-weight: 400; }
+/* Le texte qui dit à quoi sert un champ, lu avant la saisie. Posé le
+   15/09/2026 pour la finalité du numéro de téléphone. Il reprend la
+   couleur de « (facultatif) », déjà juste dans les deux thèmes. */
+.champ-aide {
+  color: var(--gris);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12.5px;
+  line-height: 1.45;
+  letter-spacing: .1px;
+  margin-top: -2px;
+}
 .case {
   display: flex;
   gap: 13px;
@@ -1782,21 +1802,39 @@ h1 {
    (27/08/2026, Romain). Le refus n'est plus un bouton mais une ligne
    discrète et soulignée : toujours visible, toujours cliquable d'un
    doigt (44 px de zone), jamais en concurrence avec le bouton doré. */
+/* LE REFUS REDEVIENT UN VRAI BOUTON (06/09/2026, contrôle juridique)
+   Il était un lien souligné de 13 px posé sous un bouton doré de pleine
+   largeur, et la relance « Es-tu sûr ? » reposait la question avec le
+   même déséquilibre : pour refuser, il fallait trouver deux fois un
+   lien effacé, contre un seul geste évident pour accepter.
+   La CNIL demande que refuser soit aussi simple qu'accepter, et un
+   consentement jugé non libre rendrait inexploitable toute la base
+   opt-in de décembre, c'est-à-dire le produit lui-même.
+   Ce qui ne change pas : la relance unique reste (Cap Sacré-Cœur l'a
+   justement aimée), et le oui garde son or. Le non reprend seulement la
+   même carrure : même largeur, même hauteur, même taille de texte,
+   contour visible. Seule la couleur les sépare désormais. */
 .btn-offres-refus {
   display: block;
-  margin: 2px auto 0;
-  min-height: 44px;            /* zone de touche : la reco des 44 px */
-  padding: 12px 18px;          /* la zone du doigt reste large */
+  width: 100%;
+  margin: 10px auto 0;
+  min-height: var(--touche);
+  padding: 20px;
   background: none;
-  border: none;
+  border: 1.5px solid var(--filet);
+  border-radius: 2px;
   cursor: pointer;
   font-family: var(--sans);
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .6px;
+  text-transform: uppercase;
   color: var(--gris);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  opacity: .85;
+  text-decoration: none;
+  opacity: 1;
+  transition: border-color .2s ease, color .2s ease;
 }
+.btn-offres-refus:hover { border-color: var(--gris); }
 .btn-offres-refus:active { color: var(--creme); }
 
 /* LA RELANCE DU PREMIER « NON » : un encart qui pose la question une
@@ -2978,6 +3016,23 @@ body.theme-circus .ticket-detail { color: var(--toile); }
   width: 100%;
 }
 
+/* LE MOT DE LA PARTIE COUPÉE (25/09/2026)
+   Une seule phrase, posée au-dessus des bons, pour le joueur dont la
+   partie s'est arrêtée en route et qui retrouve ici un cadeau qu'il n'a
+   pas vu arriver. Volontairement discret : c'est une explication, pas
+   une alerte, et le bon reste la vedette de l'écran. */
+.mesbons-reprise {
+  margin: 0 0 var(--e3);
+  padding: var(--e3) var(--e4);
+  border-left: 2px solid var(--or);
+  background: rgba(201, 150, 46, .08);
+  border-radius: 0 8px 8px 0;
+  font-size: var(--t-petit);
+  line-height: 1.5;
+  color: var(--creme);
+}
+.mesbons-reprise[hidden] { display: none; }
+
 .bons-section {
   margin: var(--e3) 0 0;
   font-size: var(--t-etiquette);
@@ -3713,3 +3768,1892 @@ body.theme-csc .roue-cadre.emballe #roue-svg {
     0 0 0 11px var(--rouge-clair),
     0 16px 44px rgba(23, 34, 44, .34);
 }
+
+/* ============================================================
+   LE TÉLÉPHONE TENU À L'HORIZONTALE (02/09/2026)
+   ============================================================
+   Constat de départ, mesuré dans un écran de 740 x 360 : l'écran
+   d'accueil demandait 979 px de hauteur, soit presque trois écrans de
+   défilement, et le bouton « C'est parti » tombait à 654 px du haut,
+   donc invisible. Le joueur qui tient son téléphone en travers (ou
+   l'enfant qui le retourne pendant la partie) ne voyait qu'une photo
+   de fond et un morceau de titre.
+
+   Le choix retenu : on NE bloque PAS le jeu avec un « tourne ton
+   téléphone ». En galerie, un écran qui refuse de jouer est un joueur
+   perdu, et certains téléphones sont bloqués en paysage par leur
+   propriétaire. On resserre donc la mise en page, sans rien changer au
+   parcours, aux règles ni aux couleurs.
+
+   La méthode : toute l'application lit son échelle dans les variables
+   du :root, il suffit donc de les redéfinir ici. Les tailles écrites
+   en vw (clamp) sont le vrai coupable : à 740 px de large, un « 12.4vw »
+   part à 92 px et le clamp plafonne au maximum. En paysage, on repasse
+   donc en valeurs fixes, et le titre se règle sur la HAUTEUR (vh).
+
+   La limite haute est 520 px : au-delà, c'est une tablette, elle a la
+   place de s'afficher normalement. */
+@media (orientation: landscape) and (max-height: 520px) {
+  :root {
+    --t-corps:   15px;
+    --t-lead:    15.5px;
+    --t-titre-s: 19px;
+    /* 20 px et pas 22 : le titre de la roue réserve deux lignes de sa
+       propre taille (pour ne pas sauter quand la phrase change en pleine
+       rotation), donc chaque point gagné ici en fait deux de hauteur. */
+    --t-titre:   20px;
+    /* Le grand titre se mesure à la hauteur disponible, plus à la
+       largeur : c'est la hauteur qui manque ici. */
+    --t-hero:    clamp(26px, 9.5vh, 36px);
+    --marge:     18px;
+    --e5: 14px; --e6: 18px; --e7: 22px; --e8: 26px;
+  }
+
+  /* La page respire moins du haut et du bas : chaque pixel gagné
+     rapproche le bouton du pouce. */
+  .app { padding-top: var(--e1); padding-bottom: var(--e5); }
+  /* L'en-tête et la guirlande mangeaient 110 px sur 360, soit près d'un
+     tiers de l'écran, avant même le premier mot du jeu. */
+  .entete { padding-bottom: var(--e2); margin-bottom: var(--e2); }
+  .logo-client { height: 34px; }
+  body.theme-circus .guirlande { margin: -4px 0 var(--e2); }
+
+  .hero { gap: var(--e2); padding-bottom: 0; }
+  .hero h1 { line-height: 1.04; }
+  .hero-emoji, .hero-photo { width: 86px; height: 86px; }
+  .sous-titre { line-height: 1.4; }
+
+  /* L'ÉCRAN DE RÉSULTAT EN TÉLÉPHONE COUCHÉ (17/09/2026)
+     Mesuré ce jour sur un écran de 640 x 360 : le bouton de cet écran
+     naissait à 422 px, donc 62 px sous le pli, et celui du programme à
+     482 px. Le perdant, qui est trois joueurs sur quatre, voyait
+     « Pas de cadeau aujourd'hui » et aucune porte de sortie.
+     Deux règles de l'habillage Cap Sacré-Cœur (plus précises que
+     celles d'ici, donc gagnantes) passaient devant les tailles du
+     paysage : le médaillon restait à 132 px de côté, soit 227 px de
+     hauteur avec ses ombres et ses marges, et le texte du résultat à
+     22 px gras, soit trois lignes pleines. Les deux reprennent en
+     paysage la taille prévue pour le paysage. En téléphone droit,
+     rien ne change : le médaillon et le lot gardent leur présence. */
+  /* Le sélecteur passe par `.hero >` exprès : à précision égale,
+     c'est la règle écrite le plus bas dans le fichier qui gagne, et
+     celle de l'habillage est plus bas que ce bloc. Un cran de
+     précision en plus règle la question sans déplacer du code. */
+  body.theme-csc #ecran-resultat .hero > .hero-emoji { width: 86px; height: 86px; }
+
+  /* Sur les écrans les plus bas (360 px, le format le plus répandu en
+     téléphone couché), 22 px de plus sur le médaillon sont 22 px de
+     moins pour le bouton, et c'est exactement ce qui manquait pour
+     qu'il tienne en entier dans l'écran. Le médaillon reste bien
+     visible : il porte la photo du lot pour le gagnant. */
+  @media (max-height: 400px) {
+    body.theme-csc #ecran-resultat .hero > .hero-emoji { width: 64px; height: 64px; }
+  }
+  body.theme-csc #ecran-resultat #resultat-texte { font-size: 17px; line-height: 1.35; }
+
+  /* La roue prenait 315 px de côté : sur 360 px de haut, elle sortait
+     de l'écran avec son titre. Elle se borne maintenant aussi à la
+     hauteur. */
+  .roue-cadre {
+    width:  min(76vw, 315px, 46vh);
+    height: min(76vw, 315px, 46vh);
+    margin-top: 10px;
+  }
+  /* Les grands boutons rendent 10 px chacun : c'est ce qui ramène le
+     bouton « Tourner » sous la roue plutôt que sous le pli. */
+  .btn-grand { padding-top: 15px; padding-bottom: 15px; }
+
+  /* Le ticket à gratter va d'un bord à l'autre : à 480 px de large et
+     dans son format 600 x 380, il réclamait 304 px de hauteur à lui
+     tout seul. En paysage il se recentre et se règle sur la hauteur
+     (le format est conservé, donc rien n'est déformé). */
+  .ticket {
+    align-self: center;
+    width: min(100%, 82vh);
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* Les jeux et leurs compteurs se resserrent du même pas. */
+  .roue-zone, .quiz-zone { gap: var(--e3); }
+  .roue-zone h2, .quiz-zone h2 { margin-bottom: 0; }
+
+  /* Le grand chiffre de chapitre du quiz : il reste le repère de
+     lecture, mais il rend 24 px de hauteur à la question. Le filet qui
+     part de lui suit le même mouvement. */
+  #question-titre { padding-top: 42px; }
+  #question-titre::before { font-size: 40px; top: -4px; }
+  #question-titre::after { top: 14px; left: 54px; }
+  .options { margin-top: 16px; }
+
+  /* LE BANDEAU DE FAÇADE, LE VRAI COUPABLE. La photo du centre
+     commercial fait 300 px de haut et le titre lui réserve 218 px de
+     place : sur un écran de 360 px, elle occupait 83 % de la hauteur et
+     poussait tout le reste hors de vue. Elle passe à 150 px, le titre
+     remonte d'autant, et elle reste une photo d'accueil au lieu de
+     devenir un mur. Les deux calques (photo et fondu) gardent la même
+     hauteur, sinon le dégradé se décroche du bas de l'image. */
+  body.theme-csc::before,
+  body.theme-csc::after { height: 132px; }
+  /* Dans une fenêtre deux fois moins haute, le cadrage d'origine ne
+     montrait plus que le bardage rouge du bâtiment, et le logo de la
+     galerie, blanc, s'y perdait malgré son halo. On remonte le cadrage
+     pour garder du ciel derrière l'en-tête. */
+  body.theme-csc::before { background-position: center 38%; }
+  /* Le logo de la galerie (rouge) tombait sur le bardage rouge du
+     bâtiment : son halo blanc n'y suffisait pas. Le calque de fondu
+     reçoit donc un second voile clair, en haut cette fois, qui éclaire
+     la bande où se posent le logo et le nom de l'opération. Le fondu du
+     bas, lui, ne change pas. */
+  body.theme-csc::after {
+    background:
+      linear-gradient(180deg,
+        rgba(247, 248, 250, .88) 0%,
+        rgba(247, 248, 250, .34) 44%,
+        rgba(247, 248, 250, 0) 64%),
+      linear-gradient(180deg,
+        rgba(247, 248, 250, 0) 0%,
+        rgba(247, 248, 250, 0) 55%,
+        rgba(247, 248, 250, .75) 82%,
+        #F7F8FA 100%);
+  }
+  body.theme-csc #ecran-accueil .hero { padding-top: 56px; }
+}
+
+/* ============================================================
+   PASSAGE DE DIRECTION ARTISTIQUE : 01/09/2026
+   ============================================================
+   Tour complet du jeu joué à l'écran en 375 x 812, écran par
+   écran, du bandeau d'accueil jusqu'au bon présenté au
+   commerçant. Ce bloc ne corrige que ce qui a été constaté à
+   l'image, jamais ce qui a été supposé en lisant le code.
+
+   Références qui ont servi de repères, toutes vérifiées :
+   la campagne de Noël 2025 des Galeries Lafayette Haussmann
+   (un vocabulaire graphique unique décliné partout) ; le
+   calendrier de l'Avent de Nova Post par Tubik Studio (la
+   couleur de la marque réservée à UNE seule fonction, l'action
+   jouable) ; le calendrier de l'Avent Telekom primé aux
+   Awwwards (l'or n'est jamais un fond, seulement un chiffre,
+   un filet de 1 px ou une pastille) ; « Magical Christmas »
+   d'Agota Studio (un noir teinté chaud, jamais du noir pur) ;
+   et les repères typographiques de Utopia et Made Good sur
+   l'échelle modulaire et l'interlettrage.
+
+   Le principe de ce passage : on ne refait rien de ce qui
+   marche. La roue, le bandit manchot, le billet de cirque et
+   le ticket doré du bon sont les pièces réussies du jeu. Tout
+   le reste devait se hisser à leur niveau.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. LES SEIZE AMPOULES DE LA ROUE N'ÉTAIENT PLUS ALLUMÉES
+   ------------------------------------------------------------
+   Constaté à l'écran : autour de la roue, huit à seize pastilles
+   BLEU NUIT, éteintes, qui font des trous dans l'anneau au lieu
+   de l'éclairer. Mesuré : la couleur rendue était rgb(23, 34, 44).
+
+   La cause : `.ampoule` se peint avec var(--or-blanc). Dans le
+   thème doré, cette variable valait un blanc chaud, donc une
+   ampoule allumée. Le thème Cap Sacré-Cœur a redéfini
+   --or-blanc en #17222C (l'encre profonde des grands titres),
+   ce qui est juste pour un titre et absurde pour une ampoule.
+   Personne ne l'avait vu parce que la roue est le seul endroit
+   du jeu où cette variable sert à peindre un objet lumineux.
+
+   L'ampoule ne suit plus le thème : elle est TOUJOURS sur le
+   bois sombre de la roue, dans les deux thèmes, donc sa couleur
+   est écrite en clair une bonne fois. */
+body.theme-csc .ampoule {
+  background: #FFF3D6;
+  box-shadow: 0 0 9px 2px rgba(255, 226, 168, .9);
+}
+
+/* ------------------------------------------------------------
+   2. LES CHIFFRES QUI TOMBAIENT SOUS LA LIGNE
+   ------------------------------------------------------------
+   Le défaut typographique le plus visible du jeu, et le plus
+   facile à manquer. Playfair Display sort par DÉFAUT des
+   chiffres elzéviriens : des chiffres à hauteur de minuscule,
+   dont le 3, le 4, le 5, le 7 et le 9 descendent sous la ligne.
+   Vérifié en mesurant la fonte : en réglage normal Playfair
+   rend exactement la même chose qu'en `oldstyle-nums`.
+
+   Conséquence à l'écran : le code du bon s'affichait
+   « PU-SCW9EE » avec un 9 de la taille d'un o, qui plonge sous
+   la ligne et qu'on peut confondre avec un g ; le titre
+   « On t'offre 200 € » se lisait « 2oo € » ; le billet portait
+   « DÉCEMBRE 2o26 ». Sur un code qu'un joueur épelle à un
+   commerçant et sur une somme d'argent, c'est une faute.
+
+   La règle de studio est simple : chiffres elzéviriens dans le
+   texte suivi, chiffres alignés dès que le chiffre est une
+   DONNÉE (un code, un prix, une date, une heure, un compteur).
+   Le jeu n'a pas de texte suivi en Playfair : tous ses chiffres
+   sont des données, donc tous passent en chiffres alignés. */
+h1, h2, h3,
+.code-valeur, .bon-code, .bon-lot,
+.commercant-offre, .valide-lot, .valide-horloge,
+.agenda-heure, .agenda-titre, .agenda-duree,
+.quiz-compteur, .manche-bandeau,
+.promo-titre, .promo-prix, .carte-titre,
+#question-titre::before,
+.ticket, .ticket-date, .resultat-ticket {
+  font-variant-numeric: lining-nums;
+}
+/* Un code et une horloge se lisent en colonne : leurs chiffres
+   doivent en plus avoir tous la même chasse, sinon le code
+   « danse » quand une lettre change d'une partie à l'autre. */
+.code-valeur, .bon-code, .valide-horloge, .agenda-heure {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* ------------------------------------------------------------
+   3. LE SEUL TRAIT DORÉ D'UN ÉCRAN ROUGE ET BLANC
+   ------------------------------------------------------------
+   Sur chaque question, le filet qui part du grand chiffre de
+   chapitre et file vers la droite était doré, rgba(201,150,46).
+   C'est un reste du thème précédent : sur un écran clair où
+   tout le reste est rouge, blanc et encre, ce trait doré isolé
+   n'appartenait à rien. La leçon du calendrier Telekom vaut ici
+   à la lettre : l'or ne survit que là où il y a du bois sombre,
+   c'est-à-dire dans les machines de jeu.
+
+   Le grand chiffre, lui, était posé à 72 % d'opacité. Sur le
+   fond sombre d'origine, cela donnait un folio discret. Sur le
+   fond clair, cela donne un rose délavé qui a l'air d'une
+   erreur d'impression. Le commentaire d'origine avait raison :
+   un folio de magazine est discret par sa finesse, pas par sa
+   pâleur. */
+body.theme-csc #question-titre::before { opacity: .9; }
+body.theme-csc #question-titre::after {
+  background: linear-gradient(90deg, rgba(228, 55, 63, .55), rgba(228, 55, 63, 0));
+}
+
+/* ------------------------------------------------------------
+   4. LE FILET ORPHELIN SOUS LA DERNIÈRE RÉPONSE
+   ------------------------------------------------------------
+   Défaut de finition présent sur TOUTES les questions : la
+   dernière réponse de la carte blanche gardait son filet de
+   séparation, qui se retrouvait à quelques pixels du bord
+   arrondi de la carte, sans rien à séparer. L'oeil lit une
+   ligne vide, et croit à une réponse coupée.
+   Un filet sépare deux choses ; s'il n'y a rien après, il n'y
+   a pas de filet. */
+body.theme-csc .options .option:last-child { border-bottom-color: transparent; }
+
+/* ------------------------------------------------------------
+   5. LA RÉPONSE CHOISIE NE SE VOYAIT PAS
+   ------------------------------------------------------------
+   Sur les questions à choix multiple, la réponse cochée est
+   franche : case rouge pleine, coche blanche, liseré rouge
+   autour de la vignette. Sur les questions à choix SIMPLE
+   (« Tu es... »), la réponse choisie ne recevait qu'un lavis
+   rose à 10 %. Mesuré : sur le fond blanc de la carte, ce lavis
+   fait un écart à peine supérieur au bruit de l'écran.
+   En galerie, sous les néons, à bout de bras, il est invisible.
+
+   On ne rajoute pas une case à cocher là où il n'y en a pas :
+   on pose une marque, un jonc rouge plein sur le bord gauche
+   de la ligne choisie. C'est le geste de la fiche produit, il
+   se lit du premier coup d'oeil et il ne déplace rien. */
+body.theme-csc .option.choisie {
+  box-shadow: inset 3px 0 0 0 #E4373F;
+}
+
+/* ------------------------------------------------------------
+   6. LA GUIRLANDE N'ÉTAIT PAS UNE GUIRLANDE
+   ------------------------------------------------------------
+   Constaté sur tous les écrans : quatorze pastilles rouges de
+   7 px, rigoureusement alignées, à égale distance, posées dans
+   le vide sous le filet de l'en-tête. Aucun fil, aucune
+   suspension, aucune irrégularité. Ce n'est pas une guirlande
+   de Noël, c'est une ligne de puces de liste.
+
+   Ce qui fait une guirlande, ce n'est pas l'ampoule : c'est le
+   fil qui la tient et le fait qu'aucune ampoule ne pende à la
+   même hauteur que sa voisine. Trois gestes suffisent, sans
+   image ni script : un fil de suspension qui remonte accrocher
+   le filet de l'en-tête, un culot métallique entre le fil et le
+   verre, et deux longueurs de fil en alternance. */
+body.theme-csc .guirlande {
+  align-items: flex-start;
+  margin: -6px 0 var(--e2);
+  padding: 0 6px;
+  gap: 2px;
+}
+body.theme-csc .guirlande i {
+  position: relative;
+  width: 8px; height: 8px;
+  margin-top: 5px;
+  background: radial-gradient(circle at 34% 28%, #FFE4BC 0%, #E4373F 58%, #A32229 100%);
+  box-shadow: 0 1px 6px rgba(228, 55, 63, .3);
+}
+/* Le fil de suspension : il remonte jusqu'au filet de l'en-tête. */
+body.theme-csc .guirlande i::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: -5px;
+  width: 1px; height: 5px;
+  margin-left: -.5px;
+  background: linear-gradient(180deg, rgba(23, 34, 44, .10), rgba(23, 34, 44, .3));
+}
+/* Le culot : le petit anneau métallique où le verre se visse.
+   Sans lui, l'ampoule flotte au bout d'un trait. */
+body.theme-csc .guirlande i::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: -3px;
+  width: 4px; height: 3px;
+  margin-left: -2px;
+  border-radius: 1px 1px 0 0;
+  background: #98A0A8;
+}
+/* Une ampoule sur deux pend plus bas. C'est cette irrégularité,
+   et elle seule, qui fait la différence entre une guirlande
+   accrochée par quelqu'un et une rangée de points. */
+body.theme-csc .guirlande i:nth-child(even) { margin-top: 10px; }
+body.theme-csc .guirlande i:nth-child(even)::before { top: -10px; height: 10px; }
+
+/* ------------------------------------------------------------
+   7. LES GRANDS BOUTONS AVAIENT UN HALO, PAS UNE OMBRE
+   ------------------------------------------------------------
+   Le bouton rouge portait une seule ombre, très large et très
+   diffuse, de la couleur du bouton : rgba(228,55,63,.55) sur
+   24 px de flou. Cela ne pose pas l'objet, cela l'entoure d'un
+   brouillard rose. C'est l'un des marqueurs les plus sûrs d'un
+   gabarit tout fait, et il se voyait d'autant plus que le fond
+   du thème est presque blanc.
+
+   Une ombre de studio est double et jamais colorée à saturation
+   pleine : une ombre courte et dense qui POSE l'objet sur la
+   page, une ombre longue et faible qui le DÉCOLLE. On y ajoute
+   l'arête claire du haut, qui donne l'épaisseur, exactement
+   comme le faisait déjà le bouton doré du thème d'origine. */
+body.theme-csc .btn-or {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .3),
+    inset 0 -1px 0 rgba(120, 20, 26, .22),
+    0 2px 4px rgba(140, 24, 30, .22),
+    0 12px 26px -14px rgba(90, 16, 20, .5);
+}
+body.theme-csc .btn-or:active {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .22),
+    inset 0 -1px 0 rgba(120, 20, 26, .2),
+    0 1px 2px rgba(140, 24, 30, .2),
+    0 5px 12px -10px rgba(90, 16, 20, .4);
+}
+
+/* ------------------------------------------------------------
+   8. UNE PHRASE DE DOUZE MOTS EN CAPITALES ESPACÉES
+   ------------------------------------------------------------
+   Sur l'écran des bons plans, le bouton principal affichait
+   « OUI, JE VEUX RECEVOIR DES BONS DE RÉDUCTION, CADEAUX ET
+   BONS PLANS » sur TROIS lignes de capitales espacées de 3 px.
+   La capitale espacée est une signature de luxe sur deux ou
+   trois mots ; sur une phrase entière, elle devient un mur qui
+   ne se lit plus, et c'est justement le bouton qui décide de
+   toute la récolte d'adresses de l'opération.
+
+   Le bouton garde sa pilule rouge et sa place : il change de
+   traitement typographique. Casse normale, semi-gras, une
+   interligne serrée. La phrase redevient une phrase. */
+body.theme-csc #btn-offres-oui,
+body.theme-csc #btn-offres-oui2 {
+  text-transform: none;
+  letter-spacing: .005em;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.32;
+  padding: 18px 22px;
+}
+
+/* ------------------------------------------------------------
+   9. UNE PISTE ÉCARTÉE APRÈS MESURE : LE VERDICT DU TICKET
+   ------------------------------------------------------------
+   À l'oeil, le mot « Pas ici. » semblait calé en haut du
+   velours rouge, avec un grand vide en dessous. Mesuré : le
+   bloc du verdict occupe 373 à 455 px dans une carte dont le
+   centre tombe à 413,5 px. Il est donc EXACTEMENT centré.
+   L'impression de déséquilibre vient de la mention « Cap
+   Sacré-Cœur », posée en absolu tout en haut du billet, qui
+   ajoute du poids visuel d'un seul côté.
+   Aucune règle n'est écrite ici : corriger un défaut qui
+   n'existe pas aurait décalé un écran qui est juste.
+   Si Romain veut malgré tout rééquilibrer, le geste serait de
+   descendre la mention, pas de déplacer le verdict. */
+
+/* ------------------------------------------------------------
+   10. L'ÉCRAN DU GAIN, LE PLUS IMPORTANT, ÉTAIT LE PLUS FAIBLE
+   ------------------------------------------------------------
+   C'est le moment que le joueur racontera en sortant, et c'est
+   l'écran qui ressemblait le plus à un formulaire. Trois choses
+   constatées à l'image :
+
+   a) La photo du lot tenait dans un médaillon de 104 px posé en
+      haut à gauche, avec 250 px de vide à sa droite. La seule
+      image de l'écran, celle qui montre ce qu'on a gagné, était
+      la plus petite chose de la page.
+   b) Le nom du lot, « 5 samoussas offerts », s'affichait en
+      19 px, donc PLUS PETIT que le nom du commerçant en 24 px
+      juste dessous. La hiérarchie était à l'envers : on gagne
+      un lot, on ne gagne pas un commerçant.
+   c) Le second choix, « Je dépenserai mon cadeau plus tard »,
+      était une pilule bordée de rouge sur toute la largeur,
+      presque aussi lourde que l'action principale. Deux boutons
+      de même poids ne font pas un choix, ils font une hésitation.
+
+   Rien n'est ajouté ni retiré : on redonne à chaque élément la
+   taille de son importance. */
+body.theme-csc #ecran-resultat .hero-emoji {
+  width: 132px;
+  height: 132px;
+  box-shadow: 0 18px 40px -14px rgba(23, 34, 44, .3);
+}
+/* Le lot passe devant le commerçant. */
+body.theme-csc #resultat-texte {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #17222C;
+}
+body.theme-csc #resultat-commercant {
+  font-size: 19px;
+  color: #46525E;
+}
+/* Le second choix redevient ce qu'il est : une porte de sortie
+   discrète, pas une deuxième proposition. */
+body.theme-csc #btn-resultat-plus-tard,
+body.theme-csc #btn-resultat-programme {
+  background: none;
+  border: none;
+  border-radius: 0;
+  width: auto;
+  align-self: flex-start;
+  padding: 14px 2px;
+  min-height: 44px;
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: #C42730;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(196, 39, 48, .4);
+  box-shadow: none;
+}
+
+/* ------------------------------------------------------------
+   11. LE PIED DE PAGE ÉTAIT LE SEUL ÉLÉMENT CENTRÉ DU JEU
+   ------------------------------------------------------------
+   Toute la refonte d'identité repose sur un bord de référence à
+   gauche : le titre, le lieu, le texte, le bouton, les mentions
+   partent tous de la même marge. Le pied, lui, restait centré,
+   pastille comprise. Une composition ne tolère qu'une seule
+   exception, et elle doit avoir une raison ; ici il n'y en avait
+   pas, c'était un reste de la version centrée. */
+body.theme-csc .pied { justify-content: flex-start; }
+
+/* ------------------------------------------------------------
+   12. LE BOUTON FANTÔME APRÈS LE TOUR DE ROUE
+   ------------------------------------------------------------
+   Pendant que la roue ralentit, « TOURNER LA ROUE » reste en
+   place, pleine largeur, en rose très pâle sur fond presque
+   blanc. Il occupe la même surface qu'avant mais ne répond plus :
+   c'est le pire moment pour laisser croire à un bouton cassé,
+   juste avant l'annonce du lot.
+   Il garde exactement sa place, pour que rien ne saute à
+   l'écran, mais il s'efface visiblement : le joueur comprend
+   que la machine travaille. */
+body.theme-csc .btn-or:disabled {
+  background: transparent;
+  color: rgba(196, 39, 48, .45);
+  box-shadow: inset 0 0 0 1px rgba(196, 39, 48, .18);
+}
+
+/* ============================================================
+   LE TÉLÉPHONE À L'HORIZONTALE, DEUXIÈME PASSAGE : 06/09/2026
+   ============================================================
+   Le passage du 02/09 avait resserré les hauteurs, écran par écran.
+   C'était le bon premier geste, mais il ne suffisait pas : mesuré à
+   nouveau ce matin en 740 x 360, cinq écrans laissaient encore hors
+   de vue l'élément que le joueur doit toucher.
+
+     Question 1 (prénom)      782 px : les trois réponses et le bouton
+     Question 2 (l'âge)       782 px : quatre réponses sur six
+     Questions 3 et 4         884 px : toutes les réponses
+     Coordonnées              871 px : la case du règlement et le bouton
+     La roue                  584 px : le bouton « Tourner » (409 à 461)
+
+   La cause n'était pas la taille des blocs, elle était dans la forme :
+   la colonne du jeu fait 480 px de large et empile tout à la verticale.
+   Or en paysage l'écran offre 740 px de large et seulement 360 de haut.
+   Nous rangions donc en hauteur, là où la place était en largeur.
+
+   La correction : les trois écrans de dialogue passent en DEUX
+   COLONNES. À gauche ce qui se lit (la question, la consigne, la
+   mention d'information), à droite ce qui se touche (les réponses, les
+   champs, le bouton). Rien n'est réduit, rien n'est masqué : c'est le
+   même écran, rangé autrement.
+
+   Les autres écrans ne bougent pas d'un pixel : ils gardent leur
+   colonne de 480 px, simplement recentrée dans une page plus large.
+
+   La barre de 620 px de large : en dessous (un petit téléphone tenu en
+   travers, 568 x 320), deux colonnes seraient deux colonnes trop
+   étroites. Ces écrans-là gardent le réglage du 02/09.
+   ============================================================ */
+@media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+
+  /* La page s'élargit, mais elle ne s'élargit que pour ceux qui en ont
+     besoin : l'en-tête, le pied et tous les écrans gardent leur colonne
+     de lecture de 480 px, simplement recentrée. Personne ne voit la
+     différence, sauf les trois écrans ci-dessous. */
+  .app { max-width: 720px; }
+  .entete, .pied, .ecran { width: 100%; max-width: 480px; margin-inline: auto; }
+  #ecran-quiz, #ecran-coordonnees, #ecran-roue { max-width: none; }
+  /* La guirlande et la barre de progression vivent hors de l'en-tête :
+     sans cette ligne elles s'étiraient sur 684 px pendant que le logo
+     restait dans sa colonne de 480, et le haut de l'écran partait de
+     travers. */
+  .quiz-entete { width: 100%; max-width: 480px; margin-inline: auto; }
+
+  /* La guirlande d'ampoules ne reste qu'à l'accueil. C'est du décor,
+     elle ne porte aucune information, et elle coûtait 30 px de haut là
+     où il en manquait exactement autant pour ramener le bouton dans
+     l'écran. Sur l'accueil, l'écran vitrine, elle ne gêne pas : le
+     bouton y tombe à 346 px sur 360. Ailleurs elle s'efface.
+     (`body.sur-accueil` est posée par afficherEcran, app.js L649 : pas
+     besoin de `:has()`, qui manquerait sur les vieux téléphones.) */
+  body:not(.sur-accueil) .guirlande { display: none; }
+
+  /* ---- LE QUIZ ET LES COORDONNÉES : lire à gauche, agir à droite ---- */
+  #ecran-quiz .quiz-zone,
+  #ecran-coordonnees .quiz-zone {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 30px;
+    row-gap: 10px;
+    align-content: start;
+  }
+
+  /* Le quiz. Attention : les deux zones « texte » et « multi » sont en
+     display: contents, elles ne sont donc pas des cases de la grille.
+     Ce sont leurs enfants qu'il faut placer, sinon les règles glissent
+     dessus sans rien faire.
+
+     La question du prénom porte les deux à la fois, trois réponses ET
+     un champ à remplir. Le champ reste à GAUCHE, sous sa question, là
+     où l'œil le cherche ; les réponses tiennent la colonne de droite et
+     le bouton se pose dessous. */
+  #question-titre     { grid-column: 1; grid-row: 1; align-self: start; }
+  #question-soustitre { grid-column: 1; grid-row: 2; align-self: start; }
+  #question-texte-input { grid-column: 1; grid-row: 3; align-self: start; }
+  #question-options   { grid-column: 2; grid-row: 1 / 4; align-self: start; }
+  #btn-texte-suivant, #btn-multi-suivant { grid-column: 2; grid-row: 4; }
+
+  /* Les réponses se resserrent : 65 px par ligne en portrait, 52 ici.
+     Trois réponses rendent 39 px, six en rendent 78, et c'est ce qui
+     ramène le bouton dans l'écran. La zone de touche reste au-dessus
+     des 44 px recommandés. */
+  #question-options .option { min-height: 52px; padding-top: 9px; padding-bottom: 9px; }
+
+  /* Et elles se rangent sur deux colonnes. La question de l'âge en
+     porte six : à la file, les deux dernières tombaient sous le pli
+     (479 px sur un écran de 360). Côte à côte, les six tiennent dans
+     la hauteur de trois. Les libellés sont courts, ils ne se coupent
+     pas ; une réponse seule sur sa ligne s'étale sur toute la largeur
+     plutôt que de laisser un trou. */
+  #question-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    align-content: start;
+  }
+  #question-options .option:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  /* Sauf les réponses illustrées (les questions 3 et 4, où chaque
+     réponse porte une photo) : sur une demi-colonne, leur libellé se
+     coupait en « M'habill... de la têt... aux pied » et la deuxième
+     colonne débordait par la droite. Elles reprennent toute la
+     largeur, et leur photo se resserre pour compenser. */
+  #question-options .option-avec-photo { grid-column: 1 / -1; }
+  #question-options .option-avec-photo img { width: 38px; height: 38px; }
+  #question-options .option-avec-photo { min-height: 0; }
+  /* Le logo de la galerie rend encore huit pixels : sur ces deux
+     questions illustrées, c'est une réponse de plus dans l'écran. */
+  .logo-client { height: 26px; }
+
+  /* Les coordonnées. La longue mention d'information passe à gauche,
+     sous la consigne : elle se lit, elle ne se touche pas, et elle
+     cesse de repousser le bouton hors de l'écran. */
+  #ecran-coordonnees .quiz-zone > h2                 { grid-column: 1; grid-row: 1; }
+  #ecran-coordonnees .quiz-zone > .question-soustitre { grid-column: 1; grid-row: 2; }
+  /* La mention d'information fait 192 px à elle seule. Posée sur une
+     seule ligne de la grille, elle rendait cette ligne haute de 192 px
+     et repoussait tout ce qui suivait dans la colonne de droite : le
+     bouton retombait à 549 px. Elle s'étale donc sur toutes les lignes
+     à partir de la troisième, et ne commande plus la hauteur d'aucune. */
+  #ecran-coordonnees .quiz-zone > .mini-mention {
+    grid-column: 1; grid-row: 3 / 20; align-self: start; margin-top: 4px;
+  }
+  #ecran-coordonnees .quiz-zone > .champ,
+  #ecran-coordonnees .quiz-zone > .suggestion,
+  #ecran-coordonnees .quiz-zone > .case,
+  #ecran-coordonnees .quiz-zone > .erreur,
+  #ecran-coordonnees .quiz-zone > .btn-grand { grid-column: 2; }
+  /* Trois champs, une case et un bouton empilés font 273 px : c'est la
+     hauteur incompressible de cet écran. Les champs rendent dix pixels
+     chacun, ce qui suffit à faire apparaître le haut du bouton. */
+  #ecran-coordonnees .champ input { padding-top: 12px; padding-bottom: 12px; }
+
+  /* ---- LES EN-TÊTES DE MANCHE ---- */
+  /* Avant la première carte de « Trois Pareils », le joueur traverse
+     302 px d'annonces : le bandeau de manche, le titre du jeu et son
+     filet, le sous-titre, le compteur de cartes, la consigne. Chacune
+     est utile, aucune ne mérite sa marge de portrait. Elles se
+     resserrent, et la table remonte de soixante pixels. */
+  #ecran-jeu .manche-bandeau { margin-bottom: 6px; padding-bottom: 6px; }
+  #ecran-jeu h2 { margin-bottom: 4px; }
+  #ecran-jeu .jeu-zone { gap: var(--e2); }
+
+  /* ---- LA ROUE : elle grandit au lieu de rétrécir ---- */
+  /* Le 02/09 l'avait bornée à 46vh pour faire tenir le bouton dessous.
+     Le bouton passant à côté, elle peut reprendre de la place : elle
+     rend 281 px au lieu de 166 sur un écran de 360, et redevient
+     lisible. Le bandeau de manche reste en pleine largeur, au-dessus. */
+  #ecran-roue .roue-zone {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 26px;
+    align-content: start;
+  }
+  #ecran-roue .manche-bandeau { grid-column: 1 / -1; grid-row: 1; }
+  #ecran-roue .roue-cadre {
+    grid-column: 1; grid-row: 2 / 4;
+    width:  min(46vw, 315px, 60vh);
+    height: min(46vw, 315px, 60vh);
+    margin-top: 0;
+  }
+  #ecran-roue h2       { grid-column: 2; grid-row: 2; align-self: end; margin: 0; }
+  #ecran-roue #btn-tourner { grid-column: 2; grid-row: 3; align-self: start; margin-top: 14px; }
+}
+
+/* ============================================================
+   17/09/2026 · L'ÉCRAN DU JEU REJOINT LES AFFICHES
+   Deux blocs proposés par la direction artistique à l'atelier du
+   17 septembre, appliqués et vérifiés à l'écran par le chef d'atelier.
+   Les autres propositions de sa note (la marquise, le titre, la
+   guirlande, le filet, le billet du portefeuille) attendent le
+   prochain passage : elles demandent un contrôle écran par écran.
+   ============================================================ */
+
+/* LE MÉDAILLON DU GAGNANT REPASSE DANS LA CAMPAGNE
+   Il était resté en noir et or : le seul objet sombre d'une
+   application entièrement claire, et on le montre au joueur à la
+   seconde exacte où il gagne. Il devient le sceau rouge de la
+   campagne, avec l'anneau crème du cartouche des affiches. L'or
+   reste, mais en filet seulement, comme sur le billet d'entrée. */
+body.theme-csc .hero-emoji {
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, .22), transparent 58%),
+    radial-gradient(circle, #E4373F 0%, #C42730 62%, #8E1A21 100%);
+  border: 0;
+  box-shadow:
+    0 0 0 5px #F7F8FA,
+    0 0 0 7px rgba(201, 150, 46, .85),
+    0 18px 40px -14px rgba(142, 26, 33, .42);
+  color: #FFF9F2;
+}
+body.theme-csc .hero-emoji svg { stroke: #FFF9F2; color: #FFF9F2; }
+/* L'écran de résultat a sa propre règle d'ombre, écrite plus haut et
+   plus précise (elle porte un identifiant) : sans cette ligne, le
+   médaillon du gagnant gardait son ancienne ombre et perdait l'anneau
+   crème et or. Quand le lot a une photo, elle remplit le disque et
+   l'anneau devient son cadre. */
+body.theme-csc #ecran-resultat .hero-emoji {
+  box-shadow:
+    0 0 0 5px #F7F8FA,
+    0 0 0 7px rgba(201, 150, 46, .85),
+    0 18px 40px -14px rgba(142, 26, 33, .42);
+}
+
+/* LA PILULE DU JEU DEVIENT CELLE DES AFFICHES
+   Le dégradé du clair vers le foncé date le bouton et le sépare de
+   la pilule imprimée, qui est un aplat. Même rouge, même ombre
+   douce, aucun relief. */
+body.theme-csc .btn-or {
+  background: #E4373F;
+  box-shadow: 0 12px 26px -10px rgba(228, 55, 63, .55);
+}
+body.theme-csc .btn-or:active { background: #C42730; }
+
+/* ============================================================
+   20/09/2026 · LES SIX PROPOSITIONS DU 17 SEPTEMBRE, APPLIQUÉES
+   ============================================================
+   L'atelier du 17 a laissé huit propositions de direction
+   artistique. Le chef d'atelier en a appliqué deux le soir même
+   (le médaillon du gagnant, la pilule des boutons) et a écrit,
+   en tête du bloc précédent, que les six autres attendaient un
+   contrôle écran par écran. Ce contrôle a été fait aujourd'hui,
+   ligne de code à l'appui, et les six sont traitées ici.
+
+   Trois d'entre elles ont changé en cours de route, parce que
+   la lecture du code a démenti la note du 17 :
+
+   a) Le lot du gagnant n'est PAS #resultat-texte. Ce paragraphe
+      porte une PHRASE sur deux écrans sur trois (le perdant, et
+      l'écran « Ton bon cadeau »). Le seul écran où il porte le
+      nom du lot est celui du gagnant, et là il est enveloppé
+      dans un <strong> (app.js, MESSAGES_GAGNE). C'est donc le
+      <strong> qu'on habille, et lui seul : grossir le
+      paragraphe entier aurait posé la phrase du perdant en
+      trente pixels de serif.
+   b) Le titre d'accueil ne passe PAS en graisse 800. La note du
+      17 voulait l'aligner sur les affiches. Mais la feuille dit
+      elle-même, au-dessus de la règle h1 : « au-delà de 40 px,
+      la graisse baisse ». Le vrai défaut était la couleur, pas
+      la graisse : le titre s'écrivait dans le gris du texte
+      courant. On corrige la couleur, on garde la graisse.
+   c) Le filet des titres ne passe PAS en or. C'était la piste
+      recommandée le 17 ; elle contredit la décision du 15
+      (bloc 3 ci-dessus : l'or ne survit que sur du bois sombre,
+      pas sur l'écran clair). Le défaut n'était pas la couleur,
+      c'était la pâleur : 38 % d'opacité sur un fond presque
+      blanc ne fait pas un filet, ça fait une trace. Il reste
+      rouge, il devient franc.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. LE BON DU PORTEFEUILLE DEVIENT LE BILLET D'ENTRÉE
+   ------------------------------------------------------------
+   C'est le ticket que le gagnant tend au commerçant, donc le
+   seul objet du jeu qui passe de main en main. Il était resté
+   en feuille d'or sur ombre noire à 55 % : l'objet de la charte
+   abandonnée le 6 septembre, le dernier survivant du noir et or
+   dans une application entièrement claire.
+
+   La campagne a déjà son objet, imprimé sur les cinq supports
+   du mur : le billet d'entrée de cirque. Papier blanc, souche
+   rouge à gauche, ligne de perforation, filet or en cheveu,
+   ombre de studio. Le joueur retrouve dans sa main ce qu'il
+   vient de lire sur l'affiche, et le commerçant reconnaît d'un
+   coup d'oeil le même billet que sur le plexi de sa caisse.
+
+   Les vingt pixels de souche sont mesurés, pas choisis : la
+   ligne de perforation de l'écran de résultat
+   (.bon-ticket-souche) est posée à left:20px depuis le 26 août.
+   La bande rouge s'arrête donc exactement là où la perforation
+   commence, et le texte, calé à 34 px, ne la touche jamais.
+   Les tickets du portefeuille (bons.js) n'ont pas ce span : la
+   perforation leur est donnée par la première couche de fond,
+   qui tombe au même endroit. Un seul trait dans les deux cas.
+
+   NE PAS « CORRIGER » PLUS BAS : les deux écrans de preuve
+   .bon-valide (vert) et .bon-valide.bon-perime (rouge) restent
+   sombres, c'est voulu. Le guide du jour J apprend au
+   commerçant à reconnaître ces deux écrans-là, et le kit
+   imprimé les reproduit à l'identique. Repeindre l'écran qu'on
+   apprend à reconnaître rendrait le guide faux le 1er décembre.
+   ------------------------------------------------------------ */
+body.theme-csc .bon-ticket {
+  color: #17222C;
+  background:
+    /* La perforation, en creux clair, POSÉE SUR LA SOUCHE et non sur le
+       papier. Premier essai : calée à 20 px, c'est-à-dire juste à droite
+       de la souche, donc du blanc cassé sur du blanc. Vérifié à l'image :
+       invisible. Un billet se déchire dans sa souche, pas à côté. */
+    repeating-linear-gradient(180deg,
+      rgba(255, 249, 242, .92) 0 5px, rgba(255, 249, 242, 0) 5px 10px)
+      16px 0 / 2px 100% no-repeat,
+    /* la souche rouge, puis le papier */
+    linear-gradient(90deg, #E4373F 0 20px, #FFFFFF 20px);
+  box-shadow:
+    0 2px 6px rgba(23, 34, 44, .10),
+    0 20px 44px -20px rgba(23, 34, 44, .30),
+    inset 0 0 0 1px rgba(201, 150, 46, .45);
+}
+/* Le span de perforation de l'écran de résultat se cale sur la même
+   encre claire : posé sur la souche rouge, le brun d'origine y
+   devenait une salissure. */
+body.theme-csc .bon-ticket-souche {
+  background: repeating-linear-gradient(180deg,
+    rgba(255, 249, 242, .92) 0 4px, rgba(255, 249, 242, 0) 4px 9px);
+}
+/* L'encre du billet. Elle était brune et dorée, parce qu'elle était
+   imprimée sur un carton doré. Sur du papier blanc : étiquettes en
+   rouge de texte, valeurs en encre profonde, mentions en gris de
+   lecture. Les trois tiennent le contraste AA sur blanc. */
+body.theme-csc .bon-ticket .code-libelle,
+body.theme-csc .bon-origine,
+body.theme-csc .bon-code-libelle { color: #C42730; }
+body.theme-csc .bon-ticket .code-valeur,
+body.theme-csc .bon-lot,
+body.theme-csc .bon-code { color: #17222C; text-shadow: none; }
+body.theme-csc .bon-ticket .code-info,
+body.theme-csc .bon-commercant,
+body.theme-csc .bon-detail { color: #46525E; }
+body.theme-csc .bon-validite { color: #5E6A76; }
+/* Le ticket déjà utilisé. Il était en gris-brun sombre, c'est-à-dire
+   le troisième objet foncé de l'écran clair, et c'est pourtant celui
+   que le commerçant verra le plus souvent (relevé de l'atelier du 17,
+   point 8). Il devient ce qu'il est : le même billet, décoloré, souche
+   grise, sans ombre portée. On le reconnaît, on voit qu'il a servi. */
+body.theme-csc .bon-ticket-passe {
+  background:
+    repeating-linear-gradient(180deg,
+      rgba(255, 255, 255, .9) 0 5px, rgba(255, 255, 255, 0) 5px 10px)
+      20px 0 / 2px 100% no-repeat,
+    linear-gradient(90deg, #AEB6BE 0 20px, #F2F4F6 20px);
+  box-shadow: inset 0 0 0 1px rgba(23, 34, 44, .10);
+}
+body.theme-csc .bon-ticket-passe .bon-origine,
+body.theme-csc .bon-ticket-passe .bon-code-libelle { color: #7A848D; }
+body.theme-csc .bon-ticket-passe .bon-lot,
+body.theme-csc .bon-ticket-passe .bon-code { color: #5E6A76; }
+body.theme-csc .bon-ticket-passe .bon-commercant,
+body.theme-csc .bon-ticket-passe .bon-detail,
+body.theme-csc .bon-ticket-passe .bon-passe-note { color: #7A848D; }
+body.theme-csc .bon-ticket-passe .bon-perfo {
+  background: repeating-linear-gradient(90deg,
+    rgba(23, 34, 44, .20) 0 5px, transparent 5px 11px);
+}
+/* La perforation horizontale, celle qui sépare la souche du code dans
+   le portefeuille, cesse d'être brune : elle prend l'encre du projet. */
+body.theme-csc .bon-perfo {
+  background: repeating-linear-gradient(90deg,
+    rgba(23, 34, 44, .26) 0 5px, transparent 5px 11px);
+}
+/* La carte d'entrée de « Mes cadeaux » annonçait le portefeuille par
+   un aplat d'or, pour dire « c'est la même matière que le ticket ».
+   Le ticket n'étant plus doré, cette carte devenait la seule promesse
+   d'or de l'écran, et elle promettait un objet qui n'existe plus. Elle
+   prend la matière du billet : papier clair et souche rouge. */
+body.theme-csc .carte-mesbons .carte-photo {
+  background-image: linear-gradient(90deg, #E4373F 0 34px, #FFFFFF 34px);
+}
+
+/* ------------------------------------------------------------
+   2. LA MARQUISE DU JEU DEVIENT CELLE DES AFFICHES
+   ------------------------------------------------------------
+   En haut de l'écran, le jeu posait une bande de 4 px de dents
+   carrées, rouge et BLANC PUR. Deux écarts avec la toile du
+   chapiteau imprimée sur les cinq supports du mur : elle n'a ni
+   feston ni ganse, et son blanc est plus clair que la page
+   elle-même (#FFFFFF contre #F7F8FA), donc la rayure claire
+   saute à l'oeil au lieu de se fondre.
+
+   Elle devient la vraie toile : rayures rouge et crème #FBF8F1,
+   frange de festons elliptiques, ganse claire cousue à leur
+   naissance. La mécanique est celle de charte-cirque.css, déjà
+   écrite et déjà éprouvée sur les six imprimés : les festons
+   sont peints EN COULEUR DE PAGE par-dessus les rayures, ce qui
+   évite tout masque et marche sur tous les téléphones.
+
+   Le pas est fixe (17 px la paire, donc 8,5 px la rayure) et
+   non fractionnaire, parce que cette bande est en position:fixed
+   et couvre la largeur de la fenêtre, pas celle d'un support
+   au format connu : un pas fractionnaire donnerait des rayures
+   de 27 px sur un écran d'ordinateur. Profondeur du feston :
+   4,9 px, soit 0,58 fois la rayure, le rapport tenu par toute
+   la campagne depuis le 15 septembre.
+
+   La hauteur totale passe de 4 à 13 px. Elle ne recouvre rien :
+   .app ouvre sur 16 px de marge haute en portrait, la bande
+   tient entièrement dedans. En téléphone couché, cette marge
+   tombe à 4 px : la bande y est réduite et la marge rendue,
+   quatre pixels de plus, le minimum pour ne rien manger du
+   logo (voir la fin de ce bloc).
+   ------------------------------------------------------------ */
+body.theme-csc .app::before {
+  height: 13px;
+  opacity: 1;
+  background: linear-gradient(90deg, #E4373F 0 50%, #FBF8F1 50% 100%) 0 0 / 17px 100%;
+}
+body.theme-csc .app::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 13px;
+  z-index: 7;
+  pointer-events: none;
+  /* Les festons : une ellipse large et peu profonde par rayure, peinte
+     dans la couleur de la page. C'est la mécanique de charte-cirque.css,
+     qui évite tout masque et marche donc sur tous les téléphones.
+     LA GANSE A ÉTÉ ESSAYÉE PUIS RETIRÉE. Sur les imprimés, la bande
+     claire cousue à la naissance des festons se lit comme une ganse
+     parce que la marquise y fait soixante pixels de haut. Ici elle en
+     fait treize : vérifié à l'image, la ganse coupait chaque rayure en
+     deux et la marquise devenait une rangée de pastilles rouges. Une
+     bonne idée à l'échelle du mur, une mauvaise à celle du téléphone. */
+  background:
+    radial-gradient(ellipse 50% 100% at 50% 0,
+      transparent 0 99.5%, #F7F8FA 99.6%) 0 100% / 8.5px 4.9px repeat-x;
+}
+
+/* ------------------------------------------------------------
+   3. LE TITRE PREND L'ENCRE QUE LE THÈME A DÉJÀ DÉCLARÉE
+   ------------------------------------------------------------
+   Le thème clair déclare --or-blanc: #17222C en écrivant, en
+   commentaire, « les grands titres : encre profonde ». Aucun
+   grand titre ne s'en servait : h1 n'a pas de couleur propre,
+   il héritait donc de body, c'est-à-dire de --creme, c'est-à-
+   dire #3A4652, la couleur du texte courant. Le mot le plus vu
+   de la campagne s'écrivait dans le gris des paragraphes.
+
+   Le mot accentué, lui, passe du rouge de TEXTE (#C42730) au
+   rouge des APLATS (#E4373F), celui des affiches. La règle de
+   la charte n'est pas « le rouge vif ne s'écrit jamais », elle
+   est « le rouge vif ne s'écrit qu'en très grand » : h1 vaut au
+   minimum 40 px en portrait et 26 px en paysage, dans les deux
+   cas du grand texte au sens WCAG, dont le seuil est 3,0 ;
+   #E4373F tient 4,0 sur ce fond.
+
+   La graisse ne bouge pas, contrairement à ce que proposait la
+   note du 17. La feuille explique dix lignes au-dessus de la
+   règle h1 pourquoi un serif de plus de 40 px doit perdre de la
+   graisse, et elle a raison. Les affiches sont en 800 parce
+   qu'elles composent à 238 px sur un mur, pas à 54 sur un
+   téléphone. Deux supports, deux échelles, une seule couleur.
+   ------------------------------------------------------------ */
+body.theme-csc .hero h1,
+body.theme-csc .bandeau-vue h2 { color: #17222C; }
+body.theme-csc .hero h1 .or { color: #E4373F; }
+
+/* ------------------------------------------------------------
+   4. LA GUIRLANDE DU JEU REJOINT CELLE DU MUR
+   ------------------------------------------------------------
+   Le jeu porte des ampoules ROUGES, les cinq supports imprimés
+   portent des ampoules DORÉES. Un visiteur qui passe de
+   l'affiche au téléphone en quatre secondes voit deux objets
+   différents au même endroit de l'image.
+
+   C'est le jeu qui cède, et pour une raison de charte, pas de
+   goût : l'or y est réservé au cadeau et aux ampoules. Les
+   ampoules sont donc précisément l'endroit où il a le droit
+   d'être, et c'est même le seul endroit du jeu où il en reste.
+
+   Tout le travail du 15 septembre est conservé au pixel près :
+   le fil de suspension, le culot, et surtout l'alternance de
+   hauteur, qui est ce qui distingue une guirlande accrochée
+   d'une rangée de points. Seuls le verre et son halo changent.
+   Le culot passe du gris d'acier à un laiton sourd : un culot
+   d'acier sous un verre doré se lit comme une pièce rapportée.
+   ------------------------------------------------------------ */
+body.theme-csc .guirlande i {
+  background: radial-gradient(circle at 36% 30%,
+    #FFF6DF 0%, #E7C77B 42%, #C9962E 74%, #9A7020 100%);
+  box-shadow: 0 1px 8px rgba(201, 150, 46, .45);
+}
+body.theme-csc .guirlande i::after { background: #9C8A6A; }
+
+/* ------------------------------------------------------------
+   5. LE FILET DES TITRES ÉTAIT UNE TRACE, PAS UN FILET
+   ------------------------------------------------------------
+   Trois endroits portent le même filet court de 44 px sur 1 :
+   sous le lieu à l'accueil (.lieu-badge), sous le titre de la
+   roue (.roue-zone h2), au-dessus du commerçant sur l'écran du
+   gain (.commercant-offre). Tous les trois lisent
+   --filet-fort, qui vaut rgba(228,55,63,.38) dans le thème
+   clair. Trente-huit pour cent de rouge sur un fond à #F7F8FA,
+   c'est un rose de papier buvard : à taille réelle, le trait ne
+   se lit pas comme un filet de titre, il se lit comme un tiret
+   oublié.
+
+   La note du 17 recommandait de le passer en or. C'est écarté :
+   le 15 septembre, cette même feuille a retiré l'or du filet
+   des questions en écrivant que sur un écran clair où tout est
+   rouge, blanc et encre, un trait doré isolé n'appartient à
+   rien. On ne va pas le remettre trois blocs plus bas.
+
+   Le défaut n'était pas la couleur, c'était l'opacité. Le filet
+   reste rouge et devient franc. Il ne change ni de longueur ni
+   d'épaisseur : un filet de titre est discret par sa finesse,
+   pas par sa pâleur.
+   ------------------------------------------------------------ */
+body.theme-csc .lieu-badge::before,
+body.theme-csc .roue-zone h2::after,
+body.theme-csc .commercant-offre::before { background: #E4373F; }
+
+/* ------------------------------------------------------------
+   6. LE LOT DU GAGNANT PASSAIT DERRIÈRE LE COMMERÇANT
+   ------------------------------------------------------------
+   La règle du 6 septembre est écrite dans cette feuille et elle
+   est juste : « le lot passe devant le commerçant ». À l'écran
+   elle était fausse. Le lot s'affichait en Jost 22 px, le nom
+   de la boutique en Playfair 24 px juste dessous : plus gros ET
+   en serif. L'oeil lisait la boutique avant le cadeau.
+
+   Le bloc 10 de cette feuille avait vu le problème et tenté de
+   le régler en grossissant #resultat-texte. Vérification faite
+   dans app.js, ce paragraphe ne porte le nom du lot que sur UN
+   écran sur trois : sur l'écran du perdant il porte trois
+   phrases, sur l'écran « Ton bon cadeau » il en porte deux.
+   Le grossir revenait à composer la consolation du perdant,
+   c'est-à-dire l'écran de trois joueurs sur quatre, en gros
+   serif.
+
+   Le gagnant, et lui seul, reçoit son lot enveloppé dans un
+   <strong> (app.js, MESSAGES_GAGNE). C'est ce <strong> qu'on
+   habille : le nom du lot devient le grand serif de l'écran,
+   et le paragraphe redevient un paragraphe partout ailleurs.
+   Le commerçant, lui, cesse d'être un titre et devient ce qu'il
+   est, une adresse : la petite capitale rouge de « CAP
+   SACRÉ-CŒUR », déjà employée à l'accueil et sur le totem.
+   On échange les rôles, on ne touche à aucun texte.
+   ------------------------------------------------------------ */
+body.theme-csc #resultat-texte {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #3A4652;
+  max-width: none;
+}
+body.theme-csc #resultat-texte strong {
+  display: block;
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  color: #17222C;
+  margin-top: 2px;
+}
+body.theme-csc #resultat-commercant {
+  font-family: 'Jost', 'Avenir Next', Helvetica, Arial, sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #C42730;
+}
+
+/* ------------------------------------------------------------
+   7. UNE CORRECTION DE MA PROPRE PROPOSITION DU 17
+   ------------------------------------------------------------
+   Le bloc appliqué le 17 au soir (« LA PILULE DU JEU DEVIENT
+   CELLE DES AFFICHES ») a bien fait ce qu'il fallait sur le
+   fond : le dégradé clair-vers-foncé est parti, l'aplat rouge
+   est arrivé. Mais il a réécrit box-shadow d'un bloc, et il a
+   donc effacé au passage le travail du bloc 7 de cette feuille,
+   qui avait remplacé le halo rose unique par une ombre de
+   studio en quatre couches. Le bouton a retrouvé son brouillard
+   rose, ce que le bloc 7 décrit comme l'un des marqueurs les
+   plus sûrs d'un gabarit tout fait.
+
+   Les deux ont raison chacun sur leur moitié : l'aplat reste,
+   l'ombre de studio revient.
+   ------------------------------------------------------------ */
+body.theme-csc .btn-or {
+  background: #E4373F;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .3),
+    inset 0 -1px 0 rgba(120, 20, 26, .22),
+    0 2px 4px rgba(140, 24, 30, .22),
+    0 12px 26px -14px rgba(90, 16, 20, .5);
+}
+body.theme-csc .btn-or:active {
+  background: #C42730;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .22),
+    inset 0 -1px 0 rgba(120, 20, 26, .2),
+    0 1px 2px rgba(140, 24, 30, .2),
+    0 5px 12px -10px rgba(90, 16, 20, .4);
+}
+/* Le bouton effacé pendant que la roue tourne (bloc 12) doit rester
+   effacé : sans cette reprise, l'ombre de studio ci-dessus le
+   rallumait au pire moment. */
+body.theme-csc .btn-or:disabled {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(196, 39, 48, .18);
+}
+
+/* ------------------------------------------------------------
+   LE TÉLÉPHONE COUCHÉ : la marquise se resserre
+   ------------------------------------------------------------
+   Là, .app n'ouvre que 4 px de marge haute (passage du 06/09,
+   où chaque pixel rapprochait le bouton du pouce). Une bande de
+   13 px mangerait 9 px du logo. Elle tombe à 8 px, festons
+   compris, et la marge haute lui est rendue : le coût net est
+   de quatre pixels, et la toile reste une toile.
+   ------------------------------------------------------------ */
+@media (orientation: landscape) and (max-height: 520px) {
+  body.theme-csc .app { padding-top: 8px; }
+  body.theme-csc .app::before,
+  body.theme-csc .app::after { height: 8px; }
+  body.theme-csc .app::after {
+    background:
+      radial-gradient(ellipse 50% 100% at 50% 0,
+        transparent 0 99.5%, #F7F8FA 99.6%) 0 100% / 8.5px 3.4px repeat-x;
+  }
+}
+
+/* ------------------------------------------------------------
+   L'ÉCRAN DES COORDONNÉES EN TÉLÉPHONE COUCHÉ (24/09/2026)
+   ------------------------------------------------------------
+   MESURE DU JOUR, sur 640 x 360 : la case du règlement court de
+   378 à 489 px et le bouton de 509 à 561, dans une page de
+   820 px. Le joueur qui fait défiler jusqu'en bas voit donc le
+   bouton (à 49 px du haut de son écran) et plus du tout la case
+   qu'il vient de cocher : elle est sortie 82 px au-dessus. C'est
+   la situation que le contrôle juridique du 20/09 interdit, avec
+   une règle d'une ligne : si le bouton est à l'écran, la case
+   doit y être aussi. Une acceptation de règlement qu'on ne peut
+   plus voir en validant est contestable, et c'est elle qui porte
+   la participation, le lot et sa remise.
+
+   CE QU'ON NE FAIT PAS, et la note du 20/09 les nomme un par un :
+   pas de bouton collant en bas pendant que la case reste hors
+   vue (c'est précisément la non-conformité), pas de case
+   pré-cochée, pas de case déplacée après le bouton, et on ne
+   raccourcit pas son texte.
+
+   CE QU'ON FAIT : en format couché seulement, la longue mention
+   d'information passe AVANT la case, au lieu de traîner sous le
+   bouton. Le bouton devient le dernier élément de l'écran, donc
+   le bas du défilement montre forcément la case, le message
+   d'erreur et le bouton ensemble. Rien n'est masqué ni
+   raccourci : l'information est simplement lue avant l'acte
+   plutôt qu'après, ce que la note appelle elle-même la bonne
+   place si la case devait un jour bouger. Les trois éléments
+   sont en plus resserrés pour tenir même quand le clavier du
+   téléphone mange la moitié de la hauteur.
+   ------------------------------------------------------------ */
+@media (orientation: landscape) and (max-height: 520px) {
+  /* .quiz-zone est une grille en colonne : l'ordre d'affichage se
+     règle sans toucher au HTML, donc le format droit ne bouge pas. */
+  #ecran-coordonnees #mention-donnees   { order: 1; margin-top: 2px; }
+  #ecran-coordonnees .case              { order: 2; }
+  #ecran-coordonnees #erreur-coordonnees { order: 3; }
+  #ecran-coordonnees #btn-valider       { order: 4; }
+
+  /* Le trio acceptation, erreur, bouton se tient serré : 20 px
+     gagnés, c'est la marge qui manque quand le clavier est ouvert. */
+  #ecran-coordonnees .case { margin-bottom: 0; }
+  #ecran-coordonnees #btn-valider { margin-top: 2px; }
+}
+
+/* En paysage large (à partir de 620 px), la zone du quiz se met en
+   deux colonnes : la mention longue occupait alors une colonne
+   entière sur 231 px de haut, et poussait la case dans une rangée
+   que le bouton ne partage pas. Les trois éléments qui doivent
+   rester ensemble reprennent donc toute la largeur, l'un sous
+   l'autre, à la fin de la grille. La mention y gagne en plus de la
+   place : le même texte tient sur moitié moins de lignes. */
+@media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+  #ecran-coordonnees #mention-donnees,
+  #ecran-coordonnees .case,
+  #ecran-coordonnees #erreur-coordonnees,
+  #ecran-coordonnees #btn-valider { grid-column: 1 / -1; }
+}
+
+/* ------------------------------------------------------------
+   L'ÉCRAN DU CONSENTEMENT EN TÉLÉPHONE COUCHÉ (24/09/2026)
+   ------------------------------------------------------------
+   Le contrôle juridique du 20/09 demandait de mesurer cet écran,
+   ce qui n'avait jamais été fait : c'est lui qui porte le vrai
+   consentement RGPD, celui dont dépend toute la base d'adresses
+   de décembre. Mesure du jour sur 640 x 360 : le « oui » court
+   de 324 à 405, le « non » de 423 à 488, et la phrase qui rend
+   le choix libre (« ton choix ne change rien à ta partie, ni à
+   tes chances, ni à ton lot ») de 496 à 556. Il existait donc
+   une position de défilement, étroite mais réelle, où le joueur
+   voyait les deux boutons sans cette phrase : le caractère libre
+   du consentement n'y était plus démontrable, à une quinzaine de
+   pixels près.
+
+   La phrase remonte donc au-dessus des boutons, en format couché
+   seulement : elle se lit avant le choix au lieu d'être une note
+   de bas de page, ce qui est l'ordre naturel et ce que la note du
+   20/09 donnait comme solution. Les deux boutons gardent
+   exactement le même poids, on n'en réduit aucun : c'est la
+   première chose que cette note interdit. En téléphone droit,
+   l'écran ne bouge pas.
+   ------------------------------------------------------------ */
+@media (orientation: landscape) and (max-height: 520px) {
+  #ecran-offres .offres-liberte { order: 1; margin-bottom: 4px; }
+  #ecran-offres #btn-offres-oui  { order: 2; }
+  #ecran-offres #btn-offres-non  { order: 3; }
+  #ecran-offres #offres-relance  { order: 4; }
+  #ecran-offres #offres-mineurs  { order: 5; }
+}
+
+
+/* ============================================================
+   LE THÈME ENGEN (25/09/2026)
+   ------------------------------------------------------------
+   Une station-service Engen fête son anniversaire et ne veut que
+   la roue. L'habillage est celui du site engen.re (Vivo Energy
+   Réunion) : bleu #002C90 en aplat, rouge #ED1651 du logo en
+   accent, blanc, Roboto Condensed pour les titres.
+   Le thème est bâti SUR la base claire de Cap Sacré-Cœur : app.js
+   pose les deux classes (theme-csc + theme-engen). Le premier bloc
+   ci-dessous est GÉNÉRÉ à partir de toutes les règles theme-csc
+   (même sélecteurs, rouge remplacé par le bleu Engen, façade
+   remplacée par le totem de la station) : il ne se retouche pas à
+   la main, on le regénère. Les retouches propres à Engen viennent
+   après.
+   ============================================================ */
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('fonts/robotocondensed.woff2') format('woff2');
+}
+
+/* --- Bloc généré depuis theme-csc (rouge -> bleu Engen) --- */
+body.theme-engen #offres-soustitre { color: #29343E; }
+@media (prefers-reduced-motion: reduce) {
+body.theme-engen .guirlande i { animation: none; opacity: .8; }
+}
+body.theme-engen {
+  --noir: #F7F8FA;                        /* le fond de la page */
+  --encre: #FFFFFF;
+  --verre: rgba(255, 255, 255, .96);      /* les cartes deviennent blanches */
+  /* #002C90 et pas le rouge vif du site : dès qu'une de ces variables
+     écrit du TEXTE sur le fond clair, le #1241A6 d'origine (4,0:1) et
+     le #2A5BD6 (3,2:1) échouent au contraste AA. Le rouge sombre passe
+     (5,7:1) et reste le rouge de la maison. Les grands boutons, eux,
+     gardent leurs dégradés écrits en littéraux plus bas. */
+  --or: #002C90;                          /* l'accent : le rouge du centre */
+  --or-clair: #002C90;
+  --or-blanc: #17222C;                    /* les grands titres : encre profonde */
+  --creme: #3A4652;                       /* le texte courant */
+  /* #5E6A76 et pas plus clair : les mentions en 12,5 px doivent tenir
+     le contraste AA (4,5:1) sur le fond blanc cassé. */
+  --gris: #5E6A76;
+  --rouge: #1241A6;
+  --rouge-clair: #2A5BD6;
+  --filet: rgba(0, 44, 144, .18);
+  --filet-fort: rgba(0, 44, 144, .38);
+}
+body.theme-engen::before {
+  background: url('img/client/station-engen.jpg') center 22% / cover no-repeat;
+  filter: none;
+}
+body.theme-engen::after {
+  background:
+    linear-gradient(180deg,
+      rgba(247, 248, 250, .58) 0%,
+      rgba(247, 248, 250, .88) 26%,
+      rgba(247, 248, 250, .97) 55%,
+      #F7F8FA 78%);
+}
+body.theme-engen .app::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  z-index: 6;
+  background: repeating-linear-gradient(90deg, #1241A6 0 14px, #FFFFFF 14px 28px);
+  opacity: .95;
+}
+body.theme-engen .guirlande { display: flex; justify-content: space-between; align-items: center; gap: 4px; margin: -6px 0 var(--e3); padding: 0 2px; }
+body.theme-engen .guirlande i {
+  display: block; width: 7px; height: 7px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #FFD6E1 0%, #1241A6 60%, #001F66 100%);
+  box-shadow: 0 0 8px 1px rgba(0, 44, 144, .35);
+  animation: ampoule 3.6s ease-in-out infinite;
+}
+body.theme-engen .btn-or {
+  background: linear-gradient(160deg, #2A5BD6 0%, #1241A6 60%, #002C90 100%);
+  color: #FFFFFF;
+  border-radius: 999px;
+  box-shadow: 0 10px 24px -8px rgba(0, 44, 144, .55);
+  text-shadow: none;
+}
+body.theme-engen .btn-discret {
+  border-radius: 999px;
+  border-color: rgba(0, 44, 144, .4);
+  color: #002C90;
+  background: #FFFFFF;
+}
+body.theme-engen .btn-offres-refus { color: var(--gris); opacity: 1; }
+body.theme-engen .options { background: #FFFFFF; border-radius: 16px; border-top: 0; box-shadow: 0 10px 30px rgba(23, 34, 44, .08); padding-top: 4px; padding-bottom: 4px; }
+body.theme-engen .option { border-bottom-color: #EDF0F3; color: #29343E; }
+body.theme-engen .option.choisie { background: linear-gradient(90deg, rgba(0, 44, 144, .1) 0%, rgba(0, 44, 144, .02) 76%, transparent 100%); color: #17222C; }
+body.theme-engen .texte-zone input, body.theme-engen .champ input {
+  background: #FFFFFF; color: #17222C;
+  border-color: #DDE2E8; border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(23, 34, 44, .06);
+}
+body.theme-engen .texte-zone input::placeholder, body.theme-engen .champ input::placeholder { color: #5E6A76; }
+body.theme-engen .agenda-duree {
+  background: linear-gradient(165deg, #3E6FE0, #1241A6);
+  color: #FFFFFF;
+}
+body.theme-engen .agenda-corps { background: #FFFFFF; border-color: #EDF0F3; box-shadow: 0 8px 22px rgba(23, 34, 44, .07); border-radius: 12px; }
+body.theme-engen .agenda-detail, body.theme-engen .agenda-titre { color: #29343E; }
+body.theme-engen .agenda-lieu { color: #002C90; }
+body.theme-engen .agenda-fil { border-left-color: rgba(0, 44, 144, .35); }
+body.theme-engen .agenda-heure { color: #002C90; }
+body.theme-engen .agenda-heure::after { background: #1241A6; box-shadow: 0 0 0 3px #F7F8FA; }
+body.theme-engen .agenda-jour-nom { color: #17222C; }
+body.theme-engen .bandeau-vue { background: #FFFFFF; border-radius: 14px; box-shadow: 0 8px 22px rgba(23, 34, 44, .07); }
+body.theme-engen .bandeau-vue h2 { color: #17222C; }
+body.theme-engen .bandeau-promos::before, body.theme-engen .bandeau-programme::before { display: none; }
+body.theme-engen .onglets-zone .onglet { color: #5E6B77; }
+body.theme-engen .onglets-zone .onglet.actif {
+  background: linear-gradient(160deg, #2A5BD6, #1241A6);
+  color: #FFFFFF;
+  border-radius: 999px;
+}
+body.theme-engen .pied, body.theme-engen .mini-mention { color: var(--gris); }
+body.theme-engen .lien-or { color: #002C90; }
+body.theme-engen .pastille { background: #1241A6; box-shadow: 0 0 10px rgba(0, 44, 144, .5); }
+body.theme-engen .entete { border-bottom-color: #E8EBEF; }
+body.theme-engen .hero-emoji { box-shadow: 0 14px 34px rgba(23, 34, 44, .16); }
+body.theme-engen .squelette { background: #E9EDF1; }
+body.theme-engen .squelette-carte { background: #FFFFFF; }
+body.theme-engen .promos-liste {
+  background: none;
+  border-top: none;
+  margin: 10px 0 20px;
+  padding: 0;
+  gap: 14px;
+}
+body.theme-engen .promo {
+  background: #FFFFFF;
+  border-color: #EDF0F3;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(23, 34, 44, .07);
+  padding: 26px 22px 24px;
+  text-align: center;
+}
+body.theme-engen .promo-haut { justify-content: center; }
+body.theme-engen .badge-test { background: #EDF0F3; color: #6A7682; border-radius: 8px; }
+body.theme-engen.mode-test .badge-test { background: #EDF0F3; }
+body.theme-engen .bandeau-vue::before { background-image: none; background-color: #FFFFFF; }
+body.theme-engen .bandeau-vue::after { background: none; }
+body.theme-engen .bandeau-vue { border-color: #EDF0F3; }
+body.theme-engen .bandeau-vue .question-soustitre { color: #5E6B77; opacity: 1; }
+body.theme-engen .bandeau-mesbons h2 { color: #17222C; }
+body.theme-engen .onglets {
+  background: #FFFFFF;
+  border-color: #E8EBEF;
+  border-radius: 999px;
+  box-shadow: 0 8px 22px rgba(23, 34, 44, .07);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+body.theme-engen .bons-section { color: #002C90; }
+body.theme-engen .bons-vide, body.theme-engen .promo-vide { color: #6A7682; }
+body.theme-engen .hero h1, body.theme-engen .sous-titre, body.theme-engen .hero .mini-mention, body.theme-engen .quiz-zone h2, body.theme-engen .roue-zone h2, body.theme-engen .question-soustitre, body.theme-engen .bandeau-vue h2, body.theme-engen .bons-vide, body.theme-engen .promo-vide { text-shadow: none; }
+body.theme-engen .carte-univers {
+  min-height: 0;
+  display: block;
+  background: #FFFFFF;
+  border: 1px solid #E8EBEF;
+  border-left: 4px solid #1241A6;
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(23, 34, 44, .09);
+  color: #29343E;
+  padding: 18px 20px;
+}
+body.theme-engen .carte-photo, body.theme-engen .carte-voile { display: none; }
+body.theme-engen .carte-texte { position: static; padding: 0; }
+body.theme-engen .carte-etiquette { color: #002C90; }
+body.theme-engen .carte-titre { color: #17222C; text-shadow: none; }
+body.theme-engen .carte-detail { color: #5E6B77; }
+body.theme-engen .carte-action, body.theme-engen .carte-action-mot { color: #002C90; }
+body.theme-engen .carte-mesbons {
+  background: linear-gradient(160deg, #FFF9EC 0%, #FFF3D8 100%);
+  border-left-color: #C9962E;
+}
+body.theme-engen .carte-mesbons .carte-etiquette { color: #8A6A21; }
+body.theme-engen .carte-mesbons .carte-action, body.theme-engen .carte-mesbons .carte-action-mot { color: #8A6A21; }
+body.theme-engen .bandit-fronton {
+  background: linear-gradient(165deg, #FFE9B8, #C9962E);
+  color: #241804;
+}
+body.theme-engen .bandit-consigne {
+  border-color: rgba(239, 195, 104, .55);
+  color: #FFE9B8;
+  background: rgba(36, 24, 4, .55);
+}
+body.theme-engen .ticket {
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 16px;
+  border: 1px solid rgba(201, 150, 46, .5);
+  box-shadow: 0 16px 40px rgba(23, 34, 44, .18);
+}
+body.theme-engen .ticket::before, body.theme-engen .ticket::after { display: none; }
+body.theme-engen .ticket-fond {
+  background: linear-gradient(160deg, #002C90 0%, #001F66 100%);
+}
+body.theme-engen .ticket-mention { color: #FFD6E1; opacity: .95; }
+body.theme-engen .ticket-detail { color: #FFF1E4; }
+body.theme-engen .ticket-resultat.ticket-perdu { color: #FFFFFF; opacity: 1; }
+body.theme-engen { position: relative; }
+body.theme-engen::before {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 300px;
+  background: url('img/client/station-engen.jpg') center 58% / cover no-repeat;
+  filter: saturate(1.06) contrast(1.03);
+  transform: none;
+}
+body.theme-engen::after {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 300px;
+  background: linear-gradient(180deg,
+    rgba(247, 248, 250, 0) 0%,
+    rgba(247, 248, 250, 0) 55%,
+    rgba(247, 248, 250, .75) 82%,
+    #F7F8FA 100%);
+}
+body.theme-engen .entete { border-bottom-color: transparent; }
+body.theme-engen .entete-jeu {
+  color: #002C90;
+  text-shadow: 0 1px 10px rgba(255, 255, 255, .95);
+}
+body.theme-engen .logo-client { filter: drop-shadow(0 2px 10px rgba(255, 255, 255, .95)); }
+body.theme-engen #ecran-accueil .hero { padding-top: 218px; }
+body.theme-engen #ecran-accueil .hero h1 { margin-top: 0; }
+body.theme-engen:not(.sur-accueil)::before { display: none; }
+body.theme-engen:not(.sur-accueil)::after { display: none; }
+body.theme-engen:not(.sur-accueil) { background: #F7F8FA; }
+body.theme-engen:not(.sur-accueil) .entete { border-bottom-color: #E8EBEF; }
+body.theme-engen:not(.sur-accueil) .entete-jeu { text-shadow: none; }
+body.theme-engen:not(.sur-accueil) .logo-client { filter: none; }
+body.theme-engen .agenda-visuel { background: #EDF0F3; }
+body.theme-engen .bandit-consigne {
+  background: linear-gradient(165deg, #FFE9B8, #C9962E);
+  border-color: #C9962E;
+  color: #241804;
+}
+body.theme-engen .agenda-ligne.vedette .agenda-corps {
+  background: #FFFFFF;
+  border-color: #E3B85A;
+  box-shadow: 0 12px 30px rgba(201, 150, 46, .22);
+}
+body.theme-engen .agenda-ligne.vedette .agenda-heure { color: #8A6A21; }
+body.theme-engen .option .coche {
+  background: #FFFFFF;
+  border-color: #C9D2DA;
+}
+body.theme-engen .option.choisie .coche {
+  background: #1241A6;
+  border-color: #002C90;
+}
+body.theme-engen .option.choisie .coche::after { border-color: #FFFFFF; }
+body.theme-engen .case input {
+  background: #FFFFFF;
+  border-color: #C9D2DA;
+}
+body.theme-engen .case input:checked {
+  background-color: #1241A6;
+  border-color: #002C90;
+}
+body.theme-engen .erreur { color: #002C90; }
+body.theme-engen .evenement-gratuit, body.theme-engen .promo-bon.obtenu {
+  color: #1F7A44;
+  border-color: rgba(31, 122, 68, .5);
+  background: rgba(31, 122, 68, .08);
+}
+body.theme-engen .bandit-levier .trait { stroke: #C9962E; }
+body.theme-engen .bandit-fleche { stroke: #C9962E; color: #C9962E; }
+body.theme-engen .bandit-halo { stroke: #C9962E; color: #C9962E; }
+body.theme-engen .bandit-ligne::before { border-left-color: #C9962E; }
+body.theme-engen .bandit-ligne::after { border-right-color: #C9962E; }
+body.theme-engen .progression { background: #E3E7EC; }
+body.theme-engen .progression-barre { box-shadow: none; }
+body.theme-engen .offres-relance {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 44, 144, .4);
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(23, 34, 44, .07);
+}
+body.theme-engen .suggestion, body.theme-engen .case, body.theme-engen .confirme, body.theme-engen .bon-valide { border-radius: 14px; }
+body.theme-engen .btn-mini { border-radius: 999px; }
+body.theme-engen .suggestion { border-color: rgba(0, 44, 144, .35); }
+body.theme-engen .btn-mini { border-color: #DDE2E8; color: #3A4652; }
+body.theme-engen .btn-mini-or {
+  background: linear-gradient(165deg, #1241A6, #002C90);
+  color: #FFFFFF;
+  border-color: #002C90;
+}
+body.theme-engen .btn-or:disabled {
+  background: rgba(0, 44, 144, .06);
+  color: rgba(196, 39, 48, .8);
+  box-shadow: inset 0 0 0 1px rgba(0, 44, 144, .35);
+  text-shadow: none;
+}
+body.theme-engen .code-libelle, body.theme-engen .bon-origine, body.theme-engen .bon-code-libelle { color: #4A3A16; }
+body.theme-engen .bon-validite { color: #4A3A16; }
+body.theme-engen .option::before { background: #1241A6; }
+body.theme-engen .manche-points span.manche-encours {
+  background: #1241A6;
+  border-color: #1241A6;
+  box-shadow: 0 0 9px rgba(0, 44, 144, .6);
+}
+body.theme-engen .squelette {
+  background: linear-gradient(100deg, #E9EDF1 30%, #F5F7F9 50%, #E9EDF1 70%);
+  background-size: 240% 100%;
+}
+body.theme-engen .pied, body.theme-engen .pied-marque { color: #68737F; }
+body.theme-engen .quiz-zone h2, body.theme-engen .roue-zone h2 { color: #17222C; }
+body.theme-engen .carte-univers:focus-visible, body.theme-engen .onglet:focus-visible {
+  outline: 3px solid #002C90;
+  outline-offset: 3px;
+}
+body.theme-engen .bon-ticket { box-shadow: 0 14px 30px rgba(23, 34, 44, .22); }
+body.theme-engen .bon-valide { box-shadow: 0 14px 30px rgba(23, 34, 44, .25); }
+body.theme-engen .hero-emoji { box-shadow: 0 12px 28px rgba(23, 34, 44, .22); }
+body.theme-engen .ticket-mention { color: #FFE9CB; }
+body.theme-engen input::placeholder { color: #8A95A1; }
+body.theme-engen .case input:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.6l3.4 3.4L13 5' fill='none' stroke='%23FFFFFF' stroke-width='2.6' stroke-linecap='square'/%3E%3C/svg%3E");
+}
+body.theme-engen .case input:focus-visible { box-shadow: 0 0 0 3px rgba(0, 44, 144, .3); }
+body.theme-engen #roue-svg {
+  box-shadow:
+    0 0 0 9px #221709,
+    0 0 0 11px var(--rouge),
+    0 16px 40px rgba(23, 34, 44, .28);
+}
+body.theme-engen .roue-cadre.emballe #roue-svg {
+  box-shadow:
+    0 0 0 9px #221709,
+    0 0 0 11px var(--rouge-clair),
+    0 16px 44px rgba(23, 34, 44, .34);
+}
+@media (orientation: landscape) and (max-height: 520px) {
+body.theme-engen #ecran-resultat .hero > .hero-emoji { width: 86px; height: 86px; }
+@media (max-height: 400px) {
+body.theme-engen #ecran-resultat .hero > .hero-emoji { width: 64px; height: 64px; }
+}
+body.theme-engen #ecran-resultat #resultat-texte { font-size: 17px; line-height: 1.35; }
+body.theme-engen::before, body.theme-engen::after { height: 132px; }
+body.theme-engen::before { background-position: center 38%; }
+body.theme-engen::after {
+    background:
+      linear-gradient(180deg,
+        rgba(247, 248, 250, .88) 0%,
+        rgba(247, 248, 250, .34) 44%,
+        rgba(247, 248, 250, 0) 64%),
+      linear-gradient(180deg,
+        rgba(247, 248, 250, 0) 0%,
+        rgba(247, 248, 250, 0) 55%,
+        rgba(247, 248, 250, .75) 82%,
+        #F7F8FA 100%);
+  }
+body.theme-engen #ecran-accueil .hero { padding-top: 56px; }
+}
+body.theme-engen .ampoule {
+  background: #FFF3D6;
+  box-shadow: 0 0 9px 2px rgba(255, 226, 168, .9);
+}
+body.theme-engen #question-titre::before { opacity: .9; }
+body.theme-engen #question-titre::after {
+  background: linear-gradient(90deg, rgba(0, 44, 144, .55), rgba(0, 44, 144, 0));
+}
+body.theme-engen .options .option:last-child { border-bottom-color: transparent; }
+body.theme-engen .option.choisie {
+  box-shadow: inset 3px 0 0 0 #1241A6;
+}
+body.theme-engen .guirlande {
+  align-items: flex-start;
+  margin: -6px 0 var(--e2);
+  padding: 0 6px;
+  gap: 2px;
+}
+body.theme-engen .guirlande i {
+  position: relative;
+  width: 8px; height: 8px;
+  margin-top: 5px;
+  background: radial-gradient(circle at 34% 28%, #FFD6E1 0%, #1241A6 58%, #001F66 100%);
+  box-shadow: 0 1px 6px rgba(0, 44, 144, .3);
+}
+body.theme-engen .guirlande i::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: -5px;
+  width: 1px; height: 5px;
+  margin-left: -.5px;
+  background: linear-gradient(180deg, rgba(23, 34, 44, .10), rgba(23, 34, 44, .3));
+}
+body.theme-engen .guirlande i::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: -3px;
+  width: 4px; height: 3px;
+  margin-left: -2px;
+  border-radius: 1px 1px 0 0;
+  background: #98A0A8;
+}
+body.theme-engen .guirlande i:nth-child(even) { margin-top: 10px; }
+body.theme-engen .guirlande i:nth-child(even)::before { top: -10px; height: 10px; }
+body.theme-engen .btn-or {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .3),
+    inset 0 -1px 0 rgba(120, 20, 26, .22),
+    0 2px 4px rgba(140, 24, 30, .22),
+    0 12px 26px -14px rgba(90, 16, 20, .5);
+}
+body.theme-engen .btn-or:active {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .22),
+    inset 0 -1px 0 rgba(120, 20, 26, .2),
+    0 1px 2px rgba(140, 24, 30, .2),
+    0 5px 12px -10px rgba(90, 16, 20, .4);
+}
+body.theme-engen #btn-offres-oui, body.theme-engen #btn-offres-oui2 {
+  text-transform: none;
+  letter-spacing: .005em;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.32;
+  padding: 18px 22px;
+}
+body.theme-engen #ecran-resultat .hero-emoji {
+  width: 132px;
+  height: 132px;
+  box-shadow: 0 18px 40px -14px rgba(23, 34, 44, .3);
+}
+body.theme-engen #resultat-texte {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #17222C;
+}
+body.theme-engen #resultat-commercant {
+  font-size: 19px;
+  color: #46525E;
+}
+body.theme-engen #btn-resultat-plus-tard, body.theme-engen #btn-resultat-programme {
+  background: none;
+  border: none;
+  border-radius: 0;
+  width: auto;
+  align-self: flex-start;
+  padding: 14px 2px;
+  min-height: 44px;
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: #002C90;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(196, 39, 48, .4);
+  box-shadow: none;
+}
+body.theme-engen .pied { justify-content: flex-start; }
+body.theme-engen .btn-or:disabled {
+  background: transparent;
+  color: rgba(196, 39, 48, .45);
+  box-shadow: inset 0 0 0 1px rgba(196, 39, 48, .18);
+}
+body.theme-engen .hero-emoji {
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, .22), transparent 58%),
+    radial-gradient(circle, #1241A6 0%, #002C90 62%, #001F66 100%);
+  border: 0;
+  box-shadow:
+    0 0 0 5px #F7F8FA,
+    0 0 0 7px rgba(201, 150, 46, .85),
+    0 18px 40px -14px rgba(142, 26, 33, .42);
+  color: #FFF9F2;
+}
+body.theme-engen .hero-emoji svg { stroke: #FFF9F2; color: #FFF9F2; }
+body.theme-engen #ecran-resultat .hero-emoji {
+  box-shadow:
+    0 0 0 5px #F7F8FA,
+    0 0 0 7px rgba(201, 150, 46, .85),
+    0 18px 40px -14px rgba(142, 26, 33, .42);
+}
+body.theme-engen .btn-or {
+  background: #1241A6;
+  box-shadow: 0 12px 26px -10px rgba(0, 44, 144, .55);
+}
+body.theme-engen .btn-or:active { background: #002C90; }
+body.theme-engen .bon-ticket {
+  color: #17222C;
+  background:
+    /* La perforation, en creux clair, POSÉE SUR LA SOUCHE et non sur le
+       papier. Premier essai : calée à 20 px, c'est-à-dire juste à droite
+       de la souche, donc du blanc cassé sur du blanc. Vérifié à l'image :
+       invisible. Un billet se déchire dans sa souche, pas à côté. */
+    repeating-linear-gradient(180deg,
+      rgba(255, 249, 242, .92) 0 5px, rgba(255, 249, 242, 0) 5px 10px)
+      16px 0 / 2px 100% no-repeat,
+    /* la souche rouge, puis le papier */
+    linear-gradient(90deg, #1241A6 0 20px, #FFFFFF 20px);
+  box-shadow:
+    0 2px 6px rgba(23, 34, 44, .10),
+    0 20px 44px -20px rgba(23, 34, 44, .30),
+    inset 0 0 0 1px rgba(201, 150, 46, .45);
+}
+body.theme-engen .bon-ticket-souche {
+  background: repeating-linear-gradient(180deg,
+    rgba(255, 249, 242, .92) 0 4px, rgba(255, 249, 242, 0) 4px 9px);
+}
+body.theme-engen .bon-ticket .code-libelle, body.theme-engen .bon-origine, body.theme-engen .bon-code-libelle { color: #002C90; }
+body.theme-engen .bon-ticket .code-valeur, body.theme-engen .bon-lot, body.theme-engen .bon-code { color: #17222C; text-shadow: none; }
+body.theme-engen .bon-ticket .code-info, body.theme-engen .bon-commercant, body.theme-engen .bon-detail { color: #46525E; }
+body.theme-engen .bon-validite { color: #5E6A76; }
+body.theme-engen .bon-ticket-passe {
+  background:
+    repeating-linear-gradient(180deg,
+      rgba(255, 255, 255, .9) 0 5px, rgba(255, 255, 255, 0) 5px 10px)
+      20px 0 / 2px 100% no-repeat,
+    linear-gradient(90deg, #AEB6BE 0 20px, #F2F4F6 20px);
+  box-shadow: inset 0 0 0 1px rgba(23, 34, 44, .10);
+}
+body.theme-engen .bon-ticket-passe .bon-origine, body.theme-engen .bon-ticket-passe .bon-code-libelle { color: #7A848D; }
+body.theme-engen .bon-ticket-passe .bon-lot, body.theme-engen .bon-ticket-passe .bon-code { color: #5E6A76; }
+body.theme-engen .bon-ticket-passe .bon-commercant, body.theme-engen .bon-ticket-passe .bon-detail, body.theme-engen .bon-ticket-passe .bon-passe-note { color: #7A848D; }
+body.theme-engen .bon-ticket-passe .bon-perfo {
+  background: repeating-linear-gradient(90deg,
+    rgba(23, 34, 44, .20) 0 5px, transparent 5px 11px);
+}
+body.theme-engen .bon-perfo {
+  background: repeating-linear-gradient(90deg,
+    rgba(23, 34, 44, .26) 0 5px, transparent 5px 11px);
+}
+body.theme-engen .carte-mesbons .carte-photo {
+  background-image: linear-gradient(90deg, #1241A6 0 34px, #FFFFFF 34px);
+}
+body.theme-engen .app::before {
+  height: 13px;
+  opacity: 1;
+  background: linear-gradient(90deg, #1241A6 0 50%, #FBF8F1 50% 100%) 0 0 / 17px 100%;
+}
+body.theme-engen .app::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 13px;
+  z-index: 7;
+  pointer-events: none;
+  /* Les festons : une ellipse large et peu profonde par rayure, peinte
+     dans la couleur de la page. C'est la mécanique de charte-cirque.css,
+     qui évite tout masque et marche donc sur tous les téléphones.
+     LA GANSE A ÉTÉ ESSAYÉE PUIS RETIRÉE. Sur les imprimés, la bande
+     claire cousue à la naissance des festons se lit comme une ganse
+     parce que la marquise y fait soixante pixels de haut. Ici elle en
+     fait treize : vérifié à l'image, la ganse coupait chaque rayure en
+     deux et la marquise devenait une rangée de pastilles rouges. Une
+     bonne idée à l'échelle du mur, une mauvaise à celle du téléphone. */
+  background:
+    radial-gradient(ellipse 50% 100% at 50% 0,
+      transparent 0 99.5%, #F7F8FA 99.6%) 0 100% / 8.5px 4.9px repeat-x;
+}
+body.theme-engen .hero h1, body.theme-engen .bandeau-vue h2 { color: #17222C; }
+body.theme-engen .hero h1 .or { color: #1241A6; }
+body.theme-engen .guirlande i {
+  background: radial-gradient(circle at 36% 30%,
+    #FFF6DF 0%, #E7C77B 42%, #C9962E 74%, #9A7020 100%);
+  box-shadow: 0 1px 8px rgba(201, 150, 46, .45);
+}
+body.theme-engen .guirlande i::after { background: #9C8A6A; }
+body.theme-engen .lieu-badge::before, body.theme-engen .roue-zone h2::after, body.theme-engen .commercant-offre::before { background: #1241A6; }
+body.theme-engen #resultat-texte {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #3A4652;
+  max-width: none;
+}
+body.theme-engen #resultat-texte strong {
+  display: block;
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  color: #17222C;
+  margin-top: 2px;
+}
+body.theme-engen #resultat-commercant {
+  font-family: 'Jost', 'Avenir Next', Helvetica, Arial, sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #002C90;
+}
+body.theme-engen .btn-or {
+  background: #1241A6;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .3),
+    inset 0 -1px 0 rgba(120, 20, 26, .22),
+    0 2px 4px rgba(140, 24, 30, .22),
+    0 12px 26px -14px rgba(90, 16, 20, .5);
+}
+body.theme-engen .btn-or:active {
+  background: #002C90;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .22),
+    inset 0 -1px 0 rgba(120, 20, 26, .2),
+    0 1px 2px rgba(140, 24, 30, .2),
+    0 5px 12px -10px rgba(90, 16, 20, .4);
+}
+body.theme-engen .btn-or:disabled {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(196, 39, 48, .18);
+}
+@media (orientation: landscape) and (max-height: 520px) {
+body.theme-engen .app { padding-top: 8px; }
+body.theme-engen .app::before, body.theme-engen .app::after { height: 8px; }
+body.theme-engen .app::after {
+    background:
+      radial-gradient(ellipse 50% 100% at 50% 0,
+        transparent 0 99.5%, #F7F8FA 99.6%) 0 100% / 8.5px 3.4px repeat-x;
+  }
+}
+
+/* --- Retouches propres à Engen --- */
+body.theme-engen {
+  --or: #002C90;
+  --or-clair: #1241A6;
+  --rouge: #ED1651;
+  --rouge-clair: #FF4D7A;
+}
+/* Les titres prennent la police condensée du site, en capitales serrées
+   comme l'enseigne ENGEN. Le texte courant garde Jost, lisible en petit. */
+body.theme-engen h1, body.theme-engen h2,
+body.theme-engen #question-titre,
+body.theme-engen #resultat-titre,
+body.theme-engen #roue-titre,
+body.theme-engen .entete-lieu,
+body.theme-engen .entete-jeu,
+body.theme-engen .bandeau-vue h2 {
+  font-family: 'Roboto Condensed', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+body.theme-engen .hero h1 { text-transform: uppercase; letter-spacing: .01em; line-height: .96; }
+/* Le mot accentué du titre : le rouge du logo, pas le bleu. */
+body.theme-engen .hero h1 .or { color: #ED1651; }
+body.theme-engen .btn, body.theme-engen .btn-or, body.theme-engen .btn-discret {
+  font-family: 'Roboto Condensed', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+/* La bande du haut : bleu Engen, terminée par le rouge du logo. */
+body.theme-engen .app::before {
+  background: linear-gradient(90deg, #002C90 0 78%, #ED1651 78%);
+  height: 5px;
+  opacity: 1;
+}
+/* Ni guirlande ni ampoules de chapiteau à la pompe. */
+body.theme-engen .guirlande { display: none; }
+/* Le logo Engen est un bloc bleu à coins vifs : on l'arrondit un peu et
+   on retire le halo blanc prévu pour le logo rouge de la galerie. */
+body.theme-engen .logo-client { height: 50px; border-radius: 8px; filter: none; box-shadow: 0 6px 18px -8px rgba(0, 44, 144, .5); }
+/* Le fond : le totem Engen aux ballons, très voilé de blanc, comme la
+   façade de la galerie sur l'autre thème. La photo est en hauteur : on
+   la cale sur le haut, là où sont les ballons. */
+body.theme-engen::before { background-position: center 12%; }
+/* La case de la roue : bleu et blanc ; le cadre garde l'or du jeu de
+   base, on le passe en bleu. */
+body.theme-engen #roue-svg { filter: drop-shadow(0 12px 26px rgba(0, 44, 144, .28)); }
+/* Sans espace découverte (station) : plus de barre d'onglets. */
+body.sans-galerie .onglets { display: none; }

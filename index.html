@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>La Hotte des Commerçants : tente ta chance !</title>
-  <meta name="description" content="Réponds à quelques questions, joue, et tente de gagner un cadeau offert par les commerçants de la galerie !">
+  <meta name="description" content="Quatre questions, trois manches, et peut-être un cadeau offert par les commerçants de la galerie.">
   <!-- L'IDENTITÉ DE PARTAGE (29/08/2026) : l'icône d'onglet, l'icône
        « ajouter à l'écran d'accueil », la couleur de la barre du
        navigateur, et la carte d'aperçu quand le lien circule sur
@@ -17,7 +17,7 @@
   <meta name="theme-color" content="#E4373F">
   <meta property="og:type" content="website">
   <meta property="og:title" content="La Hotte des Commerçants : tente ta chance !">
-  <meta property="og:description" content="Réponds à quelques questions, joue, et repars peut-être avec un cadeau offert par les commerçants de la galerie.">
+  <meta property="og:description" content="Quatre questions, trois manches, et peut-être un cadeau offert par tes commerçants.">
   <meta property="og:image" content="https://capdepontromain-stack.github.io/pullup-roue/img/partage-og.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -50,22 +50,27 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=30aout2026g">
+  <link rel="stylesheet" href="style.css?v=28sept2026c">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
        ils n'étaient demandés qu'après avoir lu tout le HTML. L'ordre
        est garanti par defer. -->
+  <!-- LE FILET DE SECOURS (20/09/2026) : chargé avant tout le reste et
+       sans defer, il voit les erreurs de tous les autres scripts. Si le
+       jeu ne s'ouvre pas, il affiche un écran lisible avec un bouton
+       « Réessayer » au lieu d'une page figée. Voir filet.js. -->
+  <script src="filet.js?v=28sept2026c"></script>
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=30aout2026g" defer></script>
-  <script src="icones-quiz.js?v=30aout2026g" defer></script>
-  <script src="contenus-demo.js?v=06sept2026p" defer></script>
+  <script src="icones.js?v=28sept2026c" defer></script>
+  <script src="icones-quiz.js?v=28sept2026c" defer></script>
+  <script src="contenus-demo.js?v=28sept2026c" defer></script>
   <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
        Il tient la liste des bons du joueur et sait la dessiner. Chargé
        avant app.js, qui l'appelle à deux endroits : quand un lot est
        gagné, et quand un bon de promotion est pris. Voir bons.js. -->
-  <script src="bons.js?v=30aout2026g" defer></script>
-  <script src="app.js?v=30aout2026g" defer></script>
+  <script src="bons.js?v=28sept2026c" defer></script>
+  <script src="app.js?v=28sept2026c" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -77,10 +82,21 @@
 </head>
 <body>
 
+  <!-- JavaScript coupé (ou bloqué par un navigateur d'entreprise) : la
+       page s'afficherait sans qu'aucun bouton ne réponde. Autant le dire. -->
+  <noscript>
+    <div style="padding:22px;text-align:center;background:#141009;color:#F6F1E6;
+                font-family:Jost,Avenir Next,Arial,sans-serif;line-height:1.5">
+      <p style="font-size:19px;font-weight:700;color:#EFC368;margin:0 0 8px">Le jeu a besoin de JavaScript</p>
+      <p style="font-size:15px;margin:0">Active JavaScript dans les réglages de ton navigateur,
+      puis scanne à nouveau le QR code de la galerie.</p>
+    </div>
+  </noscript>
+
   <!-- Le pré-thème : synchrone et minuscule, il habille la page du bon
        thème avant la première image (voir pretheme.js). Il doit rester
        le premier élément de body. -->
-  <script src="pretheme.js?v=30aout2026g"></script>
+  <script src="pretheme.js?v=28sept2026c"></script>
 
   <div class="app">
 
@@ -125,7 +141,7 @@
         <div class="hero-emoji" id="accueil-medaillon"></div>
         <h1>La Hotte des<br><span class="or">Commerçants</span></h1>
         <p id="accueil-lieu" class="lieu-badge" hidden></p>
-        <p class="sous-titre">Un mini test de personnalité, tu fais tourner la roue, et tu repars peut-être avec un cadeau&nbsp;!</p>
+        <p class="sous-titre">Quatre questions, trois manches, et peut-être un cadeau offert par tes commerçants.</p>
         <p class="accueil-compte" id="accueil-compte"></p>
         <button class="btn btn-or btn-grand" id="btn-jouer">C’est parti&nbsp;!</button>
         <!-- Rempli par app.js quand le téléphone garde un bon encore
@@ -133,7 +149,7 @@
              retrouve son code sans avoir à rejouer. -->
         <div id="accueil-rappel-bons"></div>
         <div class="mentions">
-          <p class="mini-mention">Jeu gratuit, sans obligation d’achat · 1 partie par jour · <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">Règlement</a> · Moins de 18 ans&nbsp;: joue avec l’accord d’un parent.</p>
+          <p class="mini-mention"><span class="mention-accueil-texte">Jeu gratuit, sans obligation d’achat, organisé par Pull Up Événements · Une partie par personne et par jour · Jeu et retrait des cadeaux jusqu’au 24&nbsp;décembre&nbsp;2026</span> · <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">Règlement</a> · Moins de 18 ans&nbsp;: joue avec l’accord d’un parent.</p>
         </div>
       </div>
     </section>
@@ -178,10 +194,11 @@
       </div>
       <div class="quiz-zone">
         <h2>Tes coordonnées</h2>
-        <p class="question-soustitre">Ton e-mail sert à valider ta participation. Une seule partie par jour.</p>
+        <p class="question-soustitre">Ton e-mail sert à enregistrer ta partie et à retrouver ton bon si tu perds ton code. Rien d’autre sans ton accord. Une seule partie par personne et par jour.</p>
+        <p class="mini-mention" id="mention-exclusion">Le jeu n’est pas ouvert aux personnes qui travaillent dans la galerie, dans les boutiques partenaires ou chez Pull Up Événements, ni à leur famille.</p>
         <label class="champ">
           <span>Ton adresse e-mail *</span>
-          <input type="email" id="input-email" placeholder="ton.mail@exemple.com" autocomplete="email" inputmode="email">
+          <input type="email" id="input-email" placeholder="ton.mail@exemple.com" autocomplete="email" inputmode="email" enterkeyhint="next" autocapitalize="none" autocorrect="off" spellcheck="false">
         </label>
         <div id="suggestion-email" class="suggestion" role="status" hidden>
           <p class="suggestion-texte">Petite vérification&nbsp;: tu voulais peut-être écrire <strong id="suggestion-valeur"></strong>&nbsp;?</p>
@@ -191,12 +208,30 @@
           </div>
         </div>
         <label class="champ">
-          <span>Ton numéro de téléphone <em>(facultatif)</em></span>
-          <input type="tel" id="input-tel" placeholder="0692 12 34 56" autocomplete="tel" inputmode="tel">
+          <span>Ton téléphone <em>(facultatif)</em></span>
+          <!-- La finalité doit être donnée AU MOMENT de la collecte, pas
+               seulement dans le règlement ouvert dans un autre onglet
+               (article 13 du RGPD, contrôle juridique du 15/09/2026). La
+               promesse d'absence de SMS est aussi ce qui débloque la
+               saisie : sans elle, une partie des joueurs laisse le champ
+               vide, l'autre le remplit sans savoir pourquoi. -->
+          <em class="champ-aide">On te fait signe seulement si ton cadeau coince. Jamais d’appel ni de SMS de publicité, promis.</em>
+          <input type="tel" id="input-tel" placeholder="0692 12 34 56" autocomplete="tel" inputmode="tel" enterkeyhint="done">
         </label>
+        <!-- Le numéro est facultatif : ce bloc prévient quand il a l'air
+             incomplet, il ne refuse jamais la participation. Même
+             habillage que la vérification de l'adresse e-mail, donc
+             aucun style nouveau (y compris en écran couché). -->
+        <div id="alerte-tel" class="suggestion" role="status" hidden>
+          <p class="suggestion-texte">Juste un doute&nbsp;: <strong id="alerte-tel-valeur"></strong>, c’est bien ton numéro&nbsp;?</p>
+          <div class="suggestion-actions">
+            <button type="button" class="btn-mini btn-mini-or" id="btn-tel-corriger">Je corrige</button>
+            <button type="button" class="btn-mini" id="btn-tel-garder">C’est mon numéro</button>
+          </div>
+        </div>
         <label class="case">
           <input type="checkbox" id="check-reglement">
-          <span>J’ai lu et j’accepte le <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">règlement du jeu</a> et l’enregistrement de mes réponses par l’organisateur. *</span>
+          <span>J’ai lu et j’accepte le <a href="reglement.html" target="_blank" rel="noopener noreferrer" class="lien-or">règlement du jeu</a>, qui explique ce que Pull Up Événements fait de mes réponses et de mes coordonnées. *</span>
         </label>
 
         <!-- role="alert" : le lecteur d'écran lit l'erreur dès qu'elle
@@ -205,8 +240,8 @@
         <p id="erreur-coordonnees" class="erreur" role="alert" hidden></p>
         <!-- Ce bouton ouvre le ticket à gratter, et le jeu du jour n'est
              pas toujours la roue : « Je tente ma chance » reste vrai. -->
+        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et tes coordonnées sont utilisées par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Tes réponses servent aussi à choisir, parmi les offres des commerçants, celles qui correspondent à tes goûts : elles ne changent rien à ta partie ni à ton lot. Juste après, on te demandera si tu veux aussi recevoir les bons plans des commerçants&nbsp;: ce choix ne changera rien non plus, et tu pourras en changer quand tu veux. Données conservées un an après l’opération, ou trois ans après ton dernier contact avec nous si tu acceptes de recevoir les offres ; ton téléphone, lui, est supprimé au plus tard trois mois après la fin du jeu. Jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: contact@pullup.re · <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">En savoir plus sur tes données</a></p>
         <button class="btn btn-or btn-grand" id="btn-valider">Je tente ma chance</button>
-        <p class="mini-mention" id="mention-donnees"><span id="mention-donnees-texte">Tes réponses et ton e-mail sont utilisés par Pull Up Événements (Le Tampon) pour gérer le jeu et te remettre ton lot. Juste après, on te demandera si tu veux aussi recevoir les bons plans des commerçants&nbsp;: ce choix ne changera rien à ta partie ni à ton lot, et tu pourras en changer quand tu veux. Données conservées un an après l’opération, ou trois ans si tu acceptes de recevoir les offres. Jamais vendues.</span> Tu peux accéder à tes données, les corriger ou les supprimer à tout moment&nbsp;: romain@pullup.re · <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">En savoir plus sur tes données</a></p>
       </div>
     </section>
 
@@ -214,7 +249,7 @@
     <section id="ecran-grattage" class="ecran">
       <div class="roue-zone">
         <h2 id="grattage-titre">Ton ticket à gratter</h2>
-        <p class="question-soustitre" id="grattage-consigne" role="status">Gratte avec ton doigt pour découvrir ce qu’il cache.</p>
+        <p class="question-soustitre" id="grattage-consigne" role="status">Gratte avec ton doigt. Le billet ouvre la partie, il ne donne pas de cadeau : tout se joue sur les manches qui suivent.</p>
         <div class="ticket" id="ticket">
           <div class="ticket-fond" id="ticket-fond">
             <!-- Le nom de la galerie est écrit par appliquerOperation() :
@@ -262,6 +297,7 @@
           </div>
         </div>
         <button class="btn btn-or btn-grand" id="btn-tourner">Tourner la roue</button>
+        <p class="mini-mention">Les cases affichées sont un décor&nbsp;: elles ne disent rien de tes chances. Le résultat est tiré au sort avant la partie.</p>
       </div>
     </section>
 
@@ -340,7 +376,7 @@
              gagnant doit savoir qu'il ne perd rien s'il n'utilise pas
              son bon tout de suite. Un bouton discret, et la mention
              au-dessous le rassure noir sur blanc. -->
-        <button class="btn btn-discret" id="btn-resultat-plus-tard" hidden>Je dépenserai mon cadeau plus tard</button>
+        <button class="btn btn-discret" id="btn-resultat-plus-tard" hidden>Je retirerai mon cadeau plus tard</button>
         <!-- LE PERDANT A UNE DEUXIÈME PORTE (29/08/2026, Romain) : en
              plus des bons de réduction, un bouton mène droit au
              programme des animations de la galerie. Montré au perdant
@@ -355,7 +391,15 @@
              programme, accueil) ont été retirés le 29/08/2026 :
              l'espace découverte a les siens. -->
         <div class="suites" id="resultat-suites" hidden>
-          <button class="btn btn-or" id="btn-rejouer-bonus" hidden>Il te reste un tour, vas-y !</button>
+          <!-- Libellé neutralisé le 26/09/2026 : l'article 4 du règlement écrit
+               que le billet n'attribue « aucune seconde participation », et la
+               base ne sait enregistrer qu'une participation, un lot et un code
+               par personne et par jour. La mécanique reste débranchée
+               (toursRestants vaut toujours 1, et #resultat-suites est masqué) :
+               plus aucun fichier du jeu ne contient la promesse d'un second
+               tour. Ne jamais la remettre sans que le règlement ET la base
+               changent d'abord. -->
+          <button class="btn btn-or" id="btn-rejouer-bonus" hidden>Continuer</button>
         </div>
       </div>
     </section>
@@ -404,8 +448,8 @@
               <!-- « offre », jamais « remporté » : le perdant passe ici
                    juste après « Pas de cadeau aujourd'hui », et le
                    règlement interdit de laisser croire à un gain. -->
-              <span class="carte-titre">La galerie t’offre des réductions sympas</span>
-              <span class="carte-detail">Des bons à utiliser aujourd’hui chez tes commerçants. Demain, il y en aura d’autres.</span>
+              <span class="carte-titre">Tes commerçants ont des réductions pour toi</span>
+              <span class="carte-detail">Des bons à utiliser aujourd’hui chez tes commerçants. Des bons à utiliser aujourd’hui chez tes commerçants, quand ils en proposent.</span>
               <span class="carte-action">
                 <span class="carte-action-mot">Voir les offres du jour</span>
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
@@ -432,7 +476,7 @@
             <span class="carte-texte">
               <span class="carte-etiquette">Aujourd’hui</span>
               <span class="carte-titre">Les animations du jour</span>
-              <span class="carte-detail">Le Père Noël, les ateliers, les spectacles : ce qui t’attend aujourd’hui, heure par heure.</span>
+              <span class="carte-detail">Ateliers, spectacles, rencontres : ce qui se passe aujourd’hui, heure par heure.</span>
               <span class="carte-action">
                 <span class="carte-action-mot">Voir les animations</span>
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
@@ -460,6 +504,10 @@
           <h2>Mes bons</h2>
           <p class="question-soustitre" id="mesbons-soustitre">Présente ton code au commerçant. Un bon ne sert qu’une fois.</p>
         </div>
+        <!-- LA PARTIE COUPÉE S'EXPLIQUE (25/09/2026) : ce mot n'apparaît
+             que pour le joueur dont le cadeau vient d'être rendu après une
+             partie interrompue. Le texte est écrit par app.js. -->
+        <p class="mesbons-reprise" id="mesbons-reprise" hidden></p>
         <div id="mes-bons-liste" class="mes-bons-liste"></div>
         <button class="btn btn-discret" id="btn-mes-bons-retour">Retour</button>
       </div>
@@ -471,7 +519,7 @@
         <div class="onglets-zone" data-vue="promos"></div>
         <div class="bandeau-vue bandeau-promos">
           <h2>Les offres du jour</h2>
-          <p class="question-soustitre" id="promos-soustitre">Des bons à utiliser aujourd’hui chez tes commerçants. Ils changent chaque jour.</p>
+          <p class="question-soustitre" id="promos-soustitre">Des bons à utiliser aujourd’hui chez tes commerçants. Ce sont eux qui les proposent, et ça change d’un jour à l’autre.</p>
         </div>
         <div id="promos-liste" class="promos-liste"></div>
         <button class="btn btn-discret" id="btn-promos-retour">Retour</button>
@@ -499,21 +547,24 @@
         <h1 id="offres-titre">Les bons plans de la galerie t’attendent.</h1>
         <p class="sous-titre" id="offres-soustitre">Les bons de réduction, la remise chez ta boutique préférée, les nouvelles collections, le menu du midi.</p>
 
-        <button class="btn btn-or btn-grand" id="btn-offres-oui">Oui, je veux recevoir des bons de réduction, cadeaux et bons plans</button>
-        <!-- Le « non » est volontairement discret (27/08/2026, Romain) :
-             un lien, pas un bouton, pour favoriser le oui. Il reste
-             cliquable d'un doigt et toujours visible : le refus est un
-             droit, pas une chasse au trésor. -->
+        <button class="btn btn-or btn-grand" id="btn-offres-oui">Oui, je veux recevoir les bons de réduction et les bons plans des commerçants</button>
+        <!-- Les deux réponses ont le même poids visuel : même largeur,
+             même hauteur, même taille de texte, contour visible sur le
+             refus (corrigé le 06/09/2026). La CNIL demande que refuser
+             soit aussi simple qu'accepter ; un consentement obtenu par
+             un écran déséquilibré n'est pas un consentement libre, et
+             toute la base deviendrait inexploitable. Ne jamais réduire
+             le bouton de refus. -->
         <button class="btn-offres-refus" id="btn-offres-non">Non merci, juste le jeu</button>
 
         <!-- LA RELANCE, UNE SEULE FOIS (27/08/2026, Romain) : au premier
              « non », on pose la question autrement. Le deuxième « non »
              est définitif, personne n'insiste au-delà. -->
         <div id="offres-relance" class="offres-relance" hidden>
-          <p class="offres-relance-titre">Es-tu sûr ?</p>
-          <p class="offres-relance-texte">C’est gratuit, et il y a vraiment des bons plans !</p>
-          <button class="btn btn-or btn-grand" id="btn-offres-oui2">Allez, d’accord, je m’inscris</button>
-          <button class="btn-offres-refus" id="btn-offres-non2">Non, vraiment</button>
+          <p class="offres-relance-titre">Tu peux changer d’avis.</p>
+          <p class="offres-relance-texte">Ce sont les bons plans des commerçants d’ici, plus les jeux qu’on organise dans les galeries de l’île. Tu te désabonnes en un clic.</p>
+          <button class="btn btn-or btn-grand" id="btn-offres-oui2">Oui, je m’inscris</button>
+          <button class="btn-offres-refus" id="btn-offres-non2">Non, merci</button>
         </div>
         <p id="offres-mineurs" class="mini-mention" hidden>Les offres par e-mail sont réservées aux joueurs majeurs.</p>
         <!-- « Tu peux te désabonner à tout moment » plutôt que « tu peux
@@ -521,7 +572,7 @@
              données » (29/08/2026, tournures revues à la demande de
              Romain ; le lien vers l'article données du règlement reste,
              c'est lui qui porte le détail RGPD). -->
-        <p class="mini-mention offres-liberte">Tu peux te désabonner à tout moment. Ton choix ne change <strong>rien</strong> à ta partie, ni à tes chances, ni à ton lot. <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">Comment tes données sont protégées</a></p>
+        <p class="mini-mention offres-liberte"><span class="offres-liberte-texte">C’est Pull Up Événements qui t’écrit&nbsp;: les offres des commerçants de la galerie, et les jeux et animations qu’on organise dans les galeries de La Réunion.</span> Tu peux te désabonner à tout moment. Ton choix ne change <strong>rien</strong> à ta partie, ni à tes chances, ni à ton lot. <a href="reglement.html#donnees" target="_blank" rel="noopener noreferrer" class="lien-or">Comment tes données sont protégées</a></p>
       </div>
     </section>
 
@@ -531,7 +582,7 @@
         <div class="onglets-zone" data-vue="programme"></div>
         <div class="bandeau-vue bandeau-programme">
           <h2>Les animations du jour</h2>
-          <p class="question-soustitre">Ce qui se passe aujourd’hui dans la galerie. Demain, tout change.</p>
+          <p class="question-soustitre">Ce qui se passe aujourd’hui dans la galerie, heure par heure.</p>
         </div>
         <div id="programme-liste" class="programme-liste"></div>
         <button class="btn btn-discret" id="btn-programme-retour">Retour</button>
@@ -548,6 +599,7 @@
           <span class="code-libelle" id="bon-promo-libelle">Ton bon</span>
           <span class="code-valeur" id="bon-promo-code"></span>
           <span class="code-info" id="bon-promo-detail"></span>
+          <span class="code-info" id="bon-promo-validite">Valable aujourd’hui seulement, aux heures d’ouverture de la boutique. Une seule utilisation.</span>
           <button class="btn btn-or btn-utiliser" id="btn-promo-utiliser">Je suis chez le commerçant</button>
         </div>
         <div id="bon-promo-valide" class="bon-valide" hidden>
@@ -568,7 +620,7 @@
             <button class="btn btn-or" id="btn-promo-confirme-oui">Je valide ce bon</button>
             <button class="btn btn-discret" id="btn-promo-confirme-non">Annuler</button>
           </div>
-          <p class="confirme-note">Ce bouton est réservé au commerçant.</p>
+          <p class="confirme-note">Ce bouton est réservé au commerçant. Une fois validé, le bon ne peut plus servir.</p>
         </div>
         <button class="btn btn-discret" id="btn-bon-promo-retour">Retour aux promos</button>
       </div>
@@ -605,7 +657,7 @@
           </svg>
         </div>
         <h1>Pas si vite&nbsp;!</h1>
-        <p class="sous-titre">Tu as déjà tenté ta chance aujourd’hui avec cette adresse e-mail.<br><strong>Reviens demain pour rejouer&nbsp;!</strong></p>
+        <p class="sous-titre">Tu as déjà tenté ta chance aujourd’hui avec cette adresse e-mail.<br><strong id="deja-joue-demain">Reviens demain pour rejouer&nbsp;!</strong></p>
         <!-- Visible uniquement sur la version d'essai (voir PARTIES_ILLIMITEES) -->
         <div id="deja-joue-essai" hidden>
           <p class="sous-titre">Mais comme tu es sur la <strong>version d’essai</strong>, tu peux rejouer autant de fois que tu veux. Dans la vraie opération, c’est une partie par personne et par jour.</p>
@@ -615,6 +667,14 @@
              bouton, son bon dort dans le téléphone sans aucun chemin
              pour le rouvrir. Affiché par app.js s'il reste un bon. -->
         <button class="btn btn-discret btn-grand" id="btn-deja-joue-bons" hidden>Revoir mes bons</button>
+        <!-- LE RECOURS DU JOUEUR COUPÉ EN PLEINE PARTIE (20/09/2026).
+             La partie est enregistrée dès la validation des coordonnées,
+             donc bien avant les manches : un joueur dont la page se
+             relance pendant une manche revient ici, et son cadeau
+             éventuel est en base sans qu'il ait aucun chemin pour le
+             retrouver. Masqué par app.js quand un bon dort déjà dans le
+             téléphone : dans ce cas, le bouton ci-dessus suffit. -->
+        <p class="mini-mention" id="deja-joue-recours">Ta partie s’est arrêtée en cours de route&nbsp;? Écris à <a href="mailto:contact@pullup.re">contact@pullup.re</a> avec cette adresse e-mail : on retrouve ta partie du jour.</p>
       </div>
     </section>
 

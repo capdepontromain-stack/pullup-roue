@@ -129,6 +129,38 @@
     .bn-paquet.ouvert.plein .bn-dedans { animation-duration: .01s !important; animation-delay: 0s !important; }
     .bn-paquet.ouvert.plein .bn-dedans { opacity: 1; }
   }
+
+  /* LE TÉLÉPHONE TENU EN TRAVERS (27/09/2026)
+     C'était le plus abîmé des trois : couché, la page mesurait
+     557 px pour 360 px d'écran, et le bas des paquets était coupé
+     de 74 px. Or ce jeu demande justement de ne pas quitter des
+     yeux le paquet marqué pendant le mélange : à moitié caché, il
+     devient injouable, et la phrase du verdict restait sous la
+     ligne de flottaison.
+
+     La scène passe à gauche, la consigne et le verdict à droite,
+     comme dans les onze autres jeux depuis le 06/09. La scène
+     garde sa hauteur : les paquets sont placés en absolu dedans,
+     la réduire les couperait. */
+  @media (orientation: landscape) and (max-height: 520px) and (min-width: 620px) {
+    #ecran-jeu.jeu-suiscadeau { max-width: none; }
+    #ecran-jeu.jeu-suiscadeau #jeu-zone {
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      column-gap: 24px;
+      row-gap: 7px;
+      align-content: start;
+      text-align: left;
+    }
+    /* Le plateau s'efface comme boîte : ses trois enfants entrent
+       directement dans la grille ci-dessus. */
+    #ecran-jeu.jeu-suiscadeau .bn-plateau { display: contents; }
+    #ecran-jeu.jeu-suiscadeau #jeu-zone > h2 { grid-column: 2; grid-row: 1; margin-bottom: 0; }
+    #ecran-jeu.jeu-suiscadeau #jeu-zone > .question-soustitre { grid-column: 2; grid-row: 2; margin: 0; }
+    #ecran-jeu.jeu-suiscadeau #jeu-zone .bn-scene    { grid-column: 1; grid-row: 1 / 9; align-self: center; }
+    #ecran-jeu.jeu-suiscadeau #jeu-zone .bn-consigne { grid-column: 2; grid-row: 3; align-self: start; text-align: left; }
+    #ecran-jeu.jeu-suiscadeau #jeu-zone .bn-verdict  { grid-column: 2; grid-row: 4; align-self: start; }
+  }
   `;
 
   // Le paquet fermé, dessiné au trait. Le contenu est posé derrière

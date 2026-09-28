@@ -34,6 +34,15 @@
 (function () {
 
   const CLE_PORTEFEUILLE = 'roue_mes_bons';
+  // LE MOT DU LIEU (25/09/2026) : « commerçant » vient de la galerie.
+  // Une station-service (Engen) parle de « la caisse ». app.js pose
+  // window.ROUE_MOTS depuis l'opération ; sans lui, rien ne change.
+  function motAu() {
+    return (window.ROUE_MOTS && window.ROUE_MOTS.au) || 'au commerçant';
+  }
+  function motChez() {
+    return (window.ROUE_MOTS && window.ROUE_MOTS.chez) || 'chez le commerçant';
+  }
   const CLE_UTILISES     = 'roue_bons_utilises';   // la clé historique d'app.js
 
   function lire(cle, defaut) {
@@ -73,6 +82,34 @@
     } catch (e) {
       return new Date(date.getTime() + 4 * 3600000).toISOString().slice(0, 10);
     }
+  }
+
+  // LE BON GAGNÉ AU JEU MEURT AVEC L'OPÉRATION (26/09/2026)
+  // --------------------------------------------------------
+  // Jusqu'ici, seul le bon d'une offre du jour expirait. Un lot gagné
+  // au jeu, lui, restait présentable indéfiniment : le 26 décembre, le
+  // joueur voyait encore « Valable jusqu'au 24 décembre 2026 inclus »
+  // avec le bouton actif, alors que l'article 5 du règlement dit qu'il
+  // ne peut plus être utilisé. La date de validité est écrite en
+  // toutes lettres sur le bon, parce que c'est le joueur et le
+  // commerçant qui la lisent : on la retraduit ici en date pour savoir
+  // si elle est passée. Si l'opération n'en donne pas (colonne vide,
+  // cas de la roue seule vendue à une station-service), rien n'expire :
+  // ce n'est pas à ce fichier d'inventer une fin.
+  const MOIS_FR = {
+    'janvier': '01', 'février': '02', 'fevrier': '02', 'mars': '03',
+    'avril': '04', 'mai': '05', 'juin': '06', 'juillet': '07',
+    'août': '08', 'aout': '08', 'septembre': '09', 'octobre': '10',
+    'novembre': '11', 'décembre': '12', 'decembre': '12'
+  };
+  function finDeValidite(texte) {
+    const m = String(texte || '').toLowerCase().match(/(\d{1,2})(?:er)?\s+([a-zà-öø-ÿ]+)\s+(\d{4})/);
+    if (!m || !MOIS_FR[m[2]]) return null;
+    return m[3] + '-' + MOIS_FR[m[2]] + '-' + (m[1].length === 1 ? '0' + m[1] : m[1]);
+  }
+  function validitePassee(validite, aujourdHui) {
+    const fin = finDeValidite(validite);
+    return !!fin && aujourdHui > fin;
   }
 
   const Bons = {
@@ -123,10 +160,49 @@
         // qu'on a gagné n'a pas le même goût que ce qu'on a pris.
         source:     bon.source === 'promo' ? 'promo' : 'jeu',
         validite:   bon.validite || '',
-        obtenu:     new Date().toISOString()
+        obtenu:     new Date().toISOString(),
+        // LE BON RANGÉ AVANT D'ÊTRE MONTRÉ (24/09/2026)
+        // Un bon « en attente » est écrit dans le téléphone mais
+        // n'apparaît nulle part : ni dans la liste, ni dans le compteur
+        // de l'onglet. Il sert au lot déjà tiré pendant que le joueur
+        // fait encore ses manches : s'il est coupé, le bon existe et on
+        // le lui rend au redémarrage (devoilerTout) ; s'il va au bout,
+        // l'écran du résultat le dévoile et le suspense est intact.
+        attente:    bon.attente === true
       };
       ecrire(CLE_PORTEFEUILLE, tout);
       return tout[bon.code];
+    },
+
+    // --------------------------------------------------------
+    // DÉVOILER
+    // `devoiler(code)` à la fin des manches, quand le joueur découvre
+    // son lot. `devoilerTout()` au chargement de la page : un bon
+    // encore en attente à ce moment-là ne peut venir que d'une partie
+    // interrompue, puisqu'une partie qui va au bout dévoile le sien
+    // avant de quitter l'écran. Renvoie le nombre de bons rendus.
+    // --------------------------------------------------------
+    devoiler(code) {
+      if (!code) return false;
+      const tout = lire(CLE_PORTEFEUILLE, '{}');
+      const b = tout[code];
+      if (!b || b.attente !== true) return false;
+      b.attente = false;
+      ecrire(CLE_PORTEFEUILLE, tout);
+      return true;
+    },
+
+    devoilerTout() {
+      const tout = lire(CLE_PORTEFEUILLE, '{}');
+      let rendus = 0;
+      Object.keys(tout).forEach(code => {
+        if (tout[code] && tout[code].attente === true) {
+          tout[code].attente = false;
+          rendus++;
+        }
+      });
+      if (rendus) ecrire(CLE_PORTEFEUILLE, tout);
+      return rendus;
     },
 
     // --------------------------------------------------------
@@ -142,15 +218,20 @@
       // marqué expiré : il reste visible, barré, pour que le joueur
       // comprenne la règle, mais il ne compte plus et ne s'utilise
       // plus. Les bons gagnés AU JEU, eux, vivent jusqu'à la date de
-      // l'opération (24 décembre) : rien ne les expire ici.
+      // validité écrite sur le bon, puis expirent de la même façon
+      // (26/09/2026 : avant cette date, rien ne les expirait jamais).
       const aujourdHui = jourReunion();
-      return Object.keys(tout).map(code => {
+      // Les bons en attente sont invisibles : ils existent dans le
+      // téléphone, mais le joueur n'est pas censé savoir ce qu'il a
+      // gagné avant la fin de ses manches (24/09/2026).
+      return Object.keys(tout).filter(code => tout[code] && tout[code].attente !== true).map(code => {
         const b = Object.assign({}, tout[code]);
         const u = utilises[code];
         b.utilise = !!u;
         b.utiliseLe = u ? u.date : null;
-        b.expire = b.source === 'promo' &&
-          jourReunion(new Date(b.obtenu || 0)) !== aujourdHui;
+        b.expire = b.source === 'promo'
+          ? jourReunion(new Date(b.obtenu || 0)) !== aujourdHui
+          : validitePassee(b.validite, aujourdHui);
         return b;
       }).sort((a, b) => {
         const aMort = a.utilise || a.expire, bMort = b.utilise || b.expire;
@@ -190,8 +271,8 @@
         const titre = document.createElement('p');
         titre.className = 'bons-section';
         titre.textContent = valables.length === 1
-          ? 'Ton bon, à présenter au commerçant'
-          : 'Tes ' + valables.length + ' bons, à présenter au commerçant';
+          ? 'Ton bon, à présenter ' + motAu()
+          : 'Tes ' + valables.length + ' bons, à présenter ' + motAu();
         conteneur.appendChild(titre);
         valables.forEach(b => conteneur.appendChild(carteBon(b, surUtiliser)));
       }
@@ -221,7 +302,17 @@
     el.innerHTML =
       '<div class="bon-ticket-haut">' +
         '<span class="bon-origine">' + echapper(origine) + '</span>' +
-        (bon.commercant ? '<span class="bon-commercant">' + echapper(bon.commercant) + '</span>' : '') +
+        // LE FILET DES ENSEIGNES PASSE ICI AUSSI (06/09/2026) : le
+      // portefeuille affichait encore le vrai nom de la boutique alors
+      // que l'écran du gagnant, lui, était filtré. Le bon est justement
+      // ce que le visiteur présente en caisse : c'est le dernier endroit
+      // où une enseigne non engagée doit apparaître. La fonction vit
+      // dans app.js, chargé avant ce fichier ; si elle manquait, on
+      // retombe simplement sur le nom d'origine.
+      (bon.commercant ? '<span class="bon-commercant">' +
+        echapper(typeof commercantPresentable === 'function'
+          ? commercantPresentable(bon.commercant) : bon.commercant) +
+        '</span>' : '') +
       '</div>' +
       '<div class="bon-lot">' + echapper(bon.lot) + '</div>' +
       (bon.detail ? '<div class="bon-detail">' + echapper(bon.detail) + '</div>' : '') +
@@ -244,7 +335,9 @@
       el.classList.add('bon-passe');
       const note = document.createElement('span');
       note.className = 'bon-passe-note';
-      note.textContent = 'Expiré : ce bon n’était valable que le jour même.';
+      note.textContent = bon.source === 'promo'
+        ? 'Expiré : ce bon n’était valable que le jour même.'
+        : 'Expiré : ce bon n’était valable que jusqu’au ' + bon.validite + '.';
       el.appendChild(note);
     } else {
       if (bon.validite) {
@@ -259,7 +352,7 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'btn btn-or bon-utiliser';
-      btn.textContent = 'Je suis chez le commerçant';
+      btn.textContent = 'Je suis ' + motChez();
       btn.addEventListener('click', () => {
         if (typeof surUtiliser === 'function') surUtiliser(bon);
       });
