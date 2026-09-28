@@ -219,21 +219,26 @@ const OPERATIONS_LOCALES = {
     // prend (règle de bons.js), et on peut le reprendre le lendemain.
     // La base (roue_offres, opération engen-anniversaire) prend la main
     // dès qu'elle en contient : voir CREER-OPERATION-ENGEN.sql.
-    // ⚠️ « bonbon piment » : compris ainsi à l'oral, à confirmer par
-    // Romain (il a dit « sambon »).
+    // Liste corrigée par Romain le 28/09 (fin d'après-midi) : samoussas,
+    // sapin dès 40 € d'essence, lavage pour un plein, bouteille d'eau
+    // pour deux club sandwichs. Plus de « bonbon piment ».
     offres: [
       { enseigne: 'La boutique de la station', univers: 'boutique',
         titre: 'Deux samoussas offerts pour l’achat de dix',
         detail: 'Dix samoussas achetés à la boutique, deux de plus sont offerts.',
         bon: 'Deux samoussas offerts pour l’achat de dix' },
-      { enseigne: 'La boutique de la station', univers: 'boutique',
-        titre: 'Un bonbon piment acheté, un offert',
-        detail: 'Pour un bonbon piment acheté à la boutique, le deuxième est offert.',
-        bon: 'Un bonbon piment acheté, un offert' },
       { enseigne: 'La station', univers: 'carburant',
-        titre: 'Un bonbon piment offert pour un plein',
-        detail: 'Pour un plein complet à la pompe, un bonbon piment t’attend à la boutique.',
-        bon: 'Un bonbon piment offert pour un plein' }
+        titre: 'Un sapin désodorisant offert dès 40 € d’essence',
+        detail: 'À partir de 40 € de carburant à la pompe, le sapin pour ton pare-brise est offert à la caisse.',
+        bon: 'Un sapin désodorisant offert dès 40 € d’essence' },
+      { enseigne: 'La station', univers: 'lavage',
+        titre: 'Un lavage offert pour un plein',
+        detail: 'Pour un plein complet à la pompe, le lavage de ta voiture est offert.',
+        bon: 'Un lavage offert pour un plein' },
+      { enseigne: 'La boutique de la station', univers: 'boutique',
+        titre: 'Une bouteille d’eau d’un litre offerte pour deux club sandwichs',
+        detail: 'Deux club sandwichs achetés à la boutique, la bouteille d’eau d’un litre est offerte.',
+        bon: 'Une bouteille d’eau d’un litre offerte pour deux club sandwichs' }
     ],
     // Les textes qui parlaient de la galerie et de ses commerçants.
     vocabulaire: {
@@ -2190,7 +2195,7 @@ function jeuPourNom(nom) {
 // elle, un téléphone qui a déjà joué garde l'ancien fichier en mémoire
 // et ne voit jamais les corrections (constaté le 26/08/2026 sur le
 // levier du bandit manchot).
-const VERSION_JEUX = '28sept2026d';
+const VERSION_JEUX = '28sept2026e';
 // Tous les jeux jamais créés restent chargeables (la roue, elle, vit
 // dans app.js et n'a rien à charger) : le parcours officiel en joue
 // trois (bandit, cartes, roue depuis le 29/08/2026), et la vitrine de

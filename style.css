@@ -5086,6 +5086,20 @@ body.theme-csc .btn-or:disabled {
 
 /* --- Bloc généré depuis theme-csc (rouge -> bleu Engen) --- */
 body.theme-engen #offres-soustitre { color: #29343E; }
+/* Le moyeu de la roue porte l'emblème Engen (28/09/2026, Romain) :
+   fond bleu Engen, liseré blanc, l'ovale et le « e » rouge du logo à
+   la place du chapiteau gravé. */
+.moyeu-engen { display: none; }
+body.theme-engen .moyeu-chapiteau { display: none; }
+body.theme-engen .moyeu-engen { display: block; }
+body.theme-engen .roue-centre {
+  width: 72px; height: 72px;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, .28), transparent 60%),
+    radial-gradient(circle, #1148C4 0%, #002C90 100%);
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 6px 18px rgba(0, 44, 144, .45), inset 0 1px 0 rgba(255, 255, 255, .25);
+}
 @media (prefers-reduced-motion: reduce) {
 body.theme-engen .guirlande i { animation: none; opacity: .8; }
 }

@@ -50,7 +50,7 @@
        la feuille de style au lieu de ressortir celle qu'il avait gardée en
        mémoire. À changer à chaque mise en ligne d'une modification visuelle,
        sinon un joueur déjà venu continue de voir l'ancienne version. -->
-  <link rel="stylesheet" href="style.css?v=28sept2026d">
+  <link rel="stylesheet" href="style.css?v=28sept2026e">
   <!-- Les scripts sont déclarés ici avec « defer » : le téléchargement
        commence tout de suite, en même temps que la lecture de la page,
        et l'exécution attend que la page soit construite. En fin de page,
@@ -60,17 +60,17 @@
        sans defer, il voit les erreurs de tous les autres scripts. Si le
        jeu ne s'ouvre pas, il affiche un écran lisible avec un bouton
        « Réessayer » au lieu d'une page figée. Voir filet.js. -->
-  <script src="filet.js?v=28sept2026d"></script>
+  <script src="filet.js?v=28sept2026e"></script>
   <script src="supabase-lib.js" defer></script>
-  <script src="icones.js?v=28sept2026d" defer></script>
-  <script src="icones-quiz.js?v=28sept2026d" defer></script>
-  <script src="contenus-demo.js?v=28sept2026d" defer></script>
+  <script src="icones.js?v=28sept2026e" defer></script>
+  <script src="icones-quiz.js?v=28sept2026e" defer></script>
+  <script src="contenus-demo.js?v=28sept2026e" defer></script>
   <!-- LE PORTEFEUILLE DE BONS (26/08/2026)
        Il tient la liste des bons du joueur et sait la dessiner. Chargé
        avant app.js, qui l'appelle à deux endroits : quand un lot est
        gagné, et quand un bon de promotion est pris. Voir bons.js. -->
-  <script src="bons.js?v=28sept2026d" defer></script>
-  <script src="app.js?v=28sept2026d" defer></script>
+  <script src="bons.js?v=28sept2026e" defer></script>
+  <script src="app.js?v=28sept2026e" defer></script>
   <!-- L'envoi du bon par e-mail n'est pas encore en service : le dossier
        envoi-mails ne part pas en ligne (voir .gitignore), et l'appeler
        ici ne produisait qu'une erreur 404 à chaque ouverture de la page.
@@ -96,7 +96,7 @@
   <!-- Le pré-thème : synchrone et minuscule, il habille la page du bon
        thème avant la première image (voir pretheme.js). Il doit rester
        le premier élément de body. -->
-  <script src="pretheme.js?v=28sept2026d"></script>
+  <script src="pretheme.js?v=28sept2026e"></script>
 
   <div class="app">
 
@@ -294,9 +294,18 @@
                remplace l'étoile, même trait d'or gravé. Les pictos des
                CASES, eux, ne bougent pas : tranché le 28/08. -->
           <div class="roue-centre">
-            <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+            <svg class="moyeu-chapiteau" width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
               <path d="M3 15 L15 4.5 L27 15 Z M5.5 15 L7 26 L23 26 L24.5 15 M15 4.5 V1.5 L19 2.6 L15 3.8"
                     fill="none" stroke="#EFC368" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+            </svg>
+            <!-- L'emblème Engen au moyeu (28/09/2026, Romain : « enlève le
+                 chapiteau, mets le logo Engen au milieu de la roue »).
+                 Les deux tracés viennent de img/client/logo-engen.svg
+                 (l'ovale blanc et le « e » rouge), cadrés sur l'emblème.
+                 Visible sous body.theme-engen seulement (style.css). -->
+            <svg class="moyeu-engen" width="50" height="30" viewBox="47.5 30 46.8 28.3" aria-hidden="true">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M70.9171 32C81.4657 32 92.3107 36.5204 92.3107 44.1579C92.3107 51.7955 81.4657 56.3047 70.9171 56.3047C60.3574 56.3047 49.5123 51.7955 49.5123 44.1579C49.5123 36.5204 60.3574 32 70.9171 32Z" fill="white"/>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M85.3233 37.3876L68.7354 45.9844L65.8703 44.2261L77.9141 38.0266C75.0601 36.839 70.619 36.931 70.619 36.931C57.1023 37.57 57.4337 44.2261 57.4337 44.2261C57.4337 45.8021 58.9288 50.7902 70.619 51.3832C84.7636 50.9266 85.4137 43.7457 83.5412 41.6337L87.9474 39.3046C90.3447 41.4958 90.3447 44.2245 90.3447 44.2245C90.3907 47.7745 85.6991 53.9058 70.6174 54.3498C55.5596 53.4936 51.518 47.8205 51.4736 44.2245C51.4276 40.6745 55.7895 34.4528 70.6174 33.9502C80.5857 33.8598 85.3233 37.3876 85.3233 37.3876Z" fill="#ED1651"/>
             </svg>
           </div>
         </div>
